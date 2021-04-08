@@ -1,0 +1,19 @@
+{
+  "name": "petu-api",
+  "version": "1.0.0",
+  "description": "A general purpose API designed to be used by any of my miscellaneous projects",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iapetus-11/petu-api.git"
+  },
+  "author": "Milo Weinberg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Iapetus-11/petu-api/issues"
+  },
+  "homepage": "https://github.com/Iapetus-11/petu-api#readme"
+}
