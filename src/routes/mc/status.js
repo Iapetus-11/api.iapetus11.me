@@ -12,3 +12,5 @@ router.get("/:address", (req, res) => {
 
   res.status(200).json({success: true, message: "bruh"});
 });
+
+export router;
