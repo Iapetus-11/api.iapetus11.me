@@ -5,6 +5,7 @@ const handshake = Buffer.from("01000000000000000000ffff00fefefefefdfdfdfd1234567
 export const bedrockServerStatus = (host, port) => {
   return new Promise((resolve, reject) => {
     const socket = dgram.createSocket("udp4");
+    let start;
 
     socket.on("error", (e) => {
       reject(e);
@@ -18,8 +19,10 @@ export const bedrockServerStatus = (host, port) => {
 
       let status = {
         online: true,
+        latency: (new Date() - start),
         players_online: parseInt(status_data[4]),
         players_max: parseInt(status_data[5]),
+        players_names: [],
         version: {
           brand: status_data[0],
           software: `Bedrock ${status_data[3]}`,
@@ -37,6 +40,8 @@ export const bedrockServerStatus = (host, port) => {
     });
 
     socket.send(handshake, 0, handshake.length, port, host, (e) => {
+      start = new Date();
+
       if (e) {
         reject(e);
         socket.close();
