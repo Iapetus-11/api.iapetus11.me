@@ -4,10 +4,10 @@ const validAddressChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1
 
 export const defaultStatus = {
   "online": false,
-  "players_online": 0,
-  "players_max": 0,
+  "latency": null,
+  "players_online": null,
+  "players_max": null,
   "players_names": [],
-  "latency": 0,
   "version": {"brand": null, "software": null, "protocol": null},
   "motd": null,
   "favicon": null,
