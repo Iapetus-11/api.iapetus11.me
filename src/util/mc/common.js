@@ -1,3 +1,5 @@
+import dns from "dns";
+
 import {bedrockServerStatus} from "./bedrock/status.js";
 
 const validAddressChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:.";
@@ -48,7 +50,27 @@ export const parseAddress = (address) => {
   }
 }
 
+const getActualAddress = (host) => {
+  return new Promise((resolve, reject) => {
+    dns.resolveSrv(host, (e, addresses) => {
+      try {
+        resolve([addresses[0].name, addresses[1].port]);
+      } catch (e) {
+        reject();
+      }
+    });
+  });
+}
+
+
+
 export const mcStatus = async (host, port) => {
+  try {
+    let actualAddress = await getActualAddress(host);
+    host = actualAddress[0];
+    port = actualAddress[1];
+  } catch (e) {}
+
   try {
     return await Promise.any([bedrockServerStatus(host, port)]);
   } catch (e) {
