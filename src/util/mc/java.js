@@ -8,5 +8,5 @@ class Connection {
 }
 
 export const javaServerStatus = (host, port) => {
-  const socket =
-}
+  const socket = null;
+};

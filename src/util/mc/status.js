@@ -1,31 +1,32 @@
 import dns from "dns";
 
-import {bedrockServerStatus} from "./bedrock.js";
+import { bedrockServerStatus } from "./bedrock.js";
 
-const validAddressChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:.";
+const validAddressChars =
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:.";
 let statusCache = {}; // {server: {data}}
 
 const clearStatusCacheLoop = () => {
-  Object.keys(statusCache).forEach(key => {
+  Object.keys(statusCache).forEach((key) => {
     if ((new Date() - statusCache[key].cache_time) / 1000 > 10) {
       delete statusCache[key];
     }
   });
-}
+};
 
 setInterval(clearStatusCacheLoop, 1000);
 
 export const defaultStatus = {
-  "online": false, // whether server is online or not
-  "latency": null,  // latency in milliseconds between requesting status and getting response
-  "players_online": null, // number of players online
-  "players_max": null, // max number of players allowed
-  "players_names": [], // the names of the online players
-  "version": {"brand": null, "software": null, "protocol": null}, // info about the server version and software
-  "motd": null, // the message of the day
-  "favicon": null, // the server icon / favicon that appears in the server list
-  "map": null, // the map the server is hosting
-  "gamemode": null // the default gamemode the server is on
+  online: false, // whether server is online or not
+  latency: null, // latency in milliseconds between requesting status and getting response
+  players_online: null, // number of players online
+  players_max: null, // max number of players allowed
+  players_names: [], // the names of the online players
+  version: { brand: null, software: null, protocol: null }, // info about the server version and software
+  motd: null, // the message of the day
+  favicon: null, // the server icon / favicon that appears in the server list
+  map: null, // the map the server is hosting
+  gamemode: null, // the default gamemode the server is on
 };
 
 export const parseAddress = (address) => {
@@ -59,7 +60,7 @@ export const parseAddress = (address) => {
   } else {
     return [address, null];
   }
-}
+};
 
 const getActualAddress = (host) => {
   return new Promise((resolve, reject) => {
@@ -71,7 +72,7 @@ const getActualAddress = (host) => {
       }
     });
   });
-}
+};
 
 const fetchMcStatus = async (host, port, doNotRetry) => {
   try {
@@ -89,7 +90,7 @@ const fetchMcStatus = async (host, port, doNotRetry) => {
 
     return defaultStatus;
   }
-}
+};
 
 export const mcStatus = (host, port) => {
   return new Promise((resolve, reject) => {
@@ -101,17 +102,21 @@ export const mcStatus = (host, port) => {
       resolve(cached);
     } else {
       fetchMcStatus(host, port)
-      .then(status => {
-        status = {...status, cached: false, cache_time: null};
+        .then((status) => {
+          status = { ...status, cached: false, cache_time: null };
 
-        resolve(status);
+          resolve(status);
 
-        // insert into cache if the server was online
-        if (status.online) {
-          statusCache[cacheKey] = {...status, cached: true, cache_time: (new Date())};
-        }
-      })
-      .catch(e => reject(e));
+          // insert into cache if the server was online
+          if (status.online) {
+            statusCache[cacheKey] = {
+              ...status,
+              cached: true,
+              cache_time: new Date(),
+            };
+          }
+        })
+        .catch((e) => reject(e));
     }
   });
-}
+};
