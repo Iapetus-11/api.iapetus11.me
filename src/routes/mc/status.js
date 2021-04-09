@@ -1,20 +1,18 @@
 import express from "express";
 
-import {mcStatus, validateAddress} from "../../util/mc/common.js";
+import {mcStatus, parseAddress} from "../../util/mc/common.js";
 
 const router = express.Router();
 
-router.get("/:address", (req, res) => {
-  const address = req.params.address;
-
+router.get("/:server", (req, res) => {
   try {
-    validateAddress(address);
+    const address = parseAddress(req.params.server);
   } catch (e) {
     res.status(400).json({success: false, message: "Bad Requests - URL parameter address is invalid."});
     return;
   }
 
-  res.status(200).json({success: true, message: "bruh"});
+  res.status(200).json({success: true, message: address});
 });
 
 export default router;
