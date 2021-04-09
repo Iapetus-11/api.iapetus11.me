@@ -5,7 +5,7 @@ class Connection {
     this.host = host;
     this.port = port;
 
-    this.sock = net.createConnection({host: host, port: port});
+    this.sock = net.createConnection({ host: host, port: port });
 
     this.buffer = new Buffer();
     this.pos = 0;
@@ -27,8 +27,8 @@ class Connection {
   read(n) {
     process.nextTick(() => {
       try {
-        return readRaw(n)
-      } catch(e) {
+        return readRaw(n);
+      } catch (e) {
         return read(n);
       }
     });
