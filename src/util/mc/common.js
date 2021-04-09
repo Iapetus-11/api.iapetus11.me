@@ -50,7 +50,7 @@ export const parseAddress = (address) => {
 
 export const mcStatus = async (host, port) => {
   try {
-    return await bedrockServerStatus(host, port);
+    return await Promise.any([bedrockServerStatus(host, port)]);
   } catch (e) {
     return defaultStatus;
   }
