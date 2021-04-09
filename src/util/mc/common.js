@@ -73,7 +73,7 @@ const getActualAddress = (host) => {
   });
 }
 
-const fetchMcStatus = async (host, port) => {
+const fetchMcStatus = async (host, port, doNotRetry) => {
   try {
     let actualAddress = await getActualAddress(host);
     host = actualAddress[0];
@@ -83,6 +83,10 @@ const fetchMcStatus = async (host, port) => {
   try {
     return await Promise.any([bedrockServerStatus(host, port)]);
   } catch (e) {
+    if (!doNotRetry) {
+      return await fetchMcStatus(host, port, true);
+    }
+
     return defaultStatus;
   }
 }
@@ -102,8 +106,10 @@ export const mcStatus = (host, port) => {
 
         resolve(status);
 
-        // insert into cache
-        statusCache[cacheKey] = {...status, cached: true, cache_time: (new Date())};
+        // insert into cache if the server was online
+        if (status.online) {
+          statusCache[cacheKey] = {...status, cached: true, cache_time: (new Date())};
+        }
       })
       .catch(e => reject(e));
     }
