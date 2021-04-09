@@ -3,6 +3,17 @@ import dns from "dns";
 import {bedrockServerStatus} from "./bedrock/status.js";
 
 const validAddressChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:.";
+let statusCache = {}; // {server: {data}}
+
+const clearStatusCacheLoop = () => {
+  Object.keys(statusCache).forEach(key => {
+    if ((new Date() - statusCache[key].cache_time) / 1000 > 10) {
+      delete statusCache[key];
+    }
+  });
+}
+
+setInterval(clearStatusCacheLoop, 1000);
 
 export const defaultStatus = {
   "online": false, // whether server is online or not
@@ -62,9 +73,7 @@ const getActualAddress = (host) => {
   });
 }
 
-
-
-export const mcStatus = async (host, port) => {
+const fetchMcStatus = async (host, port) => {
   try {
     let actualAddress = await getActualAddress(host);
     host = actualAddress[0];
@@ -76,4 +85,27 @@ export const mcStatus = async (host, port) => {
   } catch (e) {
     return defaultStatus;
   }
+}
+
+export const mcStatus = (host, port) => {
+  return new Promise((resolve, reject) => {
+    const cacheKey = [host, port];
+
+    const cached = statusCache[cacheKey];
+
+    if (cached) {
+      resolve(cached);
+    } else {
+      fetchMcStatus(host, port)
+      .then(status => {
+        status = {...status, cached: false, cache_time: null};
+
+        resolve(status);
+
+        // insert into cache
+        statusCache[cacheKey] = {...status, cached: true, cache_time: (new Date())};
+      })
+      .catch(e => reject(e));
+    }
+  });
 }
