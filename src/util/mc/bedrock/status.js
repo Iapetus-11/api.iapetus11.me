@@ -23,8 +23,7 @@ export const bedrockServerStatus = (host, port) => {
         version: {
           brand: status_data[0],
           software: `Bedrock ${status_data[3]}`,
-          protocol: status_data[2],
-          method: "raknet"
+          protocol: status_data[2]
         },
         motd: status_data[1],
       }
