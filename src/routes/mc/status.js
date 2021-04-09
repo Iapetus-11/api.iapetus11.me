@@ -14,9 +14,10 @@ router.get("/:server", (req, res) => {
     return;
   }
 
-  mcStatus(...address);
-
-  res.status(200).json({success: true, message: address});
+  mcStatus(...address)
+  .then((status) => {
+    res.status(200).json({success: true, ...status});
+  });
 });
 
 export default router;
