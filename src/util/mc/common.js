@@ -3,16 +3,16 @@ import {bedrockServerStatus} from "./bedrock/status.js";
 const validAddressChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:.";
 
 export const defaultStatus = {
-  "online": false,
-  "latency": null,
-  "players_online": null,
-  "players_max": null,
-  "players_names": [],
-  "version": {"brand": null, "software": null, "protocol": null},
-  "motd": null,
-  "favicon": null,
-  "map": null,
-  "gamemode": null
+  "online": false, // whether server is online or not
+  "latency": null,  // latency in milliseconds between requesting status and getting response
+  "players_online": null, // number of players online
+  "players_max": null, // max number of players allowed
+  "players_names": [], // the names of the online players
+  "version": {"brand": null, "software": null, "protocol": null}, // info about the server version and software
+  "motd": null, // the message of the day
+  "favicon": null, // the server icon / favicon that appears in the server list
+  "map": null, // the map the server is hosting
+  "gamemode": null // the default gamemode the server is on
 };
 
 export const parseAddress = (address) => {
