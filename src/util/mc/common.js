@@ -35,6 +35,6 @@ export const parseAddress = (address) => {
   }
 }
 
-export const mcStatus = async (address) => {
-  return await bedrockServerStatus()
+export const mcStatus = async (host, port) => {
+  return await bedrockServerStatus(host, port)
 }

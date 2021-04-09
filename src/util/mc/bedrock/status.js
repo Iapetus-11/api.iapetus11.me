@@ -3,6 +3,9 @@ import udp from "udp";
 const handshake = Buffer.from("\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x124Vx");
 
 export const bedrockServerStatus = (host, port) => {
+  console.log(host);
+  console.log(port);
+
   return new Promise((resolve, reject) => {
     const socket = udp.createSocket("udp4");
 
