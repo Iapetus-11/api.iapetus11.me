@@ -1,6 +1,6 @@
 import dns from "dns";
 
-import {bedrockServerStatus} from "./bedrock/status.js";
+import {bedrockServerStatus} from "./bedrock.js";
 
 const validAddressChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:.";
 let statusCache = {}; // {server: {data}}

@@ -1,6 +1,6 @@
 import express from "express";
 
-import {mcStatus, parseAddress} from "../../util/mc/common.js";
+import {mcStatus, parseAddress} from "../../util/mc/status.js";
 
 const router = express.Router();
 
