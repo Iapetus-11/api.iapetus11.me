@@ -22,7 +22,14 @@ export const parseAddress = (address) => {
   if (colonCount > 1) {
     throw new Error();
   } else if (colonCount === 1) {
-    return address.split(":");
+    const split = address.split(":");
+    const port = parseInt(split[1]);
+
+    if (!port) {
+      throw new Error();
+    }
+
+    return [split[0], port];
   } else {
     return [address, null];
   }
