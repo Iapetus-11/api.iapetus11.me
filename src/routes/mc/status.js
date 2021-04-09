@@ -17,7 +17,11 @@ router.get("/:server", (req, res) => {
   mcStatus(...address)
   .then((status) => {
     res.status(200).json({success: true, ...status});
-  });
+  })
+  .catch((e) => {
+    console.log(e);
+    res.status(500).json({success: false, message: "Error - An error occurred whilst checking the status of the server."});
+  })
 });
 
 export default router;
