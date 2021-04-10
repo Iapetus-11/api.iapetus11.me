@@ -89,5 +89,7 @@ class Connection {
 
 export const javaServerStatus = (host, port) => {
   const con = new Connection(host, port);
-  buf.writeVarInt(mcProtoVer);
+  let buf = new Buffer();
+  
+
 };
