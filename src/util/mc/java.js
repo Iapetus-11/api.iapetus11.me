@@ -1,5 +1,49 @@
 import net from "net";
 
+const mcProtoVer = 754;
+
+const writeVarInt = (buf, n, maxBits) => {
+  maxBits = (maxBits ? maxBits : 32);
+  const numMin = (-1 << (maxBits - 1));
+  const numMax = (1 << (maxBits - 1));
+
+  if (!(numMin <= num < numMax)) {
+    throw new RangeError(`${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`);
+  }
+
+  for (let i = 0; i < 10; i++) {
+    let b = num & 0x7F;
+    num = num >> 7;
+
+    buf.writeUInt8(b | (num > 0 ? 0x80 : 0));
+
+    if (num == 0) break;
+  }
+}
+
+const readVarInt = (buf, n, maxBits) => {
+  maxBits = (maxBits ? maxBits : 32);
+  const numMin = (-1 << (maxBits - 1));
+  const numMax = (1 << (maxBits - 1));
+
+  let num = 0;
+
+  for (let i = 0; i < 10; i++) {
+    let b = buf.readUInt8();
+    num = num | (b & 0x7F) << 7 * i;
+
+    if (!(b & 0x80)) break;
+  }
+
+  if (num & (1 << 31)) num -= (1 << 32);
+
+  if (!(numMin <= num < numMax)) {
+    throw new RangeError(`${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`);
+  }
+
+  return num;
+}
+
 class Connection {
   constructor(host, port) {
     this.host = host;
@@ -41,55 +85,9 @@ class Connection {
       });
     });
   }
-
-  writeVarInt(n, maxBits) {
-    maxBits = (maxBits ? maxBits : 32);
-    const numMin = (-1 << (maxBits - 1));
-    const numMax = (1 << (maxBits - 1));
-
-    if (!(numMin <= num < numMax)) {
-      throw new RangeError(`${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`);
-    }
-
-    let out = new Buffer();
-
-    for (let i = 0; i < 10; i++) {
-      let b = num & 0x7F;
-      num = num >> 7;
-
-      out.writeUInt8(b | (num > 0 ? 0x80 : 0));
-
-      if (num == 0) break;
-    }
-
-    return out;
-  }
-
-  readVarInt(n, maxBits) {
-    maxBits = (maxBits ? maxBits : 32);
-    const numMin = (-1 << (maxBits - 1));
-    const numMax = (1 << (maxBits - 1));
-
-    let num = 0;
-
-    for (let i = 0; i < 10; i++) {
-      let b = this.read(1).readUInt8();
-      num = num | (b & 0x7F) << 7 * i;
-
-      if (!(b & 0x80)) break;
-    }
-
-    if (num & (1 << 31)) num -= (1 << 32);
-
-    if (!(numMin <= num < numMax)) {
-      throw new RangeError(`${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`);
-    }
-
-    return num;
-  }
 }
 
 export const javaServerStatus = (host, port) => {
   const con = new Connection(host, port);
-  let buffer = new Buffer();
+  buf.writeVarInt(mcProtoVer);
 };
