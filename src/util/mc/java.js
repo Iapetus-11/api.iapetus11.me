@@ -44,6 +44,16 @@ const readVarInt = (buf, n, maxBits) => {
   return num;
 }
 
+const writeMutf8String = (buf, string) => {
+  for (let i = 0; i < string.length; i++) {
+    let c = string.charCodeAt(i);
+
+    if (c == 0x00) {
+      buf.writeUInt8()
+    }
+  }
+}
+
 class Connection {
   constructor(host, port) {
     this.host = host;
