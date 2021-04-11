@@ -53,10 +53,10 @@ const writeMutf8String = (buf, string) => {
     let c = string.charCodeAt(i);
 
     if (c == 0x00) {
-      buf.writeUInt8()
+      buf.writeUInt8();
     }
   }
-}
+};
 
 class Connection {
   constructor(host, port) {
