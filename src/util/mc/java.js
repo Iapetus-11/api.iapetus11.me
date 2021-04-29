@@ -12,7 +12,7 @@ class Connection {
 
     this.sock = net.createConnection({ host: host, port: port });
 
-    this.buffer = new Buffer();
+    this.buffer = new Buffer([]);
     this.pos = 0;
 
     this.sock.on("data", (data) => {
@@ -65,41 +65,43 @@ class Connection {
     return num;
   }
 
-  writeVarInt(n, maxBits) {
-    return new Promise((resolve, reject) => {
-      maxBits = maxBits ? maxBits : 32;
-      const numMin = -1 << (maxBits - 1);
-      const numMax = 1 << (maxBits - 1);
+  writeVarInt(buf, n, maxBits) {
+    maxBits = maxBits ? maxBits : 32;
+    const numMin = -1 << (maxBits - 1);
+    const numMax = 1 << (maxBits - 1);
 
-      if (!(numMin <= num < numMax)) {
-        throw new RangeError(
-          `${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`
-        );
-      }
+    if (!(numMin <= num < numMax)) {
+      throw new RangeError(
+        `${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`
+      );
+    }
 
-      let buf = new Buffer();
+    for (let i = 0; i < 10; i++) {
+      let b = num & 0x7f;
+      num = num >> 7;
 
-      for (let i = 0; i < 10; i++) {
-        let b = num & 0x7f;
-        num = num >> 7;
+      buf.writeUInt8(b | (num > 0 ? 0x80 : 0));
 
-        buf.writeUInt8(b | (num > 0 ? 0x80 : 0));
-
-        if (num == 0) break;
-      }
-
-      this.sock.write(buf).then((flushed) => resolve()).catch((e) => reject(e));
-    });
+      if (num == 0) break;
+    }
   }
 
   async writeHandshakePacket(protoVersion, address, port, nextState) {
     let buf = new Buffer();
-    buf.writeUInt16BE(port);
 
-    await this.writeVarInt(protoVersion);
-    await this.sock.write(mutf8Encoder.encode(address));
+    this.writeVarInt(buf, 0x00); // packet id
+    this.writeVarInt(buf, protoVersion); // protocol version
+    buf.write(mutf8Encoder.encode(address)); // server host/address
+    buf.writeUInt16BE(port); // server port
+    this.writeVarInt(buf, nextState); // next state
+
+    let buf
+
     await this.sock.write(buf);
-    await this.writeVarInt(nextState);
+  }
+
+  async writeStatusRequestPacket() {
+
   }
 }
 
