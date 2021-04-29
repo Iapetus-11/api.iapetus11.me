@@ -58,6 +58,13 @@ const writeMutf8String = (buf, string) => {
   }
 };
 
+const writePacketHandshake = (buf, protoVersion, address, port, nextState) => {
+  writeVarInt(buf, protoVersion);
+  writeMutf8String(buf, address);
+  buf.writeUInt16BE(port);
+  writeVarInt(buf, nextState);
+};
+
 class Connection {
   constructor(host, port) {
     this.host = host;
@@ -104,4 +111,6 @@ class Connection {
 export const javaServerStatus = (host, port) => {
   const con = new Connection(host, port);
   let buf = new Buffer();
+
+  writePacketHandshake(buf, 754, host, port, 2);
 };
