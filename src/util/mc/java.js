@@ -44,7 +44,7 @@ class Connection {
     let num = 0;
 
     for (let i = 0; i < 10; i++) {
-      let b = this.buf.readUInt8(this.pos);
+      let b = this.read(1);
       this.pos += 1;
       num = num | ((b & 0x7f) << (7 * i));
 
@@ -86,20 +86,6 @@ class Connection {
       }
 
       this.sock.write(buf).then((flushed) => resolve()).catch((e) => reject(e));
-    });
-  }
-
-  writeMutf8String(string) {
-    return new Promise((resolve, reject) => {
-      let buf = new Buffer();
-
-      for (let i = 0; i < string.length; i++) {
-        let c = string.charCodeAt(i);
-
-        if (c == 0x00) {
-          buf.writeUInt8();
-        }
-      }
     });
   }
 }
