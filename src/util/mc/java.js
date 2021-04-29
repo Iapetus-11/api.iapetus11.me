@@ -1,110 +1,56 @@
-import net from "net";
 import { MUtf8Decoder, MUtf8Encoder } from "mutf-8";
 
-const mutf8Encoder = new MUtf8Encoder();
 const mutf8Decoder = new MUtf8Decoder();
-const mcProtoVer = 754;
+const mutf8Encoder = new MUtf8Encoder();
 
-class Connection {
-  constructor(host, port) {
-    this.host = host;
-    this.port = port;
+const createServerData = (start, buf) => {
+  const latency = new Date() - start;
+  const data = mutf8Decoder.
+}
 
-    this.sock = net.createConnection({ host: host, port: port });
+const readVarInt = (buf, offset, maxBits) {
+  maxBits = maxBits ? maxBits : 32;
+  const numMin = -1 << (maxBits - 1);
+  const numMax = 1 << (maxBits - 1);
 
-    this.buffer = new Buffer([]);
-    this.pos = 0;
+  let num = 0;
 
-    this.sock.on("data", (data) => {
-      this.buffer = Buffer.concat([this.buffer, Buffer.from(data)]);
-    });
+  for (let i = 0; i < 10; i++) {
+    let b = this.read(1, offset);
+    offset += 1;
+    num = num | ((b & 0x7f) << (7 * i));
+
+    if (!(b & 0x80)) break;
   }
 
-  readRaw(n) {
-    if (this.buffer.length >= this.pos + n) {
-      this.pos += n;
-      return this.buffer.slice(this.pos - n, this.pos);
-    } else {
-      throw new Error();
-    }
+  if (num & (1 << 31)) num -= 1 << 32;
+
+  if (!(numMin <= num < numMax)) {
+    throw new RangeError(
+      `${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`
+    );
   }
 
-  read(n) {
-    setImmediate(() => {
-      try {
-        return readRaw(n);
-      } catch (e) {
-        return read(n);
-      }
-    });
-  }
+  return num;
+}
 
-  readVarInt(maxBits) {
-    maxBits = maxBits ? maxBits : 32;
-    const numMin = -1 << (maxBits - 1);
-    const numMax = 1 << (maxBits - 1);
-
-    let num = 0;
-
-    for (let i = 0; i < 10; i++) {
-      let b = this.read(1);
-      this.pos += 1;
-      num = num | ((b & 0x7f) << (7 * i));
-
-      if (!(b & 0x80)) break;
-    }
-
-    if (num & (1 << 31)) num -= 1 << 32;
-
-    if (!(numMin <= num < numMax)) {
-      throw new RangeError(
-        `${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`
-      );
-    }
-
-    return num;
-  }
-
-  writeVarInt(buf, n, maxBits) {
-    maxBits = maxBits ? maxBits : 32;
-    const numMin = -1 << (maxBits - 1);
-    const numMax = 1 << (maxBits - 1);
-
-    if (!(numMin <= num < numMax)) {
-      throw new RangeError(
-        `${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`
-      );
-    }
-
-    for (let i = 0; i < 10; i++) {
-      let b = num & 0x7f;
-      num = num >> 7;
-
-      buf.writeUInt8(b | (num > 0 ? 0x80 : 0));
-
-      if (num == 0) break;
-    }
-  }
-
-  async writeHandshakePacket(protoVersion, address, port, nextState) {
-    let buf = new Buffer();
-
-    this.writeVarInt(buf, 0x00); // packet id
-    this.writeVarInt(buf, protoVersion); // protocol version
-    buf.write(mutf8Encoder.encode(address)); // server host/address
-    buf.writeUInt16BE(port); // server port
-    this.writeVarInt(buf, nextState); // next state
-
-    let buf
-
-    await this.sock.write(buf);
-  }
-
-  async writeStatusRequestPacket() {
-
-  }
+const createStatusHandshakePacket = (host, port) => {
+  let buf = Buffer.from("");
 }
 
 export const javaServerStatus = (host, port) => {
-  const con = new Connection(host, port);
+  return new Promise((resolve, reject) => {
+    const start = new Date();
+
+    const sock = net.createConnection(port, host, () => {
+      sock.write(Buffer.from([0xFE, 0x01]));
+    });
+
+    sock.on("error", (e) => reject(e));
+
+    sock.on("data", (buf) => {
+      sock.destroy();
+      resolve(createServerData(start, buf));
+    });
+  });
 };
