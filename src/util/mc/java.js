@@ -2,69 +2,6 @@ import net from "net";
 
 const mcProtoVer = 754;
 
-const writeVarInt = (buf, n, maxBits) => {
-  maxBits = maxBits ? maxBits : 32;
-  const numMin = -1 << (maxBits - 1);
-  const numMax = 1 << (maxBits - 1);
-
-  if (!(numMin <= num < numMax)) {
-    throw new RangeError(
-      `${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`
-    );
-  }
-
-  for (let i = 0; i < 10; i++) {
-    let b = num & 0x7f;
-    num = num >> 7;
-
-    buf.writeUInt8(b | (num > 0 ? 0x80 : 0));
-
-    if (num == 0) break;
-  }
-};
-
-const readVarInt = (buf, n, maxBits) => {
-  maxBits = maxBits ? maxBits : 32;
-  const numMin = -1 << (maxBits - 1);
-  const numMax = 1 << (maxBits - 1);
-
-  let num = 0;
-
-  for (let i = 0; i < 10; i++) {
-    let b = buf.readUInt8();
-    num = num | ((b & 0x7f) << (7 * i));
-
-    if (!(b & 0x80)) break;
-  }
-
-  if (num & (1 << 31)) num -= 1 << 32;
-
-  if (!(numMin <= num < numMax)) {
-    throw new RangeError(
-      `${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`
-    );
-  }
-
-  return num;
-};
-
-const writeMutf8String = (buf, string) => {
-  for (let i = 0; i < string.length; i++) {
-    let c = string.charCodeAt(i);
-
-    if (c == 0x00) {
-      buf.writeUInt8();
-    }
-  }
-};
-
-const writePacketHandshake = (buf, protoVersion, address, port, nextState) => {
-  writeVarInt(buf, protoVersion);
-  writeMutf8String(buf, address);
-  buf.writeUInt16BE(port);
-  writeVarInt(buf, nextState);
-};
-
 class Connection {
   constructor(host, port) {
     this.host = host;
@@ -99,11 +36,70 @@ class Connection {
     });
   }
 
-  write(d) {
+  readVarInt(maxBits) {
+    maxBits = maxBits ? maxBits : 32;
+    const numMin = -1 << (maxBits - 1);
+    const numMax = 1 << (maxBits - 1);
+
+    let num = 0;
+
+    for (let i = 0; i < 10; i++) {
+      let b = this.buf.readUInt8(this.pos);
+      this.pos += 1;
+      num = num | ((b & 0x7f) << (7 * i));
+
+      if (!(b & 0x80)) break;
+    }
+
+    if (num & (1 << 31)) num -= 1 << 32;
+
+    if (!(numMin <= num < numMax)) {
+      throw new RangeError(
+        `${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`
+      );
+    }
+
+    return num;
+  }
+
+  writeVarInt(n, maxBits) {
     return new Promise((resolve, reject) => {
-      this.sock.write(d, () => {
-        resolve();
-      });
+      maxBits = maxBits ? maxBits : 32;
+      const numMin = -1 << (maxBits - 1);
+      const numMax = 1 << (maxBits - 1);
+
+      if (!(numMin <= num < numMax)) {
+        throw new RangeError(
+          `${num} doesn't fit in the range ${numMin} <= ${num} < ${numMax}`
+        );
+      }
+
+      let buf = new Buffer();
+
+      for (let i = 0; i < 10; i++) {
+        let b = num & 0x7f;
+        num = num >> 7;
+
+        buf.writeUInt8(b | (num > 0 ? 0x80 : 0));
+
+        if (num == 0) break;
+      }
+
+      this.sock.write(buf).then((flushed) => resolve()).catch((e) => reject(e));
+    });
+  }
+
+  writeMutf8String(string) {
+    return new Promise((resolve, reject) => {
+      let buf = new Buffer();
+
+      for (let i = 0; i < string.length; i++) {
+        let c = string.charCodeAt(i);
+
+        if (c == 0x00) {
+          buf.writeUInt8();
+        }
+      }
     });
   }
 }
@@ -112,5 +108,7 @@ export const javaServerStatus = (host, port) => {
   const con = new Connection(host, port);
   let buf = new Buffer();
 
-  writePacketHandshake(buf, 754, host, port, 2);
+  writePacketHandshake(buf, 754, host, port, 1);
+
+  let upcomingLen =
 };
