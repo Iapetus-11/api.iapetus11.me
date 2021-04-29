@@ -1,5 +1,8 @@
 import net from "net";
+import { MUtf8Decoder, MUtf8Encoder } from "mutf-8";
 
+const mutf8Encoder = new MUtf8Encoder();
+const mutf8Decoder = new MUtf8Decoder();
 const mcProtoVer = 754;
 
 class Connection {
@@ -88,13 +91,18 @@ class Connection {
       this.sock.write(buf).then((flushed) => resolve()).catch((e) => reject(e));
     });
   }
+
+  async writeHandshakePacket(protoVersion, address, port, nextState) {
+    let buf = new Buffer();
+    buf.writeUInt16BE(port);
+
+    await this.writeVarInt(protoVersion);
+    await this.sock.write(mutf8Encoder.encode(address));
+    await this.sock.write(buf);
+    await this.writeVarInt(nextState);
+  }
 }
 
 export const javaServerStatus = (host, port) => {
   const con = new Connection(host, port);
-  let buf = new Buffer();
-
-  writePacketHandshake(buf, 754, host, port, 1);
-
-  let upcomingLen =
 };
