@@ -95,14 +95,12 @@ class Connection {
     buf.writeUInt16BE(port); // server port
     this.writeVarInt(buf, nextState); // next state
 
-    let buf
+    let buf;
 
     await this.sock.write(buf);
   }
 
-  async writeStatusRequestPacket() {
-
-  }
+  async writeStatusRequestPacket() {}
 }
 
 export const javaServerStatus = (host, port) => {
