@@ -88,7 +88,10 @@ class Connection {
         if (num == 0) break;
       }
 
-      this.sock.write(buf).then((flushed) => resolve()).catch((e) => reject(e));
+      this.sock
+        .write(buf)
+        .then((flushed) => resolve())
+        .catch((e) => reject(e));
     });
   }
 
