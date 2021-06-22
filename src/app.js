@@ -4,6 +4,7 @@ import helmet from "helmet";
 
 // import routes
 import routeMCStatus from "./routes/mc/status.js";
+import routeServerFavicon from "./routes/mc/favicon.js";
 
 // load .env data
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(helmet());
 
 // add routes
 app.use("/mc/status", routeMCStatus);
+app.use("/mc/favicon", routeServerFavicon);
 
 // handle 404s, must be after middleware and routes to work
 app.use((req, res) => {
