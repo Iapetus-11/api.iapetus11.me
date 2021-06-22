@@ -1,6 +1,6 @@
 import canvas from "canvas";
 
-// Function for drawing an image easily onto the ctx
+// function for drawing an image easily onto the ctx
 export function drawImage(ctx, src, x, y, width, height) {
   return new Promise((resolve, reject) => {
     let image = new canvas.Image();
@@ -14,7 +14,7 @@ export function drawImage(ctx, src, x, y, width, height) {
   });
 }
 
-// Function for drawing text that auto resizes easily
+// function for drawing text that auto resizes easily
 export function drawText(
   ctx,
   text,
@@ -32,7 +32,7 @@ export function drawText(
 
   ctx.font = `${defaultSize}px "${fontName}"`;
 
-  // Ensmallen the text till it fits
+  // ensmallen the text till it fits
   while (ctx.measureText(text).width > maxWidth) {
     defaultSize -= 0.1;
     ctx.font = `${defaultSize}px "${fontName}"`;
@@ -43,9 +43,9 @@ export function drawText(
   return ctx.measureText(text).width;
 }
 
-// Make a rectangular clip/border with round edges on the given ctx
+// make a rectangular clip / border with round edges on the given ctx
 export function roundEdges(ctx, x, y, width, height, radius) {
-  // def didn't steal this from code I did on disbots.gg hehe
+  // definitely didn't steal this from code I did on disbots.gg hehe
   ctx.beginPath();
   ctx.moveTo(x + radius, y);
   ctx.lineTo(x + width - radius, y);
@@ -60,14 +60,14 @@ export function roundEdges(ctx, x, y, width, height, radius) {
   ctx.clip();
 }
 
-// Function to send an image easily
+// function to send an image easily
 export function sendImage(image, res, fileName) {
   image.toBuffer((e, buffer) => {
-    // This will send the image straight from the buffer
+    // this will send the image straight from the buffer without saving first
     res
       .writeHead(200, {
         "Content-Type": "image/png",
-        "Content-Disposition": `inline;filename=${fileName}`, // Inline or attachment
+        "Content-Disposition": `inline;filename=${fileName}`, // inline or attachment
         "Content-Length": buffer.length,
       })
       .end(Buffer.from(buffer, "binary"));
