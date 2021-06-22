@@ -15,7 +15,7 @@ export const javaServerStatus = async (host, port) => {
       .writeVarInt(State.Status)
   );
   client.send(new PacketWriter(0x0));
-  status = (await client.nextPacket()).readJSON();
+  const status = (await client.nextPacket()).readJSON();
 
   // get latency / ping as it would appear in the server list
   client.send(new PacketWriter(0x1).write(Buffer.alloc(8)));
