@@ -30,8 +30,7 @@ router.get("/:server", (req, res) => {
         0,
         64,
         64
-      ).then(() => 
-        sendImage(image, res, "favicon.png"));
+      ).then(() => sendImage(image, res, "favicon.png"));
     })
     .catch((e) => {
       console.log(e);
