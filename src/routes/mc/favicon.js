@@ -23,7 +23,14 @@ router.get("/:server", (req, res) => {
       let image = canvas.createCanvas(64, 64);
       let ctx = image.getContext("2d");
 
-      await drawImage(ctx, status.favicon || "./src/assets/unknown_pack.png", 0, 0, 64, 64);
+      await drawImage(
+        ctx,
+        status.favicon || "./src/assets/unknown_pack.png",
+        0,
+        0,
+        64,
+        64
+      );
       sendImage(image, res, "favicon.png");
     })
     .catch((e) => {
