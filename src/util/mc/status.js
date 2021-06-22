@@ -85,8 +85,8 @@ const fetchMcStatus = async (host, port, doNotRetry) => {
 
   try {
     return await Promise.any([
-      bedrockServerStatus(host, port),
-      javaServerStatus(host, port),
+      bedrockServerStatus(host, port || 19132),
+      javaServerStatus(host, port || 25565),
     ]);
   } catch (e) {
     if (!doNotRetry) {
