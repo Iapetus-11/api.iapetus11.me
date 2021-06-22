@@ -3,11 +3,17 @@ import { Client, PacketWriter, State } from "mcproto";
 export const javaServerStatus = async (host, port) => {
   const client = await Client.connect(host, port, {
     connectTimeout: 1000,
-    timeout: 1000
+    timeout: 1000,
   });
 
   // send handshake and get basic status
-  client.send(new PacketWriter(0x0).writeVarInt(options.protocol).writeString(host).writeUInt16(port).writeVarInt(State.Status));
+  client.send(
+    new PacketWriter(0x0)
+      .writeVarInt(options.protocol)
+      .writeString(host)
+      .writeUInt16(port)
+      .writeVarInt(State.Status)
+  );
   client.send(new PacketWriter(0x0));
   status = (await client.nextPacket()).readJSON();
 
@@ -26,7 +32,11 @@ export const javaServerStatus = async (host, port) => {
     players_online: status.players.online,
     players_max: status.players.max,
     players_names: status.players.sample || [],
-    version: { brand: "Java Edition", software: status.version.name, protocol: status.version.protocol },
+    version: {
+      brand: "Java Edition",
+      software: status.version.name,
+      protocol: status.version.protocol,
+    },
     motd: status.description,
     favicon: status.favicon,
     map: null,
