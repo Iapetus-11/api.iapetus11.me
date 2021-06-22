@@ -16,8 +16,8 @@ app.use(helmet());
 // add routes
 app.use("/mc/status", routeMCStatus);
 
+// handle 404s, must be after middleware and routes to work
 app.use((req, res) => {
-  // handle 404s, must be after middleware and routes to work
   res.status(404).json({
     success: false,
     message:
