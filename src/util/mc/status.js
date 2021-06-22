@@ -1,6 +1,7 @@
 import dns from "dns";
 
 import { bedrockServerStatus } from "./bedrock.js";
+import { javaServerStatus } from "./java.js";
 
 const validAddressChars =
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:.";
@@ -74,6 +75,7 @@ const getActualAddress = (host) => {
   });
 };
 
+// fetches the status of the Minecraft server, retries once
 const fetchMcStatus = async (host, port, doNotRetry) => {
   try {
     let actualAddress = await getActualAddress(host);
@@ -82,7 +84,7 @@ const fetchMcStatus = async (host, port, doNotRetry) => {
   } catch (e) {}
 
   try {
-    return await Promise.any([bedrockServerStatus(host, port)]);
+    return await Promise.any([bedrockServerStatus(host, port), javaServerStatus(host, port)]);
   } catch (e) {
     if (!doNotRetry) {
       return await fetchMcStatus(host, port, true);
