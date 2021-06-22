@@ -9,7 +9,7 @@ export const javaServerStatus = async (host, port) => {
   // send handshake and get basic status
   client.send(
     new PacketWriter(0x0)
-      .writeVarInt(options.protocol)
+      .writeVarInt(755) // 1.17 protocol version
       .writeString(host)
       .writeUInt16(port)
       .writeVarInt(State.Status)
