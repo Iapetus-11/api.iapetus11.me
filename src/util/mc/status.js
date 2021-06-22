@@ -22,7 +22,7 @@ export const defaultStatus = {
   latency: null, // latency in milliseconds between requesting status and getting response
   players_online: null, // number of players online
   players_max: null, // max number of players allowed
-  players_names: [], // the names of the online players
+  players: [], // the names of the online players
   version: { brand: null, software: null, protocol: null }, // info about the server version and software
   motd: null, // the message of the day
   favicon: null, // the server icon / favicon that appears in the server list

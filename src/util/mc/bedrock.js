@@ -28,7 +28,7 @@ export const bedrockServerStatus = (host, port) => {
         latency: new Date() - start,
         players_online: parseInt(status_data[4]),
         players_max: parseInt(status_data[5]),
-        players_names: [],
+        players: [],
         version: {
           brand: status_data[0],
           software: `Bedrock ${status_data[3]}`,

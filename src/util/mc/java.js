@@ -31,7 +31,7 @@ export const javaServerStatus = async (host, port) => {
     latency: latency,
     players_online: status.players.online,
     players_max: status.players.max,
-    players_names: status.players.sample || [],
+    players: status.players.sample || [],
     version: {
       brand: "Java Edition",
       software: status.version.name,
