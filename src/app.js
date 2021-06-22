@@ -26,6 +26,6 @@ app.use((req, res) => {
 });
 
 // run app
-app.listen(process.env.PORT, () => {
-  console.log(`Petu-API started on port ${process.env.PORT}`);
+app.listen(process.env.PORT || 42069, () => {
+  console.log(`Petu-API started on port ${process.env.PORT || 42069}`);
 });
