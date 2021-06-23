@@ -20,7 +20,7 @@ export const minecraftColors = {
 export const minecraftColorsCodes = {
   4: { nice: "Dark Red", name: "dark_red", hex: "AA0000" },
   c: { nice: "Red", name: "red", hex: "FF5555" },
-  6: { nice: "Gold", name: "gold", hex: "FFAA00", },
+  6: { nice: "Gold", name: "gold", hex: "FFAA00" },
   e: { nice: "Yellow", name: "yellow", hex: "FFFF55" },
   2: { nice: "Dark Green", name: "dark_green", hex: "00AA00" },
   a: { nice: "Green", name: "green", hex: "55FF55" },
