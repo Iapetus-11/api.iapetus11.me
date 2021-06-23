@@ -44,6 +44,7 @@ export const stringifyMotd = (motd) => {
   }
 };
 
+// outputs an array of text and colors like [{text: "text", color: "#FFFFFF"}]
 export const parseColors = (strMotd) => {
   let rich = [];
   let current = { text: "", color: "#FFFFFF" };
