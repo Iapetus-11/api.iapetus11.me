@@ -1,4 +1,7 @@
-import { minecraftColors, minecraftColorsCodes } from "../../minecraftFormatting.js";
+import {
+  minecraftColors,
+  minecraftColorsCodes,
+} from "../../minecraftFormatting.js";
 
 const formatRichMotd = (motdEntries, end) => {
   let strMotd = "";
@@ -43,7 +46,7 @@ export const stringifyMotd = (motd) => {
 
 export const parseColors = (strMotd) => {
   let rich = [];
-  let current = {text: "", color: "#FFFFFF"};
+  let current = { text: "", color: "#FFFFFF" };
 
   for (let i = 0; i < strMotd.length; i++) {
     const c = strMotd[i];
@@ -52,29 +55,29 @@ export const parseColors = (strMotd) => {
       let color;
 
       try {
-        color = "#" + minecraftColorsCodes[strMotd[i+1]].hex;
+        color = "#" + minecraftColorsCodes[strMotd[i + 1]].hex;
       } catch (e) {
         i += 1;
         continue;
       }
 
       if (color !== current.color) {
-        rich.push({...current});
+        rich.push({ ...current });
 
         current.color = color;
         current.text = "";
       }
-      
+
       i += 1;
     } else {
-        current.text += c;
+      current.text += c;
     }
   }
 
-  rich.push({...current});
+  rich.push({ ...current });
 
   return rich;
-}
+};
 
 // console.log(parseColors(formatRichMotd([
 //     {"text": "brh"},
@@ -83,10 +86,14 @@ export const parseColors = (strMotd) => {
 //     {"text": "two", "color": "#FFFFFF", "italic": true},
 // ])));
 
-console.log(parseColors(formatRichMotd([
-    {"text": "white"},
-    {"text": "aqua", "color": "aqua", "bold": true},
-    {"text": "aqua", "italic": true},
-    {"text": "yellow", "color": "yellow", "italic": false},
-    {"text": "yellow", "color": "yellow", "bold": true},
-])));
+console.log(
+  parseColors(
+    formatRichMotd([
+      { text: "white" },
+      { text: "aqua", color: "aqua", bold: true },
+      { text: "aqua", italic: true },
+      { text: "yellow", color: "yellow", italic: false },
+      { text: "yellow", color: "yellow", bold: true },
+    ])
+  )
+);
