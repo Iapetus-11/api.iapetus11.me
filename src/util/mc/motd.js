@@ -83,10 +83,10 @@ export const parseColors = (strMotd) => {
 //     {"text": "two", "color": "#FFFFFF", "italic": true},
 // ])));
 
-console.log(parseColors(formatRichMotd([
-    {"text": "white"},
-    {"text": "aqua", "color": "aqua", "bold": true},
-    {"text": "aqua", "italic": true},
-    {"text": "yellow", "color": "yellow", "italic": false},
-    {"text": "yellow", "color": "yellow", "bold": true},
-])));
+// console.log(parseColors(formatRichMotd([
+//     {"text": "white"},
+//     {"text": "aqua", "color": "aqua", "bold": true},
+//     {"text": "aqua", "italic": true},
+//     {"text": "yellow", "color": "yellow", "italic": false},
+//     {"text": "blue", "color": "blue", "bold": true},
+// ])));
