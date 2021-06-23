@@ -1,4 +1,4 @@
-import { minecraftColors } from "../../minecraftFormatting.js";
+import { minecraftColors, minecraftColorsCodes } from "../../minecraftFormatting.js";
 
 const formatRichMotd = (motdEntries, end) => {
   let strMotd = "";
@@ -37,6 +37,28 @@ export const stringifyMotd = (motd) => {
   } else if (typeof motd === "object") {
     return formatRichMotd(motd.extra, motd.text);
   } else {
-    return motd;
+    return `${motd}`;
   }
 };
+
+export const parseColors = (strMotd) => {
+  let rich = [];
+  let current = {text: "", color: "#FFFFFF"};
+
+  for (let i = 0; i < strMotd.length; i++) {
+    const c = strMotd[i];
+
+    if (c === "§" && i != strMotd.length - 1 && minecraftColorsCodes[strMotd[i+1]]) {
+      const color = "#" + minecraftColorsCodes[strMotd[i+1]].hex;
+
+      if (color !== current.color) {
+        rich.push({...current});
+        current.color = color;
+      }
+    } else {
+        current.text += c;
+    }
+  }
+
+  return rich;
+}
