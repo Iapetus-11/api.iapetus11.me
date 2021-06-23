@@ -32,6 +32,12 @@ const formatRichMotd = (motdEntries, end) => {
 };
 
 export const stringifyMotd = (motd) => {
-  if (typeof motd === "object") {
+    
+    if (Array.isArray(motd)) {
+      return formatRichMotd(motd);
+    } else if (typeof motd === "object") {
+      return formatRichMotd(motd.extra, motd.text);
+  } else {
+      return motd;
   }
 };
