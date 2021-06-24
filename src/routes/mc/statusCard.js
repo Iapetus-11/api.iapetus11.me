@@ -23,7 +23,7 @@ async function drawMotd(ctx, status) {
   ctx.font = '22px "Minecraft"';
   ctx.textAlign = 'start';
   ctx.textBaseline = 'bottom';
-  ctx.fillStyle = '#'.concat(MCData.minecraftColors['white'][2]);
+  ctx.fillStyle = '#'.concat(minecraftColors.white.hex);
 
   let drawnPixels = 0;
   let drawnPixelsVerti = 0;
