@@ -15,17 +15,7 @@ export function drawImage(ctx, src, x, y, width, height) {
 }
 
 // function for drawing text that auto resizes easily
-export function drawText(
-  ctx,
-  text,
-  x,
-  y,
-  fontName,
-  color,
-  defaultSize,
-  maxWidth,
-  alignment
-) {
+export function drawText(ctx, text, x, y, fontName, color, defaultSize, maxWidth, alignment) {
   ctx.textBaseline = "middle";
   ctx.fillStyle = color;
   ctx.textAlign = alignment;

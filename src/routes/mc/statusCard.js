@@ -2,18 +2,10 @@ import express from "express";
 import canvas from "canvas";
 import fs from "fs";
 
-import {
-  drawImage,
-  drawText,
-  roundEdges,
-  sendImage,
-} from "../../util/canvas.js";
+import { drawImage, drawText, roundEdges, sendImage } from "../../util/canvas.js";
 import { mcStatus, parseAddress } from "../../util/mc/status.js";
 import { stringifyMotd } from "../../util/mc/motd.js";
-import {
-  minecraftColors,
-  minecraftColorsCodes,
-} from "../../minecraftFormatting.js";
+import { minecraftColors, minecraftColorsCodes } from "../../minecraftFormatting.js";
 
 const router = express.Router();
 
@@ -113,12 +105,10 @@ router.get("/:server", async (req, res) => {
   let address;
 
   if (customName && 0 > customName.length > 30) {
-    res
-      .status(400)
-      .json({
-        success: false,
-        message: "Bad Request - Query parameter name is invalid",
-      });
+    res.status(400).json({
+      success: false,
+      message: "Bad Request - Query parameter name is invalid",
+    });
     return;
   }
 
@@ -149,14 +139,7 @@ router.get("/:server", async (req, res) => {
 
   let drawers = [
     drawMotd(ctx, status),
-    drawImage(
-      ctx,
-      status.favicon || "./src/assets/unknown_pack.png",
-      6,
-      6,
-      128,
-      128
-    ),
+    drawImage(ctx, status.favicon || "./src/assets/unknown_pack.png", 6, 6, 128, 128),
     drawTopText(ctx, status, req.params.server, customName),
   ];
 

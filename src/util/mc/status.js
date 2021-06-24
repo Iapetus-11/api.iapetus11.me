@@ -3,8 +3,7 @@ import dns from "dns";
 import { bedrockServerStatus } from "./bedrock.js";
 import { javaServerStatus } from "./java.js";
 
-const validAddressChars =
-  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:.";
+const validAddressChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:.";
 let statusCache = {}; // {server: {data}}
 
 const clearStatusCacheLoop = () => {

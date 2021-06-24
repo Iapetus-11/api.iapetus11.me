@@ -24,21 +24,15 @@ router.get("/:server", (req, res) => {
       let image = canvas.createCanvas(64, 64);
       let ctx = image.getContext("2d");
 
-      drawImage(
-        ctx,
-        status.favicon || "./src/assets/unknown_pack.png",
-        0,
-        0,
-        64,
-        64
-      ).then(() => sendImage(image, res, "favicon.png"));
+      drawImage(ctx, status.favicon || "./src/assets/unknown_pack.png", 0, 0, 64, 64).then(() =>
+        sendImage(image, res, "favicon.png")
+      );
     })
     .catch((e) => {
       console.log(e);
       res.status(500).json({
         success: false,
-        message:
-          "Error - An error occurred whilst checking the status of the server.",
+        message: "Error - An error occurred whilst checking the status of the server.",
       });
     });
 });

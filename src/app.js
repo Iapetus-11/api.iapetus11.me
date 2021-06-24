@@ -24,8 +24,7 @@ app.use("/mc/status", routeServerStatus);
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message:
-      "Error - Endpoint not found or method not supported for this endpoint.",
+    message: "Error - Endpoint not found or method not supported for this endpoint.",
   });
 });
 

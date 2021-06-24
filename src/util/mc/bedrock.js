@@ -1,10 +1,7 @@
 import { stringifyMotd } from "./motd.js";
 import dgram from "dgram";
 
-const handshake = Buffer.from(
-  "01000000000000000000ffff00fefefefefdfdfdfd12345678",
-  "hex"
-);
+const handshake = Buffer.from("01000000000000000000ffff00fefefefefdfdfdfd12345678", "hex");
 
 export const bedrockServerStatus = (host, port) => {
   return new Promise((resolve, reject) => {

@@ -1,7 +1,4 @@
-import {
-  minecraftColors,
-  minecraftColorsCodes,
-} from "../../minecraftFormatting.js";
+import { minecraftColors, minecraftColorsCodes } from "../../minecraftFormatting.js";
 
 const formatRichMotd = (motdEntries, end) => {
   let strMotd = "";

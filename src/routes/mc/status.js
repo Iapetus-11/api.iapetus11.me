@@ -25,8 +25,7 @@ router.get("/:server", (req, res) => {
       console.log(e);
       res.status(500).json({
         success: false,
-        message:
-          "Error - An error occurred whilst checking the status of the server.",
+        message: "Error - An error occurred whilst checking the status of the server.",
       });
     });
 });
