@@ -16,7 +16,7 @@ const formatRichMotd = (motdEntries, end) => {
       // check if color is a hex code, because some servers are stupid this way
       if (/^#[0-9A-F]{6}$/i.test(`#${entry.color.replace("#", "")}`)) {
         Object.entries(minecraftColors).forEach((colorEntry) => {
-          const [color, data] = colorEntry;
+          const data = colorEntry[1];
 
           if (data.hex === entry.color.replace("#", "")) {
             strMotd += "§" + data.code;
