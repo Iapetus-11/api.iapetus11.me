@@ -14,7 +14,7 @@ router.get("/:server", (req, res) => {
   } catch (e) {
     res.status(400).json({
       success: false,
-      message: "Bad Request - URL parameter address is invalid.",
+      message: "Bad Request - URL parameter server is invalid.",
     });
     return;
   }
