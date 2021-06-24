@@ -36,7 +36,7 @@ export const bedrockServerStatus = (host, port) => {
           protocol: status_data[2],
         },
         motd: stringifyMotd(status_data[1]),
-        motd_raw: status_data[1]
+        motd_raw: status_data[1],
       };
 
       try {
