@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 
 // import routes
-import routeMCStatus from "./routes/mc/status.js";
 import routeServerFavicon from "./routes/mc/favicon.js";
+import routeMCStatus from "./routes/mc/status.js";
 
 // load .env data
 dotenv.config();
