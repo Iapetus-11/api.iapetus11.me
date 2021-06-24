@@ -25,6 +25,7 @@ export const defaultStatus = {
   players: [], // the names of the online players
   version: { brand: null, software: null, protocol: null }, // info about the server version and software
   motd: null, // the message of the day
+  motd_raw: null, // the raw, unparsed message of the day straight from the server
   favicon: null, // the server icon / favicon that appears in the server list
   map: null, // the map the server is hosting
   gamemode: null, // the default gamemode the server is on

@@ -1,3 +1,4 @@
+import { stringifyMotd } from "./mod.js";
 import dgram from "dgram";
 
 const handshake = Buffer.from(
@@ -34,7 +35,8 @@ export const bedrockServerStatus = (host, port) => {
           software: `Bedrock ${status_data[3]}`,
           protocol: status_data[2],
         },
-        motd: status_data[1],
+        motd: stringifyMotd(status_data[1]),
+        motd_raw: status_data[1]
       };
 
       try {

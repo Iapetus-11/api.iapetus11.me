@@ -1,4 +1,5 @@
 import { Client, PacketWriter, State } from "mcproto";
+import { stringifyMotd } from "./mod.js";
 
 export const javaServerStatus = async (host, port) => {
   const client = await Client.connect(host, port, {
@@ -37,7 +38,8 @@ export const javaServerStatus = async (host, port) => {
       software: status.version.name,
       protocol: status.version.protocol,
     },
-    motd: status.description,
+    motd: stringifyMotd(status.description),
+    motd_raw: status.description,
     favicon: status.favicon,
     map: null,
     gamemode: null,
