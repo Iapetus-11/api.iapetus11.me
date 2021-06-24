@@ -4,7 +4,7 @@ import helmet from "helmet";
 
 // import routes
 import routeServerFavicon from "./routes/mc/favicon.js";
-import routeServerCard from "./routes/mc/serverCard.js";
+import routeServerCard from "./routes/mc/statusCard.js";
 import routeServerStatus from "./routes/mc/status.js";
 
 // load .env data
