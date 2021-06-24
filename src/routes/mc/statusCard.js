@@ -1,6 +1,5 @@
 import express from "express";
 import canvas from "canvas";
-import fs from "fs";
 
 import { drawImage, drawText, roundEdges, sendImage } from "../../util/canvas.js";
 import { mcStatus, parseAddress } from "../../util/mc/status.js";
