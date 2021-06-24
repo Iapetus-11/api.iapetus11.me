@@ -1,5 +1,5 @@
 import { Client, PacketWriter, State } from "mcproto";
-import { stringifyMotd } from "./mod.js";
+import { stringifyMotd } from "./motd.js";
 
 export const javaServerStatus = async (host, port) => {
   const client = await Client.connect(host, port, {

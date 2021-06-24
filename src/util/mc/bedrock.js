@@ -1,4 +1,4 @@
-import { stringifyMotd } from "./mod.js";
+import { stringifyMotd } from "./motd.js";
 import dgram from "dgram";
 
 const handshake = Buffer.from(
