@@ -15,10 +15,15 @@ const router = express.Router();
 canvas.registerFont('./src/assets/Minecraftia.ttf', { family: 'Minecraft', style: 'normal' });
 
 async function drawMotd(ctx, status) {
-  let motd = stringifyMotd(status.motd);
+  let motd = status.motd;
 
-  if (!motd) motd = 'A beautiful Minecraft server...';
-  if (!status.online) motd = 'This server is offline.';
+  if (motd){
+    motd = stringifyMotd(motd);
+  } else if (!status.online) {
+    motd = "This server is offline.";
+  } else {
+    motd = "A beautiful Minecraft server...";
+  }
 
   ctx.font = '22px "Minecraft"';
   ctx.textAlign = 'start';
