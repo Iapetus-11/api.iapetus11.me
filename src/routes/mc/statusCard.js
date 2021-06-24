@@ -49,13 +49,13 @@ async function drawMotd(ctx, status) {
   }
 }
 
-async function drawTopText(ctx, status, mcserver, customName) {
+async function drawTopText(ctx, status, address, customName) {
   ctx.textBaseline = 'bottom';
   ctx.textAlign = 'start';
 
   const top = 25;
 
-  let nameWidth = drawText(ctx, (customName || mcserver), 146, top, 'Minecraft', '#FFF', 22, 324, 'start');
+  let nameWidth = drawText(ctx, (customName || address), 146, top, 'Minecraft', '#FFF', 22, 324, 'start');
   let playerWidth = drawText(ctx, `${status.players_online}/${status.players_max}`, 762, top, 'Minecraft', '#FFF', 22, 999, 'end');
 
   if (status.online) {
@@ -101,7 +101,7 @@ router.get('/:server', async (req, res) => {
   let drawers = [
     drawMotd(ctx, status),
     drawImage(ctx, (status.favicon || './src/assets/unknown_pack.png'), 6, 6, 128, 128),
-    drawTopText(ctx, status, mcserver, customName)
+    drawTopText(ctx, status, address.join(":"), customName)
   ];
 
   await Promise.all(drawers);
