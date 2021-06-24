@@ -1,4 +1,5 @@
 import express from "express";
+import canvas from "canvas";
 
 import { mcStatus, parseAddress } from "../../util/mc/status.js";
 import { drawImage, sendImage } from "../../util/canvas.js";
