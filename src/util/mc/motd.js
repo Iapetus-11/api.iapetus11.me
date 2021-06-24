@@ -55,7 +55,7 @@ export const parseColors = (strMotd) => {
       try {
         color = "#" + minecraftColorsCodes[strMotd[i + 1]].hex;
       } catch (e) {
-        i += 1;
+        i++;
         continue;
       }
 
@@ -66,7 +66,7 @@ export const parseColors = (strMotd) => {
         current.text = "";
       }
 
-      i += 1;
+      i++;
     } else {
       current.text += c;
     }
