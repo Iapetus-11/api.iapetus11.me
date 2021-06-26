@@ -31,12 +31,15 @@ export const defaultStatus = {
 };
 
 export const parseAddress = (address) => {
-  if (4 >= address.length > 30) {
-    throw new Error();
-  }
+  // check address length
+  if (4 >= address.length > 45) throw new Error();
+
+  // ensure address contains a .
+  if (address.split(".").length < 1) throw new Error();
 
   let colonCount = 0;
 
+  // create colonCount and check allowed characters
   for (let c of address) {
     if (c === ":") {
       colonCount += 1;
@@ -49,7 +52,7 @@ export const parseAddress = (address) => {
 
   if (colonCount > 1) {
     throw new Error();
-  } else if (colonCount === 1) {
+  } else if (colonCount === 1) { // check port for validness
     const split = address.split(":");
     const port = parseInt(split[1]);
 
