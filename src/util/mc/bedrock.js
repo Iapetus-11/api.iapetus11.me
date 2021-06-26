@@ -49,7 +49,9 @@ export const bedrockServerStatus = (host, port) => {
 
       if (e) {
         reject(e);
-        socket.close();
+        try {
+          socket.close();
+        } catch (e) {}
       }
     });
 
