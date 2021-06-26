@@ -32,7 +32,9 @@ export const defaultStatus = {
 
 export const parseAddress = (address) => {
   // check address length
-  if (4 >= address.length > 45) throw new Error();
+  if (4 >= address.length || address.length > 45) {
+    throw new Error();
+  }
 
   // ensure address contains a .
   if (address.split(".").length < 1) throw new Error();
