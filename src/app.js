@@ -24,8 +24,8 @@ const app = express();
 
 const rateLimitKeyGenerator = (req) => req.get("CF-Connecting-IP") || req.ip;
 const rateLimitSkipHandler = (req, res) => process.env.BYPASS == req.get("Authorization");
-const rateLimitHandler = (req, res) =>
-  res
+const rateLimitHandler = (req, res) => {
+  return res
     .status(429)
     .json({
       message: "Error - You've hit the rate limit",
@@ -33,16 +33,18 @@ const rateLimitHandler = (req, res) =>
       current: req.rateLimit.current,
       remaining: req.rateLimit.remaining,
     });
+  }
 
 // per is in seconds, so how many requests (limit) per second (per)
-const createRateLimit = (limit, per) =>
-  rateLimit({
+const createRateLimit = (limit, per) => {
+  return rateLimit({
     windowMs: per * 1000,
     max: limit,
     keyGenerator: rateLimitKeyGenerator,
     skip: rateLimitSkipHandler,
     handler: rateLimitHandler,
   });
+}
 
 // add middleware
 app.use(helmet());
