@@ -52,7 +52,8 @@ export const parseAddress = (address) => {
 
   if (colonCount > 1) {
     throw new Error();
-  } else if (colonCount === 1) { // check port for validness
+  } else if (colonCount === 1) {
+    // check port for validness
     const split = address.split(":");
     const port = parseInt(split[1]);
 
