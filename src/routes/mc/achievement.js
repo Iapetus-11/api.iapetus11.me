@@ -16,7 +16,7 @@ router.get('/:text', async (req, res) => {
   let image = canvas.createCanvas(320, 64);
   let ctx = image.getContext('2d');
 
-  // We're dealing with inentionally pixely images so resizing should be nearest neighbor and smoothing should be off
+  // We're dealing with intentionally pixely images so resizing should be nearest neighbor and smoothing should be off
   ctx.imageSmoothingEnabled = false;
   ctx.quality = 'nearest';
   ctx.patternQuality = 'nearest';
