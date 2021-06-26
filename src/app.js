@@ -1,3 +1,4 @@
+import rateLimit from "express-rate-limit";
 import express from "express";
 import canvas from "canvas";
 import dotenv from "dotenv";
@@ -21,15 +22,22 @@ canvas.registerFont("./src/assets/Minecraftia.ttf", {
 
 const app = express();
 
+const rateLimitKeyGenerator = (req) => req.get("CF-Connecting-IP") || req.ip;
+const rateLimitSkipHandler = (req, res) => process.env.BYPASS == req.get("Authorization");
+const rateLimitHandler = (req, res) => res.status(429).json({message: "Error - You've hit the rate limit", limit: req.rateLimit.limit, current: req.rateLimit.current, remaining: req.rateLimit.remaining});
+
+// per is in seconds, so how many requests (limit) per second (per)
+const createRateLimit = (limit, per) => rateLimit({windowMs: per*1000, max: limit, keyGenerator: rateLimitKeyGenerator, skip: rateLimitSkipHandler, handler: rateLimitHandler});
+
 // add middleware
 app.use(helmet());
 
 // add routes
-app.use("/mc/achievement", routeMinecraftAchievement);
-app.use("/mc/splash", routeSplashScreen);
-app.use("/mc/favicon", routeServerFavicon);
-app.use("/mc/servercard", routeServerCard);
-app.use("/mc/status", routeServerStatus);
+app.use("/mc/achievement", createRateLimit(2, 1), routeMinecraftAchievement);
+app.use("/mc/splash", createRateLimit(2, 1), routeSplashScreen);
+app.use("/mc/favicon", createRateLimit(2, 1), routeServerFavicon);
+app.use("/mc/servercard", createRateLimit(1, 1), routeServerCard);
+app.use("/mc/status", createRateLimit(2, 1), routeServerStatus);
 
 // handle 404s, must be after middleware and routes to work
 app.use((req, res) => {
