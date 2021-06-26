@@ -1,4 +1,5 @@
 import express from "express";
+import canvas from "canvas";
 import dotenv from "dotenv";
 import helmet from "helmet";
 
@@ -11,9 +12,15 @@ import routeServerStatus from "./routes/mc/status.js";
 // load .env data
 dotenv.config();
 
+// add Minecraft font to canvas
+canvas.registerFont("./src/assets/Minecraftia.ttf", {
+  family: "Minecraft",
+  style: "normal",
+});
+
 const app = express();
 
-// use middleware
+// add middleware
 app.use(helmet());
 
 // add routes

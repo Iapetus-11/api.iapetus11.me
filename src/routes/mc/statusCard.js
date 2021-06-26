@@ -8,11 +8,6 @@ import { minecraftColors, minecraftColorsCodes } from "../../minecraftFormatting
 
 const router = express.Router();
 
-canvas.registerFont("./src/assets/Minecraftia.ttf", {
-  family: "Minecraft",
-  style: "normal",
-});
-
 async function drawMotd(ctx, status) {
   let motd = status.motd;
 
