@@ -5,6 +5,7 @@ import helmet from "helmet";
 
 // import routes
 import routeMinecraftAchievement from "./routes/mc/achievement.js";
+import routeSplashScreen from "./routes/mc/splashScreen.js";
 import routeServerFavicon from "./routes/mc/favicon.js";
 import routeServerCard from "./routes/mc/statusCard.js";
 import routeServerStatus from "./routes/mc/status.js";
@@ -25,6 +26,7 @@ app.use(helmet());
 
 // add routes
 app.use("/mc/achievement", routeMinecraftAchievement);
+app.use("/mc/splash", routeSplashScreen);
 app.use("/mc/favicon", routeServerFavicon);
 app.use("/mc/servercard", routeServerCard);
 app.use("/mc/status", routeServerStatus);
