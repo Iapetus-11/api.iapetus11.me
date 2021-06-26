@@ -1,7 +1,6 @@
 import express from 'express';
 import canvas from 'canvas';
 
-import {mcstatus} from '../../util/minecraft.js';
 import {drawImage, drawText, sendImage} from '../../util/canvas.js';
 
 const router = express.Router();
