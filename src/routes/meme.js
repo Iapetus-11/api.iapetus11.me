@@ -18,7 +18,7 @@ fetchSubredditImagePosts(memeSubreddits, 500).then((posts) => (memes = posts));
 setInterval(updateMemes, 1000 * 60 * 10);
 
 router.get("/", (req, res) => {
-  const queryId = req.query.queryId.slice(0, 24);
+  const queryId = (req.query.queryId || "").slice(0, 24);
 
   if (queryId) {
     // we need to get a meme that has not been shown for this queryId for the last 7 times
@@ -44,8 +44,6 @@ router.get("/", (req, res) => {
           i++;
         });
       }
-
-      console.log(lastQueryMemes);
 
       res.status(200).json(meme);
       return;
