@@ -1,5 +1,5 @@
 import express from "express";
-import {fetchSubredditImagePosts} from "../util/reddit.js";
+import { fetchSubredditImagePosts } from "../util/reddit.js";
 
 const router = express.Router();
 
@@ -7,10 +7,11 @@ const memeSubreddits = "memes+me_irl+dankmemes+wholesomememes+prequelmemes+comed
 let lastMemes = {};
 let memes = [];
 
-const updateMemes = () => fetchSubredditImagePosts(memeSubreddits, 500).then(posts => memes = posts);
+const updateMemes = () =>
+  fetchSubredditImagePosts(memeSubreddits, 500).then((posts) => (memes = posts));
 
 // populate the memes initially
-fetchSubredditImagePosts(memeSubreddits, 25).then(posts => memes = posts);
+fetchSubredditImagePosts(memeSubreddits, 25).then((posts) => (memes = posts));
 
 // update memes every 10 min
 setInterval(updateMemes, 1000 * 60 * 10);
@@ -18,7 +19,8 @@ setInterval(updateMemes, 1000 * 60 * 10);
 router.get("/", (req, res) => {
   const queryId = req.query.queryId.slice(0, 24);
 
-  if (queryId) { // we need to get a meme that has not been shown for this queryId for the last 7 times
+  if (queryId) {
+    // we need to get a meme that has not been shown for this queryId for the last 7 times
     let lastQueryMemes = lastMemes[queryId];
 
     if (lastQueryMemes) {
