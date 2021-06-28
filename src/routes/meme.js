@@ -1,4 +1,4 @@
-import express, { query } from "express";
+import express from "express";
 import {fetchSubredditImagePosts} from "../util/reddit.js";
 
 const router = express.Router();
