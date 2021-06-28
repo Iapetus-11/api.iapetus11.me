@@ -9,7 +9,7 @@ export const fetchSubredditImagePosts = (subreddits, limit) => {
     axios.get(`https://reddit.com/r/${subreddits}/hot/.json?limit=${limit}`)
     .then(res => {
       res.data.data.children.forEach(post => {
-        p = post.data;
+        const p = post.data;
 
         if (!(p.removal_reason || p.is_video || p.pinned || p.stickied || p.selftext)) {
           if (p.url && imageFileEndings.includes(p.url.slice(-4))) {
