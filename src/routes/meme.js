@@ -39,7 +39,7 @@ router.get("/", (req, res) => {
       if (lastQueryMemes.size >= 9) {
         let i = 0;
 
-        [...lastQueryMemes].reverse().forEach(post => {
+        [...lastQueryMemes].reverse().forEach((post) => {
           if (i > 9) lastQueryMemes.delete(post);
           i++;
         });
