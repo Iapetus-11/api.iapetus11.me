@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Iapetus-11/petu-api#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "canvas": "^2.8.0",
     "dgram": "^1.0.1",
     "dns": "^0.1.2",
