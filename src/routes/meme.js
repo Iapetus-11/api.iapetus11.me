@@ -12,6 +12,7 @@ const updateMemes = () =>
 
 // populate the memes initially
 fetchSubredditImagePosts(memeSubreddits, 25).then((posts) => (memes = posts));
+fetchSubredditImagePosts(memeSubreddits, 500).then((posts) => (memes = posts));
 
 // update memes every 10 min
 setInterval(updateMemes, 1000 * 60 * 10);
