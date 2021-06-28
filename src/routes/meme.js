@@ -36,7 +36,16 @@ router.get("/", (req, res) => {
 
       lastQueryMemes.add(memeId);
 
-      if (lastQueryMemes.length > 7) lastQueryMemes.shift();
+      if (lastQueryMemes.size >= 9) {
+        let i = 0;
+
+        [...lastQueryMemes].reverse().forEach(post => {
+          if (i > 9) lastQueryMemes.delete(post);
+          i++;
+        });
+      }
+
+      console.log(lastQueryMemes);
 
       res.status(200).json(meme);
       return;
