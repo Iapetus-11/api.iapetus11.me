@@ -27,7 +27,7 @@ router.get("/", (req, res) => {
     if (lastQueryMemes) {
       let meme, memeId;
 
-      while (!memeId || lastQueryMemes.includes(memeId)) {
+      while (!memeId || lastQueryMemes.has(memeId)) {
         meme = memes[Math.floor(Math.random() * memes.length)];
         memeId = meme.id;
       }
