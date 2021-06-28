@@ -2,7 +2,7 @@ import axios from "axios";
 
 const imageFileEndings = [".png", ".jpg", ".gif", "jpeg"];
 
-const fetchSubredditImagePosts = (subreddits, limit) => {
+export const fetchSubredditImagePosts = (subreddits, limit) => {
   return new Promise((resolve, reject) => {
     let posts = [];
 
