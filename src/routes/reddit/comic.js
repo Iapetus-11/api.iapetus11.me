@@ -1,9 +1,9 @@
 import express from "express";
-import { fetchSubredditImagePosts } from "../util/reddit.js";
+import { fetchSubredditImagePosts } from "../../util/reddit.js";
 
 const router = express.Router();
 
-const subreddits = "CursedMinecraft";
+const subreddits = "comics";
 let lastPosts = {};
 let postList = [];
 
