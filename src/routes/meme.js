@@ -31,7 +31,7 @@ router.get("/", (req, res) => {
         memeId = meme.id;
       }
 
-      lastQueryMemes.push(memeId);
+      lastQueryMemes.add(memeId);
 
       if (lastQueryMemes.length > 7) lastQueryMemes.shift();
 
@@ -39,7 +39,7 @@ router.get("/", (req, res) => {
       return;
     } else {
       const meme = memes[Math.floor(Math.random() * memes.length)];
-      lastMemes[queryId] = [meme.id];
+      lastMemes[queryId] = new Set([meme.id]);
 
       res.status(200).json(meme);
       return;
