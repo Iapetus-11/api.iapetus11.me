@@ -28,6 +28,8 @@ export const fetchSubredditImagePosts = (subreddits, limit) => {
           }
         }
       });
+      
+      resolve(posts);
     })
     .catch(e => reject(e));
   });
