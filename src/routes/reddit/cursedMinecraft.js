@@ -39,7 +39,7 @@ router.get("/", (req, res) => {
       if (lastQueryPosts.size >= 9) {
         let i = 0;
 
-        [...lastQueryPosts].reverse().forEach(post => {
+        [...lastQueryPosts].reverse().forEach((post) => {
           if (i > 9) lastQueryPosts.delete(post);
           i++;
         });
