@@ -11,7 +11,9 @@ import routeServerFavicon from "./routes/mc/favicon.js";
 import routeServerCard from "./routes/mc/statusCard.js";
 import routeServerStatus from "./routes/mc/status.js";
 
+import routeGimmeCursedMinecraft from "./routes/cursedMinecraft.js";
 import routeGimmeGreentext from "./routes/greentext.js";
+import routeGimmeComic from "./routes/comic.js";
 import routeGimmeMeme from "./routes/meme.js";
 
 // load .env data
@@ -57,7 +59,9 @@ app.use("/mc/favicon", createRateLimit(2, 1), routeServerFavicon);
 app.use("/mc/servercard", createRateLimit(1, 1), routeServerCard);
 app.use("/mc/status", createRateLimit(2, 1), routeServerStatus);
 
+app.use("/cursedminecraft", createRateLimit(5, 1), routeGimmeCursedMinecraft);
 app.use("/greentext", createRateLimit(5, 1), routeGimmeGreentext);
+app.use("/comic", createRateLimit(5, 1), routeGimmeComic);
 app.use("/meme", createRateLimit(5, 1), routeGimmeMeme);
 
 // handle 404s, must be after middleware and routes to work
