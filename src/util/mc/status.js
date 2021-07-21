@@ -71,9 +71,9 @@ export const parseAddress = (address) => {
 
 const getActualAddress = (host) => {
   return new Promise((resolve, reject) => {
-    dns.resolveSrv(host, (e, addresses) => {
+    dns.resolveSrv(`_minecraft._tcp.${host}`, (e, addresses) => {
       try {
-        resolve([addresses[0].name, addresses[1].port]);
+        resolve([addresses[0].name, addresses[0].port]);
       } catch (e) {
         reject();
       }
