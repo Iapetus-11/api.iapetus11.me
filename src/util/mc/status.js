@@ -99,6 +99,8 @@ const fetchMcStatus = async (host, port, doNotRetry) => {
       return await fetchMcStatus(host, port, true);
     }
 
+    console.log(e);
+
     return defaultStatus;
   }
 };
