@@ -28,7 +28,10 @@ canvas.registerFont("./src/assets/Minecraftia.ttf", {
 const app = express();
 
 const rateLimitKeyGenerator = (req) => req.get("CF-Connecting-IP") || req.ip;
-const rateLimitSkipHandler = (req, res) => {console.log(process.env.BYPASS, req.get("Authorization")); process.env.BYPASS == req.get("Authorization")};
+const rateLimitSkipHandler = (req, res) => {
+  console.log(process.env.BYPASS, req.get("Authorization"));
+  process.env.BYPASS == req.get("Authorization");
+};
 const rateLimitHandler = (req, res) => {
   return res.status(429).json({
     message: "Error - You've hit the rate limit",
