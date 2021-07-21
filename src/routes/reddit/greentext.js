@@ -7,15 +7,15 @@ const subreddits = "greentext";
 let lastPosts = {};
 let postList = [];
 
-const updateMemes = () =>
+const updatePosts = () =>
   fetchSubredditImagePosts(subreddits, 500).then((posts) => (postList = posts));
 
-// populate the memes initially
+// populate the posts cache initially
 fetchSubredditImagePosts(subreddits, 25).then((posts) => (postList = posts));
 fetchSubredditImagePosts(subreddits, 500).then((posts) => (postList = posts));
 
-// update memes every 10 min
-setInterval(updateMemes, 1000 * 60 * 10);
+// update posts every 10 min
+setInterval(updatePosts, 1000 * 60 * 10);
 
 router.get("/", (req, res) => {
   const queryId = (req.query.queryId || "").slice(0, 24);
@@ -28,7 +28,7 @@ router.get("/", (req, res) => {
       let post, postId;
       let tries = 0;
 
-      while ((!memeId || lastQueryPosts.has(postId)) && tries < 7) {
+      while ((!postId || lastQueryPosts.has(postId)) && tries < 7) {
         post = postList[Math.floor(Math.random() * postList.length)];
         postId = post.id;
         tries++;
