@@ -34,6 +34,7 @@ export const bedrockServerStatus = (host, port) => {
         },
         motd: stringifyMotd(status_data[1]),
         motd_raw: status_data[1],
+        favicon: null,
       };
 
       try {
