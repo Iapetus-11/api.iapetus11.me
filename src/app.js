@@ -53,16 +53,16 @@ const createRateLimit = (limit, per) => {
 app.use(helmet());
 
 // add routes
-app.use("/mc/achievement", createRateLimit(2, 1), routeMinecraftAchievement);
-app.use("/mc/splash", createRateLimit(2, 1), routeSplashScreen);
-app.use("/mc/favicon", createRateLimit(2, 1), routeServerFavicon);
-app.use("/mc/servercard", createRateLimit(1, 1), routeServerCard);
-app.use("/mc/status", createRateLimit(2, 1), routeServerStatus);
+app.use("/mc/achievement", createRateLimit(4, 1), routeMinecraftAchievement);
+app.use("/mc/splash", createRateLimit(5, 1), routeSplashScreen);
+app.use("/mc/favicon", createRateLimit(5, 1), routeServerFavicon);
+app.use("/mc/servercard", createRateLimit(5, 1), routeServerCard);
+app.use("/mc/status", createRateLimit(5, 1), routeServerStatus);
 
-app.use("/reddit/cursedminecraft", createRateLimit(5, 1), routeGimmeCursedMinecraft);
-app.use("/reddit/greentext", createRateLimit(5, 1), routeGimmeGreentext);
-app.use("/reddit/comic", createRateLimit(5, 1), routeGimmeComic);
-app.use("/reddit/meme", createRateLimit(5, 1), routeGimmeMeme);
+app.use("/reddit/cursedminecraft", createRateLimit(10, 1), routeGimmeCursedMinecraft);
+app.use("/reddit/greentext", createRateLimit(10, 1), routeGimmeGreentext);
+app.use("/reddit/comic", createRateLimit(10, 1), routeGimmeComic);
+app.use("/reddit/meme", createRateLimit(10, 1), routeGimmeMeme);
 
 // handle 404s, must be after middleware and routes to work
 app.use((req, res) => {
