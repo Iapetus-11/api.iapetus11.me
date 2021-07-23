@@ -15,7 +15,11 @@ fetchSubredditImagePosts(memeSubreddits, 25).then((posts) => (memes = posts));
 fetchSubredditImagePosts(memeSubreddits, 500).then((posts) => (memes = posts));
 
 // update memes every 10 min
-setInterval(() => {updateMemes().then(posts => (memes = posts)).catch(e => {})}, 1000 * 60 * 10);
+setInterval(() => {
+  updateMemes()
+    .then((posts) => (memes = posts))
+    .catch((e) => {});
+}, 1000 * 60 * 10);
 
 router.get("/", (req, res) => {
   const queryId = (req.query.queryId || "").slice(0, 24);

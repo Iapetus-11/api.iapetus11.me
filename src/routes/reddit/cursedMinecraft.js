@@ -15,7 +15,13 @@ fetchSubredditImagePosts(subreddits, 25).then((posts) => (postList = posts));
 fetchSubredditImagePosts(subreddits, 500).then((posts) => (postList = posts));
 
 // update posts every 10 min
-setInterval(() => updatePosts().then(posts => postList = posts).catch(e => {}), 1000 * 60 * 10);
+setInterval(
+  () =>
+    updatePosts()
+      .then((posts) => (postList = posts))
+      .catch((e) => {}),
+  1000 * 60 * 10
+);
 
 router.get("/", (req, res) => {
   const queryId = (req.query.queryId || "").slice(0, 24);
