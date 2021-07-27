@@ -84,8 +84,10 @@ const getActualAddress = (host) => {
 // fetches the status of the Minecraft server, retries once
 const fetchMcStatus = async (host, port, doNotRetry) => {
   try {
-    let [host, port] = await getActualAddress(host);
-  } catch (e) {}
+    [host, port] = await getActualAddress(host);
+  } catch (e) {
+    console.log(e);
+  }
 
   try {
     return await Promise.any([
