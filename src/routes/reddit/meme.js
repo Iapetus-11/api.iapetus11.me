@@ -3,7 +3,8 @@ import { fetchSubredditImagePosts } from "../../util/reddit.js";
 
 const router = express.Router();
 
-const memeSubreddits = "memes+me_irl+dankmemes+wholesomememes+prequelmemes+comedyheaven+marvelmemes";
+const memeSubreddits =
+  "memes+me_irl+dankmemes+wholesomememes+prequelmemes+comedyheaven+marvelmemes";
 let lastMemes = {};
 let memes = [];
 
