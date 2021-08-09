@@ -71,9 +71,9 @@ export const parseAddress = (address) => {
 
 const getActualAddress = (host) => {
   return new Promise((resolve, reject) => {
-    dns.resolveSrv(host, (e, addresses) => {
+    dns.resolveSrv(`_minecraft._tcp.${host}`, (e, addresses) => {
       try {
-        resolve([addresses[0].name, addresses[1].port]);
+        resolve([addresses[0].name, addresses[0].port]);
       } catch (e) {
         reject();
       }
@@ -84,10 +84,10 @@ const getActualAddress = (host) => {
 // fetches the status of the Minecraft server, retries once
 const fetchMcStatus = async (host, port, doNotRetry) => {
   try {
-    let actualAddress = await getActualAddress(host);
-    host = actualAddress[0];
-    port = actualAddress[1];
-  } catch (e) {}
+    [host, port] = await getActualAddress(host);
+  } catch (e) {
+    console.log(e);
+  }
 
   try {
     return await Promise.any([
