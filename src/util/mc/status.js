@@ -85,9 +85,7 @@ const getActualAddress = (host) => {
 const fetchMcStatus = async (host, port, doNotRetry) => {
   try {
     [host, port] = await getActualAddress(host);
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
 
   try {
     return await Promise.any([
