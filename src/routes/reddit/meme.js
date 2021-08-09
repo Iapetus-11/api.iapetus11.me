@@ -33,7 +33,7 @@ router.get("/", (req, res) => {
       let meme, memeId;
       let tries = 0;
 
-      while ((!memeId || lastQueryMemes.has(memeId)) && tries < 7) {
+      while ((!memeId || lastQueryMemes.has(memeId)) && tries < 15) {
         meme = memes[Math.floor(Math.random() * memes.length)];
         memeId = meme.id;
         tries++;
@@ -41,11 +41,11 @@ router.get("/", (req, res) => {
 
       lastQueryMemes.add(memeId);
 
-      if (lastQueryMemes.size >= 9) {
+      if (lastQueryMemes.size >= 17) {
         let i = 0;
 
         [...lastQueryMemes].reverse().forEach((post) => {
-          if (i > 9) lastQueryMemes.delete(post);
+          if (i > 17) lastQueryMemes.delete(post);
           i++;
         });
       }
