@@ -112,7 +112,7 @@ export const mcStatus = (host, port) => {
     } else {
       fetchMcStatus(host, port)
         .then((status) => {
-          status = { ...status, cached: false, cache_time: null };
+          status = { ...defaultStatus, ...status, cached: false, cache_time: null };
 
           resolve(status);
 
