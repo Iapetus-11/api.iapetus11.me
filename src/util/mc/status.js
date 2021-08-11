@@ -112,7 +112,9 @@ export const mcStatus = (host, port) => {
     } else {
       fetchMcStatus(host, port)
         .then((status) => {
-          status = { ...defaultStatus, ...status, cached: false, cache_time: null };
+          status = { ...status, cached: false, cache_time: null };
+          console.log(status.favicon);
+          status = Object.assign(status, defaultStatus);
 
           resolve(status);
 
