@@ -114,7 +114,7 @@ export const mcStatus = (host, port) => {
         .then((status) => {
           status = { ...status, cached: false, cache_time: null };
           status = Object.assign({ ...defaultStatus }, status);
-          
+
           if (status.favicon === undefined) {
             console.log(status);
           }
