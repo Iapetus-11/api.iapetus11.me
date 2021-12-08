@@ -13,29 +13,35 @@ export const bedrockServerStatus = (host, port) => {
     });
 
     socket.on("message", (data, info) => {
-      socket.close();
+      var status;
 
-      let status_length = data.readUint16BE(33);
-      let status_data = data
-        .slice(35, 35 + status_length)
-        .toString()
-        .split(";");
+      try {
+        socket.close();
 
-      let status = {
-        online: true,
-        latency: new Date() - start,
-        players_online: parseInt(status_data[4]),
-        players_max: parseInt(status_data[5]),
-        players: [],
-        version: {
-          brand: status_data[0],
-          software: `Bedrock ${status_data[3]}`,
-          protocol: status_data[2],
-        },
-        motd: stringifyMotd(status_data[1]),
-        motd_raw: status_data[1],
-        favicon: null,
-      };
+        let status_length = data.readUint16BE(33);
+        let status_data = data
+          .slice(35, 35 + status_length)
+          .toString()
+          .split(";");
+
+        status = {
+          online: true,
+          latency: new Date() - start,
+          players_online: parseInt(status_data[4]),
+          players_max: parseInt(status_data[5]),
+          players: [],
+          version: {
+            brand: status_data[0],
+            software: `Bedrock ${status_data[3]}`,
+            protocol: status_data[2],
+          },
+          motd: stringifyMotd(status_data[1]),
+          motd_raw: status_data[1],
+          favicon: null,
+        };
+      } catch (e) {
+        reject(e);
+      }
 
       try {
         status.map = status_data[7];
