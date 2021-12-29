@@ -68,7 +68,7 @@ app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Hi 👋",
-    docs: "Sorry but no."
+    docs: "Sorry but no.",
   });
 });
 
