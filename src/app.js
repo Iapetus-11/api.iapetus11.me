@@ -64,6 +64,14 @@ app.use("/reddit/greentext", createRateLimit(10, 1), routeGimmeGreentext);
 app.use("/reddit/comic", createRateLimit(10, 1), routeGimmeComic);
 app.use("/reddit/meme", createRateLimit(10, 1), routeGimmeMeme);
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Hi 👋",
+    docs: "Sorry but no.",
+  });
+});
+
 // handle 404s, must be after middleware and routes to work
 app.use((req, res) => {
   res.status(404).json({
