@@ -12,7 +12,7 @@ async function drawMotd(ctx, status) {
   let motd = status.motd;
 
   if (motd) {
-    motd = stringifyMotd(motd);
+    motd = stringifyMotd(motd).replace("Server.pro | ", "");
   } else if (!status.online) {
     motd = "This server is offline.";
   } else {

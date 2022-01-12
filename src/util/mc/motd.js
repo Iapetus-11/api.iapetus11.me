@@ -1,6 +1,6 @@
 import { minecraftColors, minecraftColorsCodes } from "../../minecraftFormatting.js";
 
-const formatRichMotd = (motdEntries, end) => {
+const formatRichMotd = (motdEntries, outerText) => {
   let strMotd = "";
 
   motdEntries.forEach((entry) => {
@@ -28,7 +28,7 @@ const formatRichMotd = (motdEntries, end) => {
     strMotd += entry.text || "";
   });
 
-  return strMotd + (end || "");
+  return (outerText || "") + strMotd;
 };
 
 export const stringifyMotd = (motd) => {
