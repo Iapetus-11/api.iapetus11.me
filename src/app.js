@@ -52,6 +52,14 @@ const createRateLimit = (limit, per) => {
 // add middleware
 app.use(helmet());
 
+// app.use((req, res, next) => {
+//   res.res = (status, data) => {
+//     return res.status(status).json({ success: status === 200, payload: data });
+//   }
+
+//   next();
+// });
+
 // add routes
 app.use("/mc/achievement", createRateLimit(4, 1), routeMinecraftAchievement);
 app.use("/mc/splash", createRateLimit(5, 1), routeSplashScreen);
