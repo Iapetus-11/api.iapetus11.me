@@ -1,0 +1,164 @@
+﻿using System.Text;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
+
+namespace api.iapetus11.me.Services.Minecraft;
+
+public class MinecraftColor
+{
+    public string? Key { get; }
+    public string Name { get; }
+    public string? Code { get; }
+    public string Hex { get; }
+
+    public MinecraftColor(string? key, string name, string? code, string hex)
+    {
+        Key = key;
+        Name = name;
+        Code = code;
+        Hex = hex;
+    }
+
+    public static MinecraftColor ByKey(string name, string code, string hex)
+    {
+        return new MinecraftColor(null, name, code, hex);
+    }
+
+    public static MinecraftColor ByCode(string key, string name, string hex)
+    {
+        return new MinecraftColor(key, name, null, hex);
+    }
+}
+
+public class MotdStyleComponent
+{
+    public bool? Bold { get; set; }
+    public bool? Italic { get; set; }
+    public bool? Underlined { get; set; }
+    public bool? Obfuscated { get; set; }
+    public string? Color { get; set; }
+    public string? Text { get; set; } = "";
+    
+    public MotdStyleComponent() {}
+
+    public MotdStyleComponent(string? text)
+    {
+        Text = text;
+    }
+}
+
+public class ServerMotd
+{
+    // key -> MinecraftColor
+    private static readonly IReadOnlyDictionary<string, MinecraftColor> _mcColors = new Dictionary<string, MinecraftColor>()
+    {
+        {"dark_red", MinecraftColor.ByKey("Dark Red", "4", "AA0000")},
+        {"red", MinecraftColor.ByKey("Red", "c", "FF5555")},
+        {"gold", MinecraftColor.ByKey("Gold", "6", "FFAA00")},
+        {"yellow", MinecraftColor.ByKey("Yellow", "e", "FFFF55")},
+        {"dark_green", MinecraftColor.ByKey("Dark Green", "2", "00AA00")},
+        {"green", MinecraftColor.ByKey("Green", "a", "55FF55")},
+        {"aqua", MinecraftColor.ByKey("Aqua", "b", "55FFFF")},
+        {"dark_aqua", MinecraftColor.ByKey("Dark Aqua", "3", "00AAAA")},
+        {"dark_blue", MinecraftColor.ByKey("Dark Blue", "1", "0000AA")},
+        {"blue", MinecraftColor.ByKey("Blue", "9", "5555FF")},
+        {"light_purple", MinecraftColor.ByKey("Light Purple", "d", "FF55FF")},
+        {"white", MinecraftColor.ByKey("White", "f", "FFFFFF")},
+        {"gray", MinecraftColor.ByKey("Gray", "7", "AAAAAA")},
+        {"dark_gray", MinecraftColor.ByKey("Dark Gray", "8", "555555")},
+        {"black", MinecraftColor.ByKey("Black", "0", "000000")}
+    };
+    
+    // mc code -> MinecraftColor
+    private static readonly IReadOnlyDictionary<string, MinecraftColor> _mcColorsByCode = new Dictionary<string, MinecraftColor>()
+    {
+        {"4", MinecraftColor.ByCode("dark_red", "Dark Red", "AA0000")},
+        {"c", MinecraftColor.ByCode("red", "Red", "FF5555")},
+        {"6", MinecraftColor.ByCode("gold", "Gold", "FFAA00")},
+        {"e", MinecraftColor.ByCode("yellow", "Yellow", "FFFF55")},
+        {"2", MinecraftColor.ByCode("dark_green", "Dark Green", "00AA00")},
+        {"a", MinecraftColor.ByCode("green", "Green", "55FF55")},
+        {"b", MinecraftColor.ByCode("aqua", "Aqua", "55FFFF")},
+        {"3", MinecraftColor.ByCode("dark_aqua", "Dark Aqua", "00AAAA")},
+        {"1", MinecraftColor.ByCode("dark_blue", "Dark Blue", "0000AA")},
+        {"9", MinecraftColor.ByCode("blue", "Blue", "5555FF")},
+        {"d", MinecraftColor.ByCode("light_purple", "Light Purple", "FF55FF")},
+        {"f", MinecraftColor.ByCode("white", "White", "FFFFFF")},
+        {"7", MinecraftColor.ByCode("gray", "Gray", "AAAAAA")},
+        {"8", MinecraftColor.ByCode("dark_gray", "Dark Gray", "555555")},
+        {"0", MinecraftColor.ByCode("black", "Black", "000000")}
+    };
+    
+    private static Regex _hexCodeRegex = new(
+        @"^#(?:[0-9a-fA-F]{3}){1,2}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    private readonly string _motd;
+
+    public ServerMotd(string motd)
+    {
+        _motd = motd;
+    }
+
+    public ServerMotd(JToken? motd)
+    {
+        _motd = ParseJsonMotd(motd);
+    }
+
+    public override string ToString()
+    {
+        return _motd;
+    }
+
+    public static string ParseJsonMotd(JToken? motdJson)
+    {
+        if (motdJson == null) return "";
+        
+        if (motdJson.Type == JTokenType.String) return motdJson.Value<string>() ?? "";
+        
+        var motdOut = new StringBuilder();
+
+        List<JToken> motdEntries = motdJson.Type switch
+        {
+            JTokenType.Object => motdJson["extra"]?.ToList() ?? new(),
+            JTokenType.Array => motdJson.ToList(),
+            _ => throw new Exception($"Unsupported data type: {motdJson.Type}")
+        };
+
+        foreach (var entry in motdEntries)
+        {
+            if (entry["bold"]?.Value<bool>() == true) motdOut.Append("§l");
+            if (entry["italic"]?.Value<bool>() == true) motdOut.Append("§o");
+            if (entry["underlined"]?.Value<bool>() == true) motdOut.Append("§n");
+            if (entry["obfuscated"]?.Value<bool>() == true) motdOut.Append("§k");
+
+            var color = entry["color"]?.Value<string>();
+
+            if (string.IsNullOrEmpty(color)) continue;
+            
+            // some servers don't use mc color codes, they use hex
+            if (_hexCodeRegex.IsMatch("#" + color.Replace("#", "")))
+            {
+                var hexNice = color.ToUpper().Replace("#", "");
+                
+                foreach (var mcColor in _mcColors.Values)
+                {
+                    if (hexNice == mcColor.Hex)
+                    {
+                        motdOut.Append($"§{mcColor.Code}");
+                        break;
+                    }
+                }
+            }
+            else // isn't a hex code, should be a normal mc color code
+            {
+                var code = _mcColors?[color]?.Code;
+                if (code != null) motdOut.Append($"§{code}");
+            }
+
+            var text = entry["text"]?.Value<string>();
+            if (text != null) motdOut.Append(text);
+        }
+
+        return motdOut + (motdJson["text"]?.Value<string>() ?? "");
+    }
+}

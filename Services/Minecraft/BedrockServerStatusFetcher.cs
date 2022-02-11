@@ -45,7 +45,7 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
             players: new MinecraftServerStatusPlayer[] { },
             version: new MinecraftServerStatusVersion(
                 "Bedrock Edition", "Bedrock Edition", int.Parse(splitData[2])),
-            messageOfTheDay: splitData[1],
+            motd: splitData[1],
             favicon: null,
             map: splitData[7],
             gameMode: splitData[8]);

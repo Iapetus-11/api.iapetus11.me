@@ -49,7 +49,7 @@ public class Server
 
     private async Task DnsLookup()
     {
-        var result = await new LookupClient().QueryAsync(_host, QueryType.SRV);
+        var result = await new LookupClient().QueryAsync($"_minecraft._tcp.{_host}", QueryType.SRV);
         var record = result.Answers.SrvRecords().FirstOrDefault();
 
         if (record == null) return;
@@ -59,7 +59,7 @@ public class Server
         // _type = ServerType.Java; // only Java servers use SRV records, so we can set the type to Java
     }
 
-    public async Task<MinecraftServerStatus> FetchDefaultStatus()
+    private async Task<MinecraftServerStatus> FetchDefaultStatus()
     {
         await Task.Delay(2000);
         
