@@ -17,7 +17,7 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
     public BedrockServerStatusFetcher(string host, int port)
     {
         _host = host;
-        _port = port;
+        _port = port is > 0 and < 65535 ? port : 19132;
     }
     
     public async Task<MinecraftServerStatus> FetchStatus()
@@ -36,6 +36,8 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
         var splitData = data.Split(';');
 
         return new MinecraftServerStatus(
+            host: _host,
+            port: _port,
             online: true,
             latency: (float) stopwatch.ElapsedMilliseconds,
             onlinePlayers: int.Parse(splitData[4]),

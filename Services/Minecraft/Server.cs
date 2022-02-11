@@ -9,22 +9,15 @@ namespace api.iapetus11.me.Services.Minecraft;
 
 public class InvalidServerAddressException : Exception { }
 
-public enum ServerType
-{
-    Unknown, Java, Bedrock
-}
-
 public class Server
 {
     private string _host;
     private int _port;
-    private ServerType _type;
 
-    public Server(string host, int port, ServerType type = ServerType.Unknown)
+    public Server(string host, int port)
     {
         _host = host;
         _port = port;
-        _type = type;
     }
 
     public Server(string address)
@@ -63,38 +56,43 @@ public class Server
         
         _host = record.Target;
         _port = record.Port;
-        _type = ServerType.Java; // only Java servers use SRV records, so we can set the type to Java
+        // _type = ServerType.Java; // only Java servers use SRV records, so we can set the type to Java
+    }
+
+    public async Task<MinecraftServerStatus> FetchDefaultStatus()
+    {
+        await Task.Delay(2000);
+        
+        return new MinecraftServerStatus(
+            _host, _port, false, -1f, 0, 0, new MinecraftServerStatusPlayer[] {}, 
+            null, null, null, null, null);
     }
 
     public async Task<MinecraftServerStatus> FetchStatus()
     {
         await DnsLookup();
-        var statusTasks = new List<Task<MinecraftServerStatus>>();
-
-        switch (_type)
+        
+        var defaultStatusTask = FetchDefaultStatus();
+        var statusTasks = new List<Task<MinecraftServerStatus>>()
         {
-            case ServerType.Unknown or ServerType.Java:
-                // statusTasks.Add(new JavaServerStatusFetcher(_host, _port).FetchStatus());
-                break;
-            case ServerType.Unknown or ServerType.Bedrock:
-                statusTasks.Add(new BedrockServerStatusFetcher(_host, _port).FetchStatus());
-                break;
-        }
+            defaultStatusTask,
+            new JavaServerStatusFetcher(_host, _port).FetchStatus(),
+            new BedrockServerStatusFetcher(_host, _port).FetchStatus()
+        };
 
         while (statusTasks.Any())
         {
-            var status = await Task.WhenAny(statusTasks);
-            statusTasks.Remove(status);
+            var statusTask = await Task.WhenAny(statusTasks);
+            statusTasks.Remove(statusTask);
+
+            if (statusTask == defaultStatusTask) break;
 
             try
             {
-                return await status;
-            }
-            catch (Exception e) { }
+                return await statusTask;
+            } catch (Exception e) when (e is SocketException) {}
         }
-
-        return new MinecraftServerStatus(
-            false, -1f, 0, 0, new MinecraftServerStatusPlayer[] {}, 
-            null, null, null, null, null);
+        
+        return await defaultStatusTask;
     }
 }
