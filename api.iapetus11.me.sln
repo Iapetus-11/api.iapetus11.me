@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api.iapetus11.me", "api.iapetus11.me.csproj", "{0E4D567C-7F26-4670-9A85-1112A81B75B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api.iapetus11.me", "api.iapetus11.me/api.iapetus11.me.csproj", "{0E4D567C-7F26-4670-9A85-1112A81B75B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
