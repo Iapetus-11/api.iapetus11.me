@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Net.Sockets;
 using api.iapetus11.me.Models;
 using DnsClient;
@@ -29,26 +28,26 @@ public class InvalidServerAddressException : ServerStatusException
     }
 }
 
-public class Server
+public class MinecraftServer
 {
     private static readonly ImmutableHashSet<char> _validAddressChars = "abcdefghijklmnopqrstuvwxyz0123456789.-_".ToImmutableHashSet();
 
-    public string Host { get; private set; }
-    public int Port { get; private set; }
+    private string _host;
+    private int _port;
 
-    private MinecraftServerStatus? _status;
+    public MinecraftServerStatus? Status { get; private set; }
 
-    public Server(string host, int port)
+    public MinecraftServer(string host, int port)
     {
-        Host = host;
-        Port = port;
+        _host = host;
+        _port = port;
     }
 
-    public Server(string address)
+    public MinecraftServer(string address)
     {
         try
         {
-            (Host, Port) = ParseAddress(address);
+            (_host, _port) = ParseAddress(address);
         }
         catch (Exception e)
         {
@@ -75,7 +74,7 @@ public class Server
                 throw new InvalidServerAddressException(address);
         }
 
-        if (!(port is > 0 and < 65535) && port != -1) throw new InvalidServerAddressException(address);
+        if (port is not (> 0 and < 65535) && port != -1) throw new InvalidServerAddressException(address);
 
         if (host.ToLower().Any(c => !_validAddressChars.Contains(c)))
         {
@@ -87,19 +86,19 @@ public class Server
 
     private MinecraftServerStatus DefaultStatus()
     {
-        return new MinecraftServerStatus(Host, Port,false, -1f, 0, 0,
+        return new MinecraftServerStatus(_host, _port,false, -1f, 0, 0,
             new MinecraftServerStatusPlayer[] {}, null, null, null, null, null);
     }
 
     private async Task DnsLookup()
     {
-        var result = await new LookupClient().QueryAsync($"_minecraft._tcp.{Host}", QueryType.SRV);
+        var result = await new LookupClient().QueryAsync($"_minecraft._tcp.{_host}", QueryType.SRV);
         var record = result.Answers.SrvRecords().FirstOrDefault();
 
         if (record == null) return;
         
-        Host = record.Target;
-        Port = record.Port;
+        _host = record.Target;
+        _port = record.Port;
     }
 
     private async Task<MinecraftServerStatus> FetchDefaultStatus()
@@ -116,8 +115,8 @@ public class Server
         var statusTasks = new List<Task<MinecraftServerStatus>>()
         {
             defaultStatusTask,
-            new JavaServerStatusFetcher(Host, Port).FetchStatus(),
-            new BedrockServerStatusFetcher(Host, Port).FetchStatus()
+            new JavaServerStatusFetcher(_host, _port).FetchStatus(),
+            new BedrockServerStatusFetcher(_host, _port).FetchStatus()
         };
 
         while (statusTasks.Any())
@@ -129,26 +128,26 @@ public class Server
 
             try
             {
-                _status =  await statusTask;
+                Status =  await statusTask;
                 break;
             } catch (SocketException) {}
         }
 
-        return _status ??= await defaultStatusTask;
+        return Status ??= await defaultStatusTask;
     }
 
     public async Task<Stream> FetchStatusImage(string name)
     {
         try
         {
-            if (_status == null) await FetchStatus();
+            if (Status == null) await FetchStatus();
         }
         catch (Exception)
         {
-            _status = DefaultStatus();
+            Status = DefaultStatus();
         }
 
-        var image = new ServerImage(_status ?? throw new InvalidOperationException()).Generate(name);
+        var image = new ServerImage(Status ?? throw new InvalidOperationException()).Generate(name);
         var stream = new MemoryStream();
         
         await image.SaveAsPngAsync(stream);

@@ -1,54 +1,49 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing;
-using SixLabors.ImageSharp.Drawing.Processing;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 namespace api.iapetus11.me.Services.Minecraft;
 
 public class MinecraftColor
 {
     // key -> MinecraftColor
-    private static readonly IReadOnlyDictionary<string, MinecraftColor> _mcColors = new Dictionary<string, MinecraftColor>()
+    private static readonly IReadOnlyDictionary<string, MinecraftColor> _mcColors = new Dictionary<string, MinecraftColor>
     {
-        {"dark_red", MinecraftColor.ByKey("Dark Red", "4", "AA0000")},
-        {"red", MinecraftColor.ByKey("Red", "c", "FF5555")},
-        {"gold", MinecraftColor.ByKey("Gold", "6", "FFAA00")},
-        {"yellow", MinecraftColor.ByKey("Yellow", "e", "FFFF55")},
-        {"dark_green", MinecraftColor.ByKey("Dark Green", "2", "00AA00")},
-        {"green", MinecraftColor.ByKey("Green", "a", "55FF55")},
-        {"aqua", MinecraftColor.ByKey("Aqua", "b", "55FFFF")},
-        {"dark_aqua", MinecraftColor.ByKey("Dark Aqua", "3", "00AAAA")},
-        {"dark_blue", MinecraftColor.ByKey("Dark Blue", "1", "0000AA")},
-        {"blue", MinecraftColor.ByKey("Blue", "9", "5555FF")},
-        {"light_purple", MinecraftColor.ByKey("Light Purple", "d", "FF55FF")},
-        {"white", MinecraftColor.ByKey("White", "f", "FFFFFF")},
-        {"gray", MinecraftColor.ByKey("Gray", "7", "AAAAAA")},
-        {"dark_gray", MinecraftColor.ByKey("Dark Gray", "8", "555555")},
-        {"black", MinecraftColor.ByKey("Black", "0", "000000")}
+        {"dark_red", ByKey("Dark Red", "4", "AA0000")},
+        {"red", ByKey("Red", "c", "FF5555")},
+        {"gold", ByKey("Gold", "6", "FFAA00")},
+        {"yellow", ByKey("Yellow", "e", "FFFF55")},
+        {"dark_green", ByKey("Dark Green", "2", "00AA00")},
+        {"green", ByKey("Green", "a", "55FF55")},
+        {"aqua", ByKey("Aqua", "b", "55FFFF")},
+        {"dark_aqua", ByKey("Dark Aqua", "3", "00AAAA")},
+        {"dark_blue", ByKey("Dark Blue", "1", "0000AA")},
+        {"blue", ByKey("Blue", "9", "5555FF")},
+        {"light_purple", ByKey("Light Purple", "d", "FF55FF")},
+        {"white", ByKey("White", "f", "FFFFFF")},
+        {"gray", ByKey("Gray", "7", "AAAAAA")},
+        {"dark_gray", ByKey("Dark Gray", "8", "555555")},
+        {"black", ByKey("Black", "0", "000000")}
     };
     
     // mc code -> MinecraftColor
-    private static readonly IReadOnlyDictionary<string, MinecraftColor> _mcColorsByCode = new Dictionary<string, MinecraftColor>()
+    private static readonly IReadOnlyDictionary<string, MinecraftColor> _mcColorsByCode = new Dictionary<string, MinecraftColor>
     {
-        {"4", MinecraftColor.ByCode("dark_red", "Dark Red", "AA0000")},
-        {"c", MinecraftColor.ByCode("red", "Red", "FF5555")},
-        {"6", MinecraftColor.ByCode("gold", "Gold", "FFAA00")},
-        {"e", MinecraftColor.ByCode("yellow", "Yellow", "FFFF55")},
-        {"2", MinecraftColor.ByCode("dark_green", "Dark Green", "00AA00")},
-        {"a", MinecraftColor.ByCode("green", "Green", "55FF55")},
-        {"b", MinecraftColor.ByCode("aqua", "Aqua", "55FFFF")},
-        {"3", MinecraftColor.ByCode("dark_aqua", "Dark Aqua", "00AAAA")},
-        {"1", MinecraftColor.ByCode("dark_blue", "Dark Blue", "0000AA")},
-        {"9", MinecraftColor.ByCode("blue", "Blue", "5555FF")},
-        {"d", MinecraftColor.ByCode("light_purple", "Light Purple", "FF55FF")},
-        {"f", MinecraftColor.ByCode("white", "White", "FFFFFF")},
-        {"7", MinecraftColor.ByCode("gray", "Gray", "AAAAAA")},
-        {"8", MinecraftColor.ByCode("dark_gray", "Dark Gray", "555555")},
-        {"0", MinecraftColor.ByCode("black", "Black", "000000")}
+        {"4", ByCode("dark_red", "Dark Red", "AA0000")},
+        {"c", ByCode("red", "Red", "FF5555")},
+        {"6", ByCode("gold", "Gold", "FFAA00")},
+        {"e", ByCode("yellow", "Yellow", "FFFF55")},
+        {"2", ByCode("dark_green", "Dark Green", "00AA00")},
+        {"a", ByCode("green", "Green", "55FF55")},
+        {"b", ByCode("aqua", "Aqua", "55FFFF")},
+        {"3", ByCode("dark_aqua", "Dark Aqua", "00AAAA")},
+        {"1", ByCode("dark_blue", "Dark Blue", "0000AA")},
+        {"9", ByCode("blue", "Blue", "5555FF")},
+        {"d", ByCode("light_purple", "Light Purple", "FF55FF")},
+        {"f", ByCode("white", "White", "FFFFFF")},
+        {"7", ByCode("gray", "Gray", "AAAAAA")},
+        {"8", ByCode("dark_gray", "Dark Gray", "555555")},
+        {"0", ByCode("black", "Black", "000000")}
     };
     
     public string? Key { get; }

@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using api.iapetus11.me.Services.Minecraft;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global

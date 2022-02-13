@@ -8,7 +8,7 @@ namespace api.iapetus11.me.Services.Minecraft;
 public class BedrockServerStatusFetcher : IServerStatusFetcher
 {
     // request to ask bedrock server for status
-    private static readonly byte[] BedrockStatusRequest =
+    private static readonly byte[] _bedrockStatusRequest =
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 254, 254, 254, 254, 253, 253, 253, 253, 18, 52, 86, 120};
 
     private readonly string _host;
@@ -27,7 +27,7 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
         
         stopwatch.Start();
 
-        await client.SendAsync(BedrockStatusRequest);
+        await client.SendAsync(_bedrockStatusRequest);
         var result = await client.ReceiveAsync();
         
         stopwatch.Stop();
@@ -39,7 +39,7 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
             host: _host,
             port: _port,
             online: true,
-            latency: (float) stopwatch.ElapsedMilliseconds,
+            latency: stopwatch.ElapsedMilliseconds,
             onlinePlayers: int.Parse(splitData[4]),
             maxPlayers: int.Parse(splitData[5]),
             players: new MinecraftServerStatusPlayer[] { },

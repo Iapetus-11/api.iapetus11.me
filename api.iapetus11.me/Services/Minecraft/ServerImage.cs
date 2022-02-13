@@ -23,7 +23,7 @@ public class ServerImage
         _status = status;
     }
 
-    private static IImageProcessingContext RoundCorners(IImageProcessingContext ctx, float radius)
+    private static void RoundCorners(IImageProcessingContext ctx, float radius)
     {
         var (width, height) = ctx.GetCurrentSize();
         var rect = new RectangularPolygon(-0.5f, -0.5f, radius, radius);
@@ -45,8 +45,6 @@ public class ServerImage
         });
 
         foreach (var c in corners) ctx = ctx.Fill(Color.Red, c);
-
-        return ctx;
     }
 
     private static void DrawAdjustingText(IImageProcessingContext ctx, string text, int x, int y, FontFamily fontFamily,
@@ -142,6 +140,8 @@ public class ServerImage
             HorizontalAlignment.Center, out _));
         image.Mutate(x => x.DrawImage(favicon, new Point(6, 6), 1.0f));
         image.Mutate(x => RoundCorners(x, 4));
+
+        favicon.Dispose();
 
         return image;
     }

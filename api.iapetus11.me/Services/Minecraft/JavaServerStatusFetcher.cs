@@ -367,7 +367,7 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
     public async Task<MinecraftServerStatus> FetchStatus()
     {
         var connection = new JavaServerConnection(_host, _port);
-        long latency = -1;
+        long latency;
         JObject statusData;
     
         await connection.Connect();

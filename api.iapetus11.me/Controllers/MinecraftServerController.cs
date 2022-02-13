@@ -7,19 +7,19 @@ namespace api.iapetus11.me.Controllers;
 [ApiController]
 public class MinecraftServerController : Controller
 {
-    private readonly IMinecraftServerStatusService _serverStatus;
+    private readonly IMinecraftServerService _serverService;
 
-    public MinecraftServerController(IMinecraftServerStatusService statusService)
+    public MinecraftServerController(IMinecraftServerService serverService)
     {
-        _serverStatus = statusService;
+        _serverService = serverService;
     }
     
-    [HttpGet("/mc/status/{server}")]
-    public async Task<IActionResult> Status(string server)
+    [HttpGet("/mc/status/{serverAddress}")]
+    public async Task<IActionResult> Status(string serverAddress)
     {
         try
         {
-            return Ok(await _serverStatus.FetchStatus(server));
+            return Ok((await _serverService.FetchServer(serverAddress)).Status);
         }
         catch (InvalidServerAddressException e)
         {
@@ -27,10 +27,10 @@ public class MinecraftServerController : Controller
         }
     }
 
-    [HttpGet("/mc/status/{server}/image")]
-    public async Task<IActionResult> StatusImage(string server, [FromQuery(Name = "customName")] string? customName = null)
+    [HttpGet("/mc/status/{serverAddress}/image")]
+    public async Task<IActionResult> StatusImage(string serverAddress, [FromQuery(Name = "customName")] string? customName = null)
     {
-        var imageStream = await _serverStatus.FetchStatusImage(server, customName);
-        return File(imageStream, "image/png");
+        var server = await _serverService.FetchServer(serverAddress, true);
+        return File(await server.FetchStatusImage(customName ?? serverAddress), "image/png");
     }
 }
