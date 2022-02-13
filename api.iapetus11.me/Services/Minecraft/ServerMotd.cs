@@ -80,20 +80,11 @@ public class ServerMotd
 
     private readonly string _motd;
 
-    public ServerMotd(string motd)
-    {
-        _motd = motd;
-    }
+    public ServerMotd(string motd) => _motd = motd;
 
-    public ServerMotd(JToken? motd)
-    {
-        _motd = ParseJsonMotd(motd);
-    }
+    public ServerMotd(JToken? motd) => _motd = ParseJsonMotd(motd);
 
-    public override string ToString()
-    {
-        return _motd;
-    }
+    public override string ToString() => _motd;
 
     private static string ParseJsonMotd(JToken? motdJson)
     {

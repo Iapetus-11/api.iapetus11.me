@@ -1,7 +1,7 @@
-﻿using api.iapetus11.me.Models;
+﻿using api.iapetus11.me.Extensions;
+using api.iapetus11.me.Models;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -18,59 +18,7 @@ public class ServerImage
 
     private readonly MinecraftServerStatus _status;
 
-    public ServerImage(MinecraftServerStatus status)
-    {
-        _status = status;
-    }
-
-    private static void RoundCorners(IImageProcessingContext ctx, float radius)
-    {
-        var (width, height) = ctx.GetCurrentSize();
-        var rect = new RectangularPolygon(-0.5f, -0.5f, radius, radius);
-
-        var cornerTopLeft = rect.Clip(new EllipsePolygon(radius - 0.5f, radius - 0.5f, radius));
-
-        var rightPos = width - cornerTopLeft.Bounds.Width + 1;
-        var bottomPos = height - cornerTopLeft.Bounds.Height + 1;
-
-        var cornerTopRight = cornerTopLeft.RotateDegree(90).Translate(rightPos, 0);
-        var cornerBottomLeft = cornerTopLeft.RotateDegree(-90).Translate(0, bottomPos);
-        var cornerBottomRight = cornerTopLeft.RotateDegree(180).Translate(rightPos, bottomPos);
-
-        var corners = new PathCollection(cornerTopLeft, cornerBottomLeft, cornerTopRight, cornerBottomRight);
-
-        ctx.SetGraphicsOptions(new GraphicsOptions {
-            Antialias = true,
-            AlphaCompositionMode = PixelAlphaCompositionMode.DestOut // punch out new colors
-        });
-
-        foreach (var c in corners) ctx = ctx.Fill(Color.Red, c);
-    }
-
-    private static void DrawAdjustingText(IImageProcessingContext ctx, string text, int x, int y, FontFamily fontFamily,
-        Color color, float defaultSize, float maxWidth, HorizontalAlignment alignmentHoriz, out float textWidth)
-    {
-        var fontSize = defaultSize;
-        var font = fontFamily.CreateFont(fontSize, FontStyle.Regular);
-        var options = new TextOptions(font)
-        {
-            HorizontalAlignment = alignmentHoriz,
-            VerticalAlignment = VerticalAlignment.Center,
-            Origin = new PointF(x, y),
-        };
-
-        ctx.SetGraphicsOptions(new GraphicsOptions {Antialias = false});
-
-        while (TextMeasurer.Measure(text, options).Width > maxWidth)
-        {
-            fontSize -= 0.1f;
-            options.Font = fontFamily.CreateFont(fontSize, FontStyle.Regular);
-        }
-        
-        ctx.DrawText(options, text, color);
-
-        textWidth = TextMeasurer.Measure(text, options).Width;
-    }
+    public ServerImage(MinecraftServerStatus status) => _status = status;
 
     private void DrawMotd(IImageProcessingContext ctx)
     {
@@ -131,15 +79,15 @@ public class ServerImage
             .Resize(128, 128, new NearestNeighborResampler()));
 
         image.Mutate(DrawMotd);
-        image.Mutate(x => DrawAdjustingText(x, name, 146, 40, _minecraftiaFontFamily, Color.White, 22, 324,
+        image.Mutate(x => x.DrawAdjustingText(name, 146, 40, _minecraftiaFontFamily, Color.White, 22, 324,
             HorizontalAlignment.Left, out nameTextWidth));
-        image.Mutate(x => DrawAdjustingText(x, $"{_status.OnlinePlayers} / {_status.MaxPlayers}", 762, 40,
+        image.Mutate(x => x.DrawAdjustingText($"{_status.OnlinePlayers} / {_status.MaxPlayers}", 762, 40,
             _minecraftiaFontFamily, Color.White, 22, 999, HorizontalAlignment.Right, out playerTextWidth));
-        image.Mutate(x => DrawAdjustingText(x, $"{_status.Latency}ms",
+        image.Mutate(x => x.DrawAdjustingText($"{_status.Latency}ms",
             (int)((146 + nameTextWidth + (762 - playerTextWidth)) / 2.0f), 40, _minecraftiaFontFamily, Color.White, 22, 324,
             HorizontalAlignment.Center, out _));
         image.Mutate(x => x.DrawImage(favicon, new Point(6, 6), 1.0f));
-        image.Mutate(x => RoundCorners(x, 4));
+        image.Mutate(x => x.RoundCorners(4));
         
         if (favicon != _defaultFaviconImage) favicon.Dispose();
 

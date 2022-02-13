@@ -9,10 +9,7 @@ public class MinecraftServerController : Controller
 {
     private readonly IMinecraftServerService _serverService;
 
-    public MinecraftServerController(IMinecraftServerService serverService)
-    {
-        _serverService = serverService;
-    }
+    public MinecraftServerController(IMinecraftServerService serverService) => _serverService = serverService;
     
     [HttpGet("/mc/status/{serverAddress}")]
     public async Task<IActionResult> GetStatus(string serverAddress)

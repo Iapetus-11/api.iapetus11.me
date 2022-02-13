@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Net.Sockets;
+using api.iapetus11.me.Extensions;
 using api.iapetus11.me.Models;
 using DnsClient;
 using SixLabors.ImageSharp;
@@ -36,12 +37,6 @@ public class MinecraftServer
     private int _port;
 
     public MinecraftServerStatus? Status { get; private set; }
-
-    public MinecraftServer(string host, int port)
-    {
-        _host = host;
-        _port = port;
-    }
 
     public MinecraftServer(string address)
     {
@@ -147,14 +142,9 @@ public class MinecraftServer
             Status = DefaultStatus();
         }
 
-        var image = new ServerImage(Status ?? throw new InvalidOperationException()).Generate(name);
-        var stream = new MemoryStream();
-        
-        await image.SaveAsPngAsync(stream);
-        image.Dispose();
-
-        stream.Position = 0;
-
-        return stream;
+        using (var image = new ServerImage(Status ?? throw new InvalidOperationException()).Generate(name))
+        {
+            return image.ToPngStream();
+        }
     }
 }

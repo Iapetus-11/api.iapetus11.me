@@ -228,16 +228,15 @@ internal class Buffer
     }
 }
 
-
-class JavaServerConnection : IDisposable
+internal class JavaServerConnection : IDisposable
 {
-    private static readonly Random _rand = new Random();
+    private static readonly Random _rand = new();
     
     private readonly string _host;
     private readonly int _port;
     
-    private TcpClient _client;
-    private NetworkStream _stream;
+    private TcpClient _client = null!;
+    private NetworkStream _stream = null!;
 
     public JavaServerConnection(string host, int port)
     {

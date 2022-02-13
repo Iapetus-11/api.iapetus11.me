@@ -8,10 +8,7 @@ public class MinecraftServerService : IMinecraftServerService
 {
     private readonly IAppCache _cache;
 
-    public MinecraftServerService(IAppCache cache)
-    {
-        _cache = cache;
-    }
+    public MinecraftServerService(IAppCache cache) => _cache = cache;
     
     public async Task<MinecraftServer> FetchServer(string address, bool suppressErrors = false)
     {

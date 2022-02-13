@@ -23,12 +23,9 @@ public class RedditPostFetcher : IRedditPostFetcher
 
     private readonly Dictionary<string, RedditPost[]> _postGroups = new();
     private readonly Dictionary<string, List<string>> _lastPosts = new();
-    private Timer? _timer = null;
+    private Timer _timer = null!;
 
-    public RedditPostFetcher(HttpClient http)
-    {
-        _http = http;
-    }
+    public RedditPostFetcher(HttpClient http) => _http = http;
 
     public RedditPost FetchRandomPost(string subredditGroup, string? requesterId)
     {
@@ -87,12 +84,12 @@ public class RedditPostFetcher : IRedditPostFetcher
 
     public Task StopAsync(CancellationToken stoppingToken)
     {
-        _timer?.Change(Timeout.Infinite, 0);
+        _timer.Change(Timeout.Infinite, 0);
         return Task.CompletedTask;
     }
 
     public void Dispose()
     {
-        _timer?.Dispose();
+        _timer.Dispose();
     }
 }
