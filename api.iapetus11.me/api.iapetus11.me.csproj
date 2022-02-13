@@ -9,6 +9,12 @@
     <ItemGroup>
       <PackageReference Include="DnsClient" Version="1.6.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="2.0.0" />
+      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Content\Images" />
     </ItemGroup>
 
 </Project>

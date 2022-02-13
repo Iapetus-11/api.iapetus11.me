@@ -1,53 +1,15 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace api.iapetus11.me.Services.Minecraft;
 
 public class MinecraftColor
-{
-    public string? Key { get; }
-    public string Name { get; }
-    public string? Code { get; }
-    public string Hex { get; }
-
-    public MinecraftColor(string? key, string name, string? code, string hex)
-    {
-        Key = key;
-        Name = name;
-        Code = code;
-        Hex = hex;
-    }
-
-    public static MinecraftColor ByKey(string name, string code, string hex)
-    {
-        return new MinecraftColor(null, name, code, hex);
-    }
-
-    public static MinecraftColor ByCode(string key, string name, string hex)
-    {
-        return new MinecraftColor(key, name, null, hex);
-    }
-}
-
-public class MotdStyleComponent
-{
-    public bool? Bold { get; set; }
-    public bool? Italic { get; set; }
-    public bool? Underlined { get; set; }
-    public bool? Obfuscated { get; set; }
-    public string? Color { get; set; }
-    public string? Text { get; set; } = "";
-    
-    public MotdStyleComponent() {}
-
-    public MotdStyleComponent(string? text)
-    {
-        Text = text;
-    }
-}
-
-public class ServerMotd
 {
     // key -> MinecraftColor
     private static readonly IReadOnlyDictionary<string, MinecraftColor> _mcColors = new Dictionary<string, MinecraftColor>()
@@ -89,7 +51,36 @@ public class ServerMotd
         {"0", MinecraftColor.ByCode("black", "Black", "000000")}
     };
     
-    private static Regex _hexCodeRegex = new(
+    public string? Key { get; }
+    public string Name { get; }
+    public string? Code { get; }
+    public string Hex { get; }
+
+    public MinecraftColor(string? key, string name, string? code, string hex)
+    {
+        Key = key;
+        Name = name;
+        Code = code;
+        Hex = hex;
+    }
+
+    private static MinecraftColor ByKey(string name, string code, string hex)
+        => new(null, name, code, hex);
+
+    private static MinecraftColor ByCode(string key, string name, string hex)
+        => new(key, name, null, hex);
+
+    public static MinecraftColor GetColorByKey(string key) => _mcColors[key];
+
+    public static MinecraftColor GetColorByCode(string code) => _mcColorsByCode[code];
+
+    public static IEnumerable<MinecraftColor> GetColors() => _mcColors.Values;
+}
+
+public class ServerMotd
+{
+    
+    private static readonly Regex _hexCodeRegex = new(
         @"^#(?:[0-9a-fA-F]{3}){1,2}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private readonly string _motd;
@@ -109,7 +100,7 @@ public class ServerMotd
         return _motd;
     }
 
-    public static string ParseJsonMotd(JToken? motdJson)
+    private static string ParseJsonMotd(JToken? motdJson)
     {
         if (motdJson == null) return "";
         
@@ -140,7 +131,7 @@ public class ServerMotd
             {
                 var hexNice = color.ToUpper().Replace("#", "");
                 
-                foreach (var mcColor in _mcColors.Values)
+                foreach (var mcColor in MinecraftColor.GetColors())
                 {
                     if (hexNice == mcColor.Hex)
                     {
@@ -151,8 +142,11 @@ public class ServerMotd
             }
             else // isn't a hex code, should be a normal mc color code
             {
-                var code = _mcColors?[color]?.Code;
-                if (code != null) motdOut.Append($"§{code}");
+                try
+                {
+                    motdOut.Append($"§{MinecraftColor.GetColorByKey(color).Code}");
+                }
+                catch (KeyNotFoundException) {}
             }
 
             var text = entry["text"]?.Value<string>();

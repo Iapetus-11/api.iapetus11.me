@@ -50,8 +50,10 @@ public class MinecraftServerStatus
     [JsonPropertyName("gamemode")]
     public string? GameMode { get; }
 
-    public MinecraftServerStatus(string host, int port, bool online, float latency, int onlinePlayers, int maxPlayers,
-        MinecraftServerStatusPlayer[] players, MinecraftServerStatusVersion? version, string? motd, string? favicon, string? map, string? gameMode)
+    public MinecraftServerStatus(string host, int port, bool online, float latency, int onlinePlayers,
+        int maxPlayers, MinecraftServerStatusPlayer[] players, MinecraftServerStatusVersion? version, string? motd,
+        string? favicon, string? map, string? gameMode)
+
     {
         Host = host;
         Port = port;

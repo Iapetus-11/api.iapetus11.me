@@ -254,11 +254,11 @@ class JavaServerConnection
 
     public void Close()
     {
-        if (_stream != null) _stream.Close();
-        if (_client != null) _client.Close();
+        _stream.Close();
+        _client.Close();
     }
-    
-    public async Task<byte[]> Read(int n)
+
+    private async Task<byte[]> Read(int n)
     {
         var buffer = new byte[n];
         var read = 0;
@@ -292,7 +292,7 @@ class JavaServerConnection
         return new Buffer(await Read(packetLength));
     }
 
-    public async Task WritePacket(Buffer data)
+    private async Task WritePacket(Buffer data)
     {
         var buffer = new Buffer();
         
@@ -386,7 +386,7 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
         var players = statusData["players"]?["sample"]?.Select(p =>
             new MinecraftServerStatusPlayer(p["name"].Value<string>(), p["id"].Value<string>())).ToArray() ?? new MinecraftServerStatusPlayer[]{};
 
-        var serverMotd = new ServerMotd(statusData["description"]);
+        var serverMotd = new ServerMotd(statusData["description"]).ToString();
 
         return new MinecraftServerStatus(
             host: _host,
@@ -398,7 +398,7 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
             players: players,
             version: new MinecraftServerStatusVersion("Java Edition", statusData["version"]["name"].Value<string>(),
                 statusData["version"]["protocol"].Value<int>()),
-            motd: serverMotd.ToString(),
+            motd: serverMotd,
             favicon: statusData["favicon"]?.Value<string>(),
             map: null,
             gameMode: null

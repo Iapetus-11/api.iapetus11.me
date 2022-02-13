@@ -1,10 +1,10 @@
-using api.iapetus11.me.Services.Minecraft;
+using api.iapetus11.me.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<IServerStatusService, ServerStatusService>();
+builder.Services.AddSingleton<IMinecraftServerStatusService, MinecraftServerStatusService>();
 
 var app = builder.Build();
 
