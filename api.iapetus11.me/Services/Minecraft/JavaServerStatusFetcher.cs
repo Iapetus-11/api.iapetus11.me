@@ -229,7 +229,7 @@ internal class Buffer
 }
 
 
-class JavaServerConnection
+class JavaServerConnection : IDisposable
 {
     private static readonly Random _rand = new Random();
     
@@ -252,10 +252,12 @@ class JavaServerConnection
         _stream = _client.GetStream();
     }
 
-    public void Close()
+    public void Dispose()
     {
         _stream.Close();
         _client.Close();
+        _stream.Dispose();
+        _client.Dispose();
     }
 
     private async Task<byte[]> Read(int n)
@@ -366,21 +368,15 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
 
     public async Task<MinecraftServerStatus> FetchStatus()
     {
-        var connection = new JavaServerConnection(_host, _port);
         long latency;
         JObject statusData;
-    
-        await connection.Connect();
 
-        try
+        using (var connection = new JavaServerConnection(_host, _port))
         {
+            await connection.Connect();
             await connection.SendHandShakePacket();
             statusData = await connection.FetchStatus();
             latency = await connection.FetchPing();
-        }
-        finally
-        {
-            connection.Close();
         }
 
         var players = statusData["players"]?["sample"]?.Select(p =>
@@ -389,19 +385,19 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
         var serverMotd = new ServerMotd(statusData["description"]).ToString();
 
         return new MinecraftServerStatus(
-            host: _host,
-            port: _port,
-            online: true,
-            latency: latency,
-            onlinePlayers: statusData["players"]?["online"]?.Value<int>() ?? 0,
-            maxPlayers: statusData["players"]?["max"]?.Value<int>() ?? 0,
-            players: players,
-            version: new MinecraftServerStatusVersion("Java Edition", statusData["version"]["name"].Value<string>(),
+            _host,
+            _port,
+            true,
+            latency,
+            statusData["players"]?["online"]?.Value<int>() ?? 0,
+            statusData["players"]?["max"]?.Value<int>() ?? 0,
+            players,
+            new MinecraftServerStatusVersion("Java Edition", statusData["version"]["name"].Value<string>(),
                 statusData["version"]["protocol"].Value<int>()),
-            motd: serverMotd,
-            favicon: statusData["favicon"]?.Value<string>(),
-            map: null,
-            gameMode: null
+            serverMotd,
+            statusData["favicon"]?.Value<string>(),
+            null,
+            null
         );
     }
 }

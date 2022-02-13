@@ -4,8 +4,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<IMinecraftServerService, MinecraftServerService>();
 builder.Services.AddLazyCache();
+builder.Services.AddHttpClient();
+
+builder.Services.AddSingleton<IMinecraftServerService, MinecraftServerService>();
+
+builder.Services.AddSingleton<IRedditPostFetcher, RedditPostFetcher>();
+builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetService<IRedditPostFetcher>());
 
 var app = builder.Build();
 

@@ -15,7 +15,7 @@ public class MinecraftServerController : Controller
     }
     
     [HttpGet("/mc/status/{serverAddress}")]
-    public async Task<IActionResult> Status(string serverAddress)
+    public async Task<IActionResult> GetStatus(string serverAddress)
     {
         try
         {
@@ -28,7 +28,7 @@ public class MinecraftServerController : Controller
     }
 
     [HttpGet("/mc/status/{serverAddress}/image")]
-    public async Task<IActionResult> StatusImage(string serverAddress, [FromQuery(Name = "customName")] string? customName = null)
+    public async Task<IActionResult> GetStatusImage(string serverAddress, [FromQuery(Name = "customName")] string? customName = null)
     {
         var server = await _serverService.FetchServer(serverAddress, true);
         return File(await server.FetchStatusImage(customName ?? serverAddress), "image/png");

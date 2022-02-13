@@ -22,32 +22,35 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
     
     public async Task<MinecraftServerStatus> FetchStatus()
     {
-        var client = new UdpClient(_host, _port);
         var stopwatch = new Stopwatch();
+        UdpReceiveResult result;
         
-        stopwatch.Start();
+        using (var client = new UdpClient(_host, _port))
+        {
+            stopwatch.Start();
+            
+            await client.SendAsync(_bedrockStatusRequest);
+            result = await client.ReceiveAsync();
+            
+            stopwatch.Stop();
+        }
 
-        await client.SendAsync(_bedrockStatusRequest);
-        var result = await client.ReceiveAsync();
-        
-        stopwatch.Stop();
-        
         var data = Encoding.UTF8.GetString(result.Buffer);
         var splitData = data.Split(';');
 
         return new MinecraftServerStatus(
-            host: _host,
-            port: _port,
-            online: true,
-            latency: stopwatch.ElapsedMilliseconds,
-            onlinePlayers: int.Parse(splitData[4]),
-            maxPlayers: int.Parse(splitData[5]),
-            players: new MinecraftServerStatusPlayer[] { },
-            version: new MinecraftServerStatusVersion(
+            _host,
+            _port,
+            true,
+            stopwatch.ElapsedMilliseconds,
+            int.Parse(splitData[4]),
+            int.Parse(splitData[5]),
+            new MinecraftServerStatusPlayer[] { },
+            new MinecraftServerStatusVersion(
                 "Bedrock Edition", "Bedrock Edition", int.Parse(splitData[2])),
-            motd: splitData[1],
-            favicon: null,
-            map: splitData[7],
-            gameMode: splitData[8]);
+            splitData[1],
+            null,
+            splitData[7],
+            splitData[8]);
     }
 }
