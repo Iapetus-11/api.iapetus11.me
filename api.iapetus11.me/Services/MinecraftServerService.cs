@@ -1,36 +1,36 @@
 ﻿using api.iapetus11.me.Services.Minecraft;
+using LazyCache;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace api.iapetus11.me.Services;
 
 public class MinecraftServerService : IMinecraftServerService
 {
-    private readonly IMemoryCache _memoryCache;
+    private readonly IAppCache _cache;
 
-    public MinecraftServerService(IMemoryCache memoryCache)
+    public MinecraftServerService(IAppCache cache)
     {
-        _memoryCache = memoryCache;
+        _cache = cache;
     }
     
     public async Task<MinecraftServer> FetchServer(string address, bool suppressErrors = false)
     {
-        MinecraftServer server;
-
-        if (_memoryCache.TryGetValue(address, out server)) return server;
-
-        server = new MinecraftServer(address);
-
-        try
+        return await _cache.GetOrAddAsync(GetCacheKey(address), async () =>
         {
-            await server.FetchStatus();
-        }
-        catch (Exception)
-        {
-            if (!suppressErrors) throw;
-        }
+            try
+            {
+                var server = new MinecraftServer(address);
+                await server.FetchStatus();
+                return server;
+            }
+            catch (Exception)
+            {
+                if (!suppressErrors) throw;
+            }
 
-        if (server.Status?.Online == true) _memoryCache.Set(address, server, TimeSpan.FromMinutes(1));
-
-        return server;
+            return new MinecraftServer("someValidOfflineAddress");
+        });
     }
+
+    private static string GetCacheKey(string address) => $"MinecraftServer:{address}";
 }

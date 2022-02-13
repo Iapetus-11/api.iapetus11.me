@@ -140,8 +140,8 @@ public class ServerImage
             HorizontalAlignment.Center, out _));
         image.Mutate(x => x.DrawImage(favicon, new Point(6, 6), 1.0f));
         image.Mutate(x => RoundCorners(x, 4));
-
-        favicon.Dispose();
+        
+        if (favicon != _defaultFaviconImage) favicon.Dispose();
 
         return image;
     }
