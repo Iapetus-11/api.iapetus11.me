@@ -9,7 +9,7 @@ namespace api.iapetus11.me.Extensions;
 
 public static class ImageExtensions
 {
-    public static void DrawAdjustingText(this IImageProcessingContext ctx, string text, int x, int y, FontFamily fontFamily,
+    public static IImageProcessingContext DrawAdjustingText(this IImageProcessingContext ctx, string text, float x, float y, FontFamily fontFamily,
         Color color, float defaultSize, float maxWidth, HorizontalAlignment alignmentHoriz, out float textWidth)
     {
         var fontSize = defaultSize;
@@ -32,6 +32,8 @@ public static class ImageExtensions
         ctx.DrawText(options, text, color);
 
         textWidth = TextMeasurer.Measure(text, options).Width;
+
+        return ctx;
     }
     
     public static void RoundCorners(this IImageProcessingContext ctx, float radius)

@@ -8,6 +8,7 @@ builder.Services.AddLazyCache();
 builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IMinecraftServerService, MinecraftServerService>();
+builder.Services.AddSingleton<IMinecraftImageService, MinecraftImageService>();
 
 builder.Services.AddSingleton<IRedditPostFetcher, RedditPostFetcher>();
 builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetService<IRedditPostFetcher>());

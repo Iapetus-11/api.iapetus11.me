@@ -62,7 +62,7 @@ public class RedditPostFetcher : IRedditPostFetcher
         foreach (var (subredditGroup, subreddits) in _subredditGroups)
         {
             var res = await _http.GetAsync($"https://reddit.com/r/{subreddits}/hot/.json?limit=500");
-            var data = JsonConvert.DeserializeObject<RedditPostsRaw>(await res.Content.ReadAsStringAsync());
+            var data = JsonConvert.DeserializeObject<RedditListing>(await res.Content.ReadAsStringAsync());
             var posts = data.Data.Children
                 .Select(p => p.Data)
                 .SkipWhile(p =>

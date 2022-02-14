@@ -11,12 +11,12 @@ public class MinecraftServerController : Controller
 
     public MinecraftServerController(IMinecraftServerService serverService) => _serverService = serverService;
     
-    [HttpGet("/mc/status/{serverAddress}")]
-    public async Task<IActionResult> GetStatus(string serverAddress)
+    [HttpGet("/mc/server/status/{address}")]
+    public async Task<IActionResult> GetServerStatus(string address)
     {
         try
         {
-            return Ok((await _serverService.FetchServer(serverAddress)).Status);
+            return Ok((await _serverService.FetchServer(address)).Status);
         }
         catch (InvalidServerAddressException e)
         {
@@ -24,10 +24,10 @@ public class MinecraftServerController : Controller
         }
     }
 
-    [HttpGet("/mc/status/{serverAddress}/image")]
-    public async Task<IActionResult> GetStatusImage(string serverAddress, [FromQuery(Name = "customName")] string? customName = null)
+    [HttpGet("/mc/server/status/{address}/image")]
+    public async Task<IActionResult> GetServerStatusImage(string address, [FromQuery(Name = "customName")] string? customName = null)
     {
-        var server = await _serverService.FetchServer(serverAddress, true);
-        return File(await server.FetchStatusImage(customName ?? serverAddress), "image/png");
+        var server = await _serverService.FetchServer(address, true);
+        return File(await server.FetchStatusImage(customName ?? address), "image/png");
     }
 }

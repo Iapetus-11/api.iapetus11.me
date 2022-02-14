@@ -3,7 +3,6 @@ using System.Net.Sockets;
 using api.iapetus11.me.Extensions;
 using api.iapetus11.me.Models;
 using DnsClient;
-using SixLabors.ImageSharp;
 
 namespace api.iapetus11.me.Services.Minecraft;
 

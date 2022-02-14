@@ -1,17 +1,19 @@
 ﻿namespace api.iapetus11.me.Models;
 
+// auto generated models
+
 using System;
 using J = Newtonsoft.Json.JsonPropertyAttribute;
 using R = Newtonsoft.Json.Required;
 using N = Newtonsoft.Json.NullValueHandling;
 
-public partial class RedditPostsRaw
+public partial class RedditListing
 {
     [J("kind")] public string Kind { get; set; }
-    [J("data")] public RedditPostsData Data { get; set; }
+    [J("data")] public RedditListingData Data { get; set; }
 }
 
-public partial class RedditPostsData
+public partial class RedditListingData
 {
     [J("after")] public string After { get; set; }
     [J("dist")] public long Dist { get; set; }
