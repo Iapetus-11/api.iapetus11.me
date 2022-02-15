@@ -32,4 +32,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "api.iapetus11.me v1.0.0"));
 }
 
+app.MapGet("/", () => new
+{
+    Author = "Iapetus11 / Milo Weinberg",
+    Repository = "https://github.com/Iapetus-11/api.iapetus11.me"
+});
+
 app.Run();
