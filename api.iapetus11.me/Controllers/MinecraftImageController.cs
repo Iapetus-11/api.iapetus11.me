@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.iapetus11.me.Controllers;
 
 [ApiController]
-[Route("mc")]
-public class MinecraftImageController : Controller
+[Route("mc/image")]
+public class MinecraftImageController : ControllerBase
 {
     private readonly IMinecraftImageService _minecraftImageService;
 
@@ -14,7 +14,7 @@ public class MinecraftImageController : Controller
         _minecraftImageService = minecraftImageService;
     }
     
-    [HttpGet("/achievement/{achievement}")]
+    [HttpGet("achievement/{achievement}")]
     public IActionResult GetCustomAchievement(string achievement)
     {
         if (achievement.Length is < 1 or > 30) return BadRequest("Achievement text is not within 1-30 characters in length");
