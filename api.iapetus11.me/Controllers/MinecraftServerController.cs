@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.iapetus11.me.Controllers;
 
 [ApiController]
-[Route("/mc/server")]
+[Route("mc")]
 public class MinecraftServerController : Controller
 {
     private readonly IMinecraftServerService _serverService;

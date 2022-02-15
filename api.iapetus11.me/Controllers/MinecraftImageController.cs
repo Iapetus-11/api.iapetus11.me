@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.iapetus11.me.Controllers;
 
 [ApiController]
-[Route("/mc/image")]
+[Route("mc")]
 public class MinecraftImageController : Controller
 {
     private readonly IMinecraftImageService _minecraftImageService;
