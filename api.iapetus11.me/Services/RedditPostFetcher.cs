@@ -57,6 +57,10 @@ public class RedditPostFetcher : IRedditPostFetcher
         return post;
     }
 
+    public bool IsValidGroup(string subredditGroup) => _subredditGroups.ContainsKey(subredditGroup);
+
+    public string[] GetSubredditGroups() => _subredditGroups.Keys.ToArray();
+
     private async void BackgroundFetchPosts(object? state)
     {
         foreach (var (subredditGroup, subreddits) in _subredditGroups)

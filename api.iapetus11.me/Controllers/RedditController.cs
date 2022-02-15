@@ -12,6 +12,11 @@ public class RedditController : Controller
 
     [HttpGet("/reddit/{subredditGroup}")]
     public IActionResult GetRedditPost(string subredditGroup,
-        [FromQuery(Name = "requesterId")] string? requesterId = null) =>
-        Ok(_reddit.FetchRandomPost(subredditGroup, requesterId));
+        [FromQuery(Name = "requesterId")] string? requesterId = null)
+    {
+        if (!_reddit.IsValidGroup(subredditGroup))
+            return BadRequest("Invalid subreddit group, must be one of: " + string.Join(", ", _reddit.GetSubredditGroups()));
+        
+        return Ok(_reddit.FetchRandomPost(subredditGroup, requesterId));
+    }
 }
