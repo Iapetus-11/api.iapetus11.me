@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.iapetus11.me.Controllers;
 
 [ApiController]
+[Route("/mc/server")]
 public class MinecraftServerController : Controller
 {
     private readonly IMinecraftServerService _serverService;
 
     public MinecraftServerController(IMinecraftServerService serverService) => _serverService = serverService;
     
-    [HttpGet("/mc/server/status/{address}")]
+    [HttpGet("/status/{address}")]
     public async Task<IActionResult> GetServerStatus(string address)
     {
         try
@@ -24,7 +25,7 @@ public class MinecraftServerController : Controller
         }
     }
 
-    [HttpGet("/mc/server/status/{address}/image")]
+    [HttpGet("/status/{address}/image")]
     public async Task<IActionResult> GetServerStatusImage(string address, [FromQuery(Name = "customName")] string? customName = null)
     {
         var server = await _serverService.FetchServer(address, true);

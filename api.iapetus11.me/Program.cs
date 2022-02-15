@@ -6,6 +6,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddLazyCache();
 builder.Services.AddHttpClient();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IMinecraftServerService, MinecraftServerService>();
 builder.Services.AddSingleton<IMinecraftImageService, MinecraftImageService>();
@@ -19,5 +20,12 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors();
 app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "api.iapetus11.me v1.0.0"));
+}
 
 app.Run();

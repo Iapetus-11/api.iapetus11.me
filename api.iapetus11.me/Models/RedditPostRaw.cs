@@ -84,7 +84,7 @@ public partial class RedditPostRawData
     [J("mod_note")] public object ModNote { get; set; }
     [J("created")] public long Created { get; set; }
     [J("link_flair_type")] public string LinkFlairType { get; set; }
-    [J("wls")] public long Wls { get; set; }
+    [J("wls")] public long? Wls { get; set; }
     [J("removed_by_category")] public object RemovedByCategory { get; set; }
     [J("banned_by")] public object BannedBy { get; set; }
     [J("author_flair_type")] public string AuthorFlairType { get; set; }
