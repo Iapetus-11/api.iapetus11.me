@@ -11,20 +11,20 @@ namespace api.iapetus11.me.Services.Minecraft;
 
 public class ServerImage
 {
-    private static readonly Image _backgroundImage = Image.Load("Content/Images/dirt_background.png");
-    private static readonly Image _defaultFaviconImage = Image.Load("Content/Images/unknown_pack.png");
-    private static readonly FontCollection _fontCollection = new();
-    private static FontFamily _minecraftiaFontFamily = _fontCollection.Add("Content/Fonts/Minecraftia.ttf");
-
     private readonly MinecraftServerStatus _status;
+    private readonly IStaticAssetsService _assets;
 
-    public ServerImage(MinecraftServerStatus status) => _status = status;
+    public ServerImage(MinecraftServerStatus status, IStaticAssetsService assets)
+    {
+        _status = status;
+        _assets = assets;
+    }
 
     private void DrawMotd(IImageProcessingContext ctx)
     {
         var motd = _status.Online ? _status.Motd ?? "A beautiful Minecraft server..." : "This server is offline.";
 
-        var font = _minecraftiaFontFamily.CreateFont(22, FontStyle.Regular);
+        var font = _assets.MinecraftiaFontFamily.CreateFont(22, FontStyle.Regular);
         var options = new TextOptions(font)
         {
             HorizontalAlignment = HorizontalAlignment.Left,
@@ -66,30 +66,37 @@ public class ServerImage
 
     public Image Generate(string name)
     {
-        var image = _backgroundImage.CloneAs<Rgba32>();
+        var image = _assets.StatusBackgroundImage.CloneAs<Rgba32>();
 
         var nameTextWidth = 0f;
         var playerTextWidth = 0f;
 
         var favicon = string.IsNullOrWhiteSpace(_status.Favicon)
-            ? _defaultFaviconImage
+            ? _assets.DefaultFaviconImage
             : Image.Load(Convert.FromBase64String(_status.Favicon.Replace("data:image/png;base64,", "")));
+        
         favicon.Mutate(x => x
             .SetGraphicsOptions(new GraphicsOptions {Antialias = false})
             .Resize(128, 128, new NearestNeighborResampler()));
 
         image.Mutate(DrawMotd);
-        image.Mutate(x => x.DrawAdjustingText(name, 146, 40, _minecraftiaFontFamily, Color.White, 22, 324,
+
+        image.Mutate(x => x.DrawAdjustingText(name, 146, 40, _assets.MinecraftiaFontFamily, Color.White, 22, 324,
             HorizontalAlignment.Left, out nameTextWidth));
+
         image.Mutate(x => x.DrawAdjustingText($"{_status.OnlinePlayers} / {_status.MaxPlayers}", 762, 40,
-            _minecraftiaFontFamily, Color.White, 22, 999, HorizontalAlignment.Right, out playerTextWidth));
+            _assets.MinecraftiaFontFamily, Color.White, 22, 999, HorizontalAlignment.Right, out playerTextWidth));
+
         image.Mutate(x => x.DrawAdjustingText($"{_status.Latency}ms",
-            (int)((146 + nameTextWidth + (762 - playerTextWidth)) / 2.0f), 40, _minecraftiaFontFamily, Color.White, 22, 324,
+            (int) ((146 + nameTextWidth + (762 - playerTextWidth)) / 2.0f), 40, _assets.MinecraftiaFontFamily,
+            Color.White, 22, 324,
             HorizontalAlignment.Center, out _));
+        
         image.Mutate(x => x.DrawImage(favicon, new Point(6, 6), 1.0f));
+        
         image.Mutate(x => x.RoundCorners(4));
         
-        if (favicon != _defaultFaviconImage) favicon.Dispose();
+        if (favicon != _assets.DefaultFaviconImage) favicon.Dispose();
 
         return image;
     }

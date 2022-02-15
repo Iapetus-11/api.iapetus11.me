@@ -8,28 +8,29 @@ namespace api.iapetus11.me.Services;
 
 public class MinecraftImageService : IMinecraftImageService
 {
-    private static readonly Image _achievementBaseImage = Image.Load("Content/Images/achievement.png");
-    private static readonly Image _splashBaseImage = Image.Load("Content/Images/splash.png");
-    
-    private static readonly FontCollection _fontCollection = new();
-    private static readonly FontFamily _minecraftiaFontFamily = _fontCollection.Add("Content/Fonts/Minecraftia.ttf");
-    
-    private static readonly PointF _splashTextPos = new(556+5, 98+10);
+    private static readonly PointF _splashTextPos = new PointF(556+5, 98+10);
+
+    private readonly IStaticAssetsService _assets;
+
+    public MinecraftImageService(IStaticAssetsService assets) => _assets = assets;
     
     public Stream GenerateAchievement(string achievement)
     {
-        return _achievementBaseImage.Clone(x => x.DrawAdjustingText(achievement, 60, 54, _minecraftiaFontFamily,
-            Color.White, 16, 250, HorizontalAlignment.Left, out _)).ToPngStream();
+        return _assets.AchievementBaseImage
+            .Clone(x => x
+                .DrawAdjustingText(achievement, 60, 54, _assets.MinecraftiaFontFamily, Color.White, 16, 250,
+                    HorizontalAlignment.Left, out _))
+            .ToPngStream();
     }
 
     public Stream GenerateSplashScreen(string text)
     {
-        return _splashBaseImage.Clone(x => x
+        return _assets.SplashBaseImage.Clone(x => x
             .SetDrawingTransform(Matrix3x2Extensions.CreateRotation(-0.45f, _splashTextPos))
-            .DrawAdjustingText(text, _splashTextPos.X, _splashTextPos.Y, _minecraftiaFontFamily,
+            .DrawAdjustingText(text, _splashTextPos.X, _splashTextPos.Y, _assets.MinecraftiaFontFamily,
                 Color.ParseHex("3F3F00"), 25, 200,
                 HorizontalAlignment.Center, out _)
-            .DrawAdjustingText(text, _splashTextPos.X - 2, _splashTextPos.Y - 2, _minecraftiaFontFamily,
+            .DrawAdjustingText(text, _splashTextPos.X - 2, _splashTextPos.Y - 2, _assets.MinecraftiaFontFamily,
                 Color.ParseHex("FFFF00"), 25, 200, HorizontalAlignment.Center, out _)
         ).ToPngStream();
     }

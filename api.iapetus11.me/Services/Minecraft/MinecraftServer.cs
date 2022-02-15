@@ -35,7 +35,7 @@ public class MinecraftServer
     private string _host;
     private int _port;
 
-    public MinecraftServerStatus? Status { get; private set; }
+    public MinecraftServerStatus Status { get; private set; } = null!;
 
     public MinecraftServer(string address)
     {
@@ -47,6 +47,8 @@ public class MinecraftServer
         {
             throw new InvalidServerAddressException(address, e);
         }
+
+        Status = DefaultStatus();
     }
 
     private static Tuple<string, int> ParseAddress(string address)
@@ -128,22 +130,5 @@ public class MinecraftServer
         }
 
         return Status ??= await defaultStatusTask;
-    }
-
-    public async Task<Stream> FetchStatusImage(string name)
-    {
-        try
-        {
-            if (Status == null) await FetchStatus();
-        }
-        catch (Exception)
-        {
-            Status = DefaultStatus();
-        }
-
-        using (var image = new ServerImage(Status ?? throw new InvalidOperationException()).Generate(name))
-        {
-            return image.ToPngStream();
-        }
     }
 }

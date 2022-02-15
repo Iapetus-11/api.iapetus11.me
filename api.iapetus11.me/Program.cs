@@ -8,11 +8,15 @@ builder.Services.AddLazyCache();
 builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IMinecraftServerService, MinecraftServerService>();
-builder.Services.AddSingleton<IMinecraftImageService, MinecraftImageService>();
+builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
+builder.Services.AddScoped<IMinecraftImageService, MinecraftImageService>();
 
 builder.Services.AddSingleton<IRedditPostFetcher, RedditPostFetcher>();
 builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetService<IRedditPostFetcher>());
+
+var staticAssetsService = new StaticAssetsService();
+staticAssetsService.CacheAllAssets();
+builder.Services.AddSingleton<IStaticAssetsService>(staticAssetsService);
 
 var app = builder.Build();
 

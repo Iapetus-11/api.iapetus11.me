@@ -17,7 +17,7 @@ public class MinecraftServerController : ControllerBase
     {
         try
         {
-            return Ok((await _serverService.FetchServer(address)).Status);
+            return Ok(await _serverService.FetchServerStatus(address));
         }
         catch (InvalidServerAddressException e)
         {
@@ -28,7 +28,6 @@ public class MinecraftServerController : ControllerBase
     [HttpGet("status/{address}/image")]
     public async Task<IActionResult> GetServerStatusImage(string address, [FromQuery(Name = "customName")] string? customName = null)
     {
-        var server = await _serverService.FetchServer(address, true);
-        return File(await server.FetchStatusImage(customName ?? address), "image/png");
+        return File(await _serverService.FetchServerImage(address, customName ?? address), "image/png");
     }
 }
