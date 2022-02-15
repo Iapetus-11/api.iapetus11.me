@@ -235,8 +235,8 @@ internal class JavaServerConnection : IDisposable
     private readonly string _host;
     private readonly int _port;
     
-    private TcpClient _client = null!;
-    private NetworkStream _stream = null!;
+    private TcpClient? _client;
+    private NetworkStream? _stream;
 
     public JavaServerConnection(string host, int port)
     {
@@ -253,14 +253,23 @@ internal class JavaServerConnection : IDisposable
 
     public void Dispose()
     {
-        _stream.Close();
-        _client.Close();
-        _stream.Dispose();
-        _client.Dispose();
+        if (_stream != null)
+        {
+            _stream.Close();
+            _stream.Dispose();
+        }
+
+        if (_client != null)
+        {
+            _client.Close();
+            _client.Dispose();
+        }
     }
 
     private async Task<byte[]> Read(int n)
     {
+        if (_stream == null) throw new InvalidOperationException("Stream is null.");
+        
         var buffer = new byte[n];
         var read = 0;
 
@@ -295,6 +304,8 @@ internal class JavaServerConnection : IDisposable
 
     private async Task WritePacket(Buffer data)
     {
+        if (_stream == null) throw new InvalidOperationException("Stream is null.");
+        
         var buffer = new Buffer();
         
         buffer.WriteVarInt(data.Length());

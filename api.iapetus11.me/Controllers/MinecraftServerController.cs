@@ -30,4 +30,10 @@ public class MinecraftServerController : ControllerBase
     {
         return File(await _serverService.FetchServerImage(address, customName ?? address), "image/png");
     }
+
+    [HttpGet("status/{address}/image/favicon")]
+    public async Task<IActionResult> GetServerFavicon(string address)
+    {
+        return File(await _serverService.FetchServerFavicon(address), "image/png");
+    }
 }

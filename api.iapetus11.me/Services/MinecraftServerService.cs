@@ -2,6 +2,10 @@
 using api.iapetus11.me.Models;
 using api.iapetus11.me.Services.Minecraft;
 using LazyCache;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using ImageExtensions = api.iapetus11.me.Extensions.ImageExtensions;
 
 namespace api.iapetus11.me.Services;
 
@@ -32,7 +36,7 @@ public class MinecraftServerService : IMinecraftServerService
             }
 
             return new MinecraftServer("someValidOfflineAddress");
-        });
+        }, TimeSpan.FromMinutes(1));
     }
 
     public async Task<MinecraftServerStatus> FetchServerStatus(string address)
@@ -48,6 +52,19 @@ public class MinecraftServerService : IMinecraftServerService
         {
             return image.ToPngStream();
         }
+    }
+
+    public async Task<Stream> FetchServerFavicon(string address)
+    {
+        var status = await FetchServerStatus(address);
+
+        if (status.Favicon == null) return _assets.DefaultFaviconImage.ToPngStream();
+
+        var image = ImageExtensions.FromB64Png(status.Favicon);
+        
+        image.Mutate(x => x.SetGraphicsOptions(new GraphicsOptions{Antialias = true}).Resize(128, 128, new NearestNeighborResampler()));
+
+        return image.ToPngStream();
     }
 
     private static string GetCacheKey(string address) => $"MinecraftServer:{address}";

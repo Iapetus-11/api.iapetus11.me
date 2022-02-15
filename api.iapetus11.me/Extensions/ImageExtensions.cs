@@ -69,4 +69,7 @@ public static class ImageExtensions
         
         return stream;
     }
+
+    public static Image FromB64Png(string b64) =>
+        Image.Load(Convert.FromBase64String(b64.Replace("data:image/png;base64,", "")));
 }

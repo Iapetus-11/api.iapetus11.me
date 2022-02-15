@@ -6,6 +6,7 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using ImageExtensions = SixLabors.ImageSharp.ImageExtensions;
 
 namespace api.iapetus11.me.Services.Minecraft;
 
@@ -73,7 +74,7 @@ public class ServerImage
 
         var favicon = string.IsNullOrWhiteSpace(_status.Favicon)
             ? _assets.DefaultFaviconImage
-            : Image.Load(Convert.FromBase64String(_status.Favicon.Replace("data:image/png;base64,", "")));
+            : api.iapetus11.me.Extensions.ImageExtensions.FromB64Png(_status.Favicon);
         
         favicon.Mutate(x => x
             .SetGraphicsOptions(new GraphicsOptions {Antialias = false})

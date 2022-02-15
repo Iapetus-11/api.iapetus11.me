@@ -72,7 +72,7 @@ public class RedditPostFetcher : IRedditPostFetcher
                 .SkipWhile(p =>
                     p.RemovalReason != null || p.IsVideo || p.Pinned || p.Stickied || !string.IsNullOrEmpty(p.Selftext))
                 .TakeWhile(p => p.Url != null && _validMediaExtensions.Contains(p.Url[^4..]))
-                .Select(p => new RedditPost(p.Id, p.Subreddit, p.Author, p.Title, p.Permalink, p.Url, (int) p.Ups,
+                .Select(p => new RedditPost(p.Id, p.Subreddit, p.Author, p.Title, "https://reddit.com" + p.Permalink, p.Url, (int) p.Ups,
                     (int) p.Downs, p.Over18, p.Spoiler))
                 .ToArray();
 
