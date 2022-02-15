@@ -381,7 +381,7 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
         var players = statusData["players"]?["sample"]?.Select(p =>
             new MinecraftServerStatusPlayer(p["name"].Value<string>(), p["id"].Value<string>())).ToArray() ?? new MinecraftServerStatusPlayer[]{};
 
-        var serverMotd = new ServerMotd(statusData["description"]).ToString();
+        var motd = new ServerMotd(statusData["description"]);
 
         return new MinecraftServerStatus(
             _host,
@@ -393,7 +393,8 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
             players,
             new MinecraftServerStatusVersion("Java Edition", statusData["version"]["name"].Value<string>(),
                 statusData["version"]["protocol"].Value<int>()),
-            serverMotd,
+            motd.Motd,
+            motd.MotdClean,
             statusData["favicon"]?.Value<string>(),
             null,
             null

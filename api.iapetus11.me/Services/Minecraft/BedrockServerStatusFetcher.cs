@@ -38,6 +38,8 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
         var data = Encoding.UTF8.GetString(result.Buffer);
         var splitData = data.Split(';');
 
+        var motd = new ServerMotd(splitData[1]);
+
         return new MinecraftServerStatus(
             _host,
             _port,
@@ -48,7 +50,8 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
             new MinecraftServerStatusPlayer[] { },
             new MinecraftServerStatusVersion(
                 "Bedrock Edition", "Bedrock Edition", int.Parse(splitData[2])),
-            splitData[1],
+            motd.Motd,
+            motd.MotdClean,
             null,
             splitData[7],
             splitData[8]);

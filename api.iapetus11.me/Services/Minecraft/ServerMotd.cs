@@ -78,21 +78,29 @@ public class ServerMotd
     private static readonly Regex _hexCodeRegex = new(
         @"^#(?:[0-9a-fA-F]{3}){1,2}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    private readonly string _motd;
+    public readonly string Motd;
+    public readonly string MotdClean;
 
-    public ServerMotd(string motd) => _motd = motd;
-
-    public ServerMotd(JToken? motd) => _motd = ParseJsonMotd(motd);
-
-    public override string ToString() => _motd;
-
-    private static string ParseJsonMotd(JToken? motdJson)
+    public ServerMotd(string motd)
     {
-        if (motdJson == null) return "";
-        
-        if (motdJson.Type == JTokenType.String) return motdJson.Value<string>() ?? "";
+        Motd = motd;
+        MotdClean = StripColorCodes(motd);
+    }
+
+    public ServerMotd(JToken? motd) => (Motd, MotdClean) = ParseJsonMotd(motd);
+
+    private static Tuple<string, string> ParseJsonMotd(JToken? motdJson)
+    {
+        if (motdJson == null) return new Tuple<string, string>("", "");
+
+        if (motdJson.Type == JTokenType.String)
+        {
+            var text = motdJson.Value<string>() ?? "";
+            return new Tuple<string, string>(text, text);
+        }
         
         var motdOut = new StringBuilder();
+        var motdCleanOut = new StringBuilder();
 
         List<JToken> motdEntries = motdJson.Type switch
         {
@@ -136,9 +144,29 @@ public class ServerMotd
             }
 
             var text = entry["text"]?.Value<string>();
-            if (text != null) motdOut.Append(text);
+            if (text != null)
+            {
+                motdOut.Append(text);
+                motdCleanOut.Append(text);
+            }
         }
 
-        return motdOut + (motdJson["text"]?.Value<string>() ?? "");
+        var endText = motdJson["text"]?.Value<string>() ?? "";
+        motdOut.Append(endText);
+        motdCleanOut.Append(endText);
+
+        return new Tuple<string, string>(motdOut.ToString(), motdCleanOut.ToString());
+    }
+
+    private static string StripColorCodes(string text)
+    {
+        var outText = new StringBuilder();
+        
+        for (var i = 1; i < text.Length; i++)
+        {
+            if (text[i - 1] != '§' && text[i] != '§') outText.Append(text[i]);
+        }
+
+        return outText.ToString();
     }
 }

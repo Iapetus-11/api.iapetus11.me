@@ -83,7 +83,7 @@ public class MinecraftServer
     private MinecraftServerStatus DefaultStatus()
     {
         return new MinecraftServerStatus(_host, _port,false, -1f, 0, 0,
-            new MinecraftServerStatusPlayer[] {}, null, null, null, null, null);
+            new MinecraftServerStatusPlayer[] {}, null, null, null, null, null, null);
     }
 
     private async Task DnsLookup()

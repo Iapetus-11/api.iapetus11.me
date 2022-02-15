@@ -20,7 +20,6 @@ builder.Services.AddSingleton<IStaticAssetsService>(staticAssetsService);
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors();
 app.UseEndpoints(endpoints => endpoints.MapControllers());
