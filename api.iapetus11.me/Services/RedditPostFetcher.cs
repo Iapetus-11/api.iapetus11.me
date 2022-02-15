@@ -46,7 +46,7 @@ public class RedditPostFetcher : IRedditPostFetcher
                 
                 lastRequesterPosts.Add(post.Id);
 
-                if (lastRequesterPosts.Count > 7) _lastPosts[requesterId] = lastRequesterPosts.Skip(1).ToList();
+                if (lastRequesterPosts.Count > 20) _lastPosts[requesterId] = lastRequesterPosts.Skip(1).ToList();
             }
             else
             {
