@@ -40,13 +40,13 @@ public class RedditPostFetcher : IRedditPostFetcher
 
                 for (var i = 0; i < 20; i++)
                 {
-                    if (lastRequesterPosts.Contains(post.Id)) break;
+                    if (lastRequesterPosts.TakeWhile(p => p.Equals(post.Id)).Any()) break;
                     post = posts[_rand.Next(0, posts.Length)];
                 }
                 
                 lastRequesterPosts.Add(post.Id);
 
-                if (lastRequesterPosts.Count > 5) _lastPosts[requesterId] = lastRequesterPosts.Skip(1).ToList();
+                if (lastRequesterPosts.Count > 7) _lastPosts[requesterId] = lastRequesterPosts.Skip(1).ToList();
             }
             else
             {

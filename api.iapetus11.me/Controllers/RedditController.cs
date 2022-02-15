@@ -14,6 +14,7 @@ public class RedditController : Controller
     public IActionResult GetRedditPost(string subredditGroup,
         [FromQuery(Name = "requesterId")] string? requesterId = null)
     {
+        
         if (!_reddit.IsValidGroup(subredditGroup))
             return BadRequest("Invalid subreddit group, must be one of: " + string.Join(", ", _reddit.GetSubredditGroups()));
         
