@@ -40,7 +40,7 @@ public class RedditPostFetcher : IRedditPostFetcher
 
                 for (var i = 0; i < 20; i++)
                 {
-                    if (lastRequesterPosts.TakeWhile(p => p.Equals(post.Id)).Any()) break;
+                    if (lastRequesterPosts.Any(p => p.Equals(post.Id))) break;
                     post = posts[_rand.Next(0, posts.Length)];
                 }
                 
@@ -69,9 +69,9 @@ public class RedditPostFetcher : IRedditPostFetcher
             var data = JsonConvert.DeserializeObject<RedditListing>(await res.Content.ReadAsStringAsync());
             var posts = data.Data.Children
                 .Select(p => p.Data)
-                .SkipWhile(p =>
-                    p.RemovalReason != null || p.IsVideo || p.Pinned || p.Stickied || !string.IsNullOrEmpty(p.Selftext))
-                .TakeWhile(p => p.Url != null && _validMediaExtensions.Contains(p.Url[^4..]))
+                .Where(p =>
+                    !(p.RemovalReason != null || p.IsVideo || p.Pinned || p.Stickied || !string.IsNullOrEmpty(p.Selftext)))
+                .Where(p => p.Url != null && _validMediaExtensions.Contains(p.Url[^4..]))
                 .Select(p => new RedditPost(p.Id, p.Subreddit, p.Author, p.Title, "https://reddit.com" + p.Permalink, p.Url, (int) p.Ups,
                     (int) p.Downs, p.Over18, p.Spoiler))
                 .ToArray();
