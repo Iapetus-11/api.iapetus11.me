@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
+// ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace api.iapetus11.me.Models;
 
 public record MinecraftServerStatusPlayer(string Username, string Id);

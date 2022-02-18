@@ -1,19 +1,23 @@
-﻿namespace api.iapetus11.me.Models;
+﻿#pragma warning disable CS8618
+
+using Newtonsoft.Json;
 
 // auto generated models
+// ReSharper disable ClassNeverInstantiated.Global
 
-using System;
-using J = Newtonsoft.Json.JsonPropertyAttribute;
-using R = Newtonsoft.Json.Required;
-using N = Newtonsoft.Json.NullValueHandling;
+namespace api.iapetus11.me.Models;
 
-public partial class RedditListing
+using J = JsonPropertyAttribute;
+using R = Required;
+using N = NullValueHandling;
+
+public class RedditListing
 {
     [J("kind")] public string Kind { get; set; }
     [J("data")] public RedditListingData Data { get; set; }
 }
 
-public partial class RedditListingData
+public class RedditListingData
 {
     [J("after")] public string After { get; set; }
     [J("dist")] public long Dist { get; set; }
@@ -23,13 +27,13 @@ public partial class RedditListingData
     [J("before")] public object Before { get; set; }
 }
 
-public partial class RedditPostRaw
+public class RedditPostRaw
 {
     [J("kind")] public string Kind { get; set; }
     [J("data")] public RedditPostRawData Data { get; set; }
 }
 
-public partial class RedditPostRawData
+public class RedditPostRawData
 {
     [J("approved_at_utc")] public object ApprovedAtUtc { get; set; }
     [J("subreddit")] public string Subreddit { get; set; }
@@ -142,7 +146,7 @@ public partial class RedditPostRawData
     [J("is_video")] public bool IsVideo { get; set; }
 }
 
-public partial class RedditAllAwarding
+public class RedditAllAwarding
 {
     [J("giver_coin_reward")] public long? GiverCoinReward { get; set; }
     [J("subreddit_id")] public object SubredditId { get; set; }
@@ -179,30 +183,30 @@ public partial class RedditAllAwarding
     [J("static_icon_url")] public Uri StaticIconUrl { get; set; }
 }
 
-public partial class RedditResizedIcon
+public class RedditResizedIcon
 {
     [J("url")] public Uri Url { get; set; }
     [J("width")] public long Width { get; set; }
     [J("height")] public long Height { get; set; }
 }
 
-public partial class RedditAuthorFlairRichtext
+public class RedditAuthorFlairRichtext
 {
     [J("e")] public string E { get; set; }
     [J("t")] public string T { get; set; }
 }
 
-public partial class RedditGildings
+public class RedditGildings
 {
     [J("gid_1")] public long Gid1 { get; set; }
 }
 
-public partial class RedditMedia
+public class RedditMedia
 {
     [J("reddit_video")] public RedditVideo RedditVideo { get; set; }
 }
 
-public partial class RedditVideo
+public class RedditVideo
 {
     [J("bitrate_kbps")] public long BitrateKbps { get; set; }
     [J("fallback_url")] public Uri FallbackUrl { get; set; }
@@ -216,17 +220,17 @@ public partial class RedditVideo
     [J("transcoding_status")] public string TranscodingStatus { get; set; }
 }
 
-public partial class RedditMediaEmbed
+public class RedditMediaEmbed
 {
 }
 
-public partial class RedditPreview
+public class RedditPreview
 {
     [J("images")] public RedditImage[] Images { get; set; }
     [J("enabled")] public bool Enabled { get; set; }
 }
 
-public partial class RedditImage
+public class RedditImage
 {
     [J("source")] public RedditImageSource Source { get; set; }
     [J("resolutions")] public RedditImageSource[] Resolutions { get; set; }
@@ -234,14 +238,14 @@ public partial class RedditImage
     [J("id")] public string Id { get; set; }
 }
 
-public partial class RedditImageSource
+public class RedditImageSource
 {
     [J("url")] public Uri Url { get; set; }
     [J("width")] public long Width { get; set; }
     [J("height")] public long Height { get; set; }
 }
 
-public partial class RedditVariants
+public class RedditVariants
 {
     [J("gif", NullValueHandling = N.Ignore)]
     public RedditGif RedditGif { get; set; }
@@ -250,13 +254,13 @@ public partial class RedditVariants
     public RedditGif Mp4 { get; set; }
 }
 
-public partial class RedditGif
+public class RedditGif
 {
     [J("source")] public RedditGifSource Source { get; set; }
     [J("resolutions")] public RedditGifSource[] Resolutions { get; set; }
 }
 
-public partial class RedditGifSource
+public class RedditGifSource
 {
     [J("url")] public Uri Url { get; set; }
     [J("width")] public long Width { get; set; }
