@@ -23,20 +23,24 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
     public async Task<MinecraftServerStatus> FetchStatus()
     {
         var stopwatch = new Stopwatch();
-        UdpReceiveResult result;
+        byte[] data;
         
         using (var client = new UdpClient(_host, _port))
         {
             stopwatch.Start();
             
             await client.SendAsync(_bedrockStatusRequest);
-            result = await client.ReceiveAsync();
+            var result = await client.ReceiveAsync();
             
             stopwatch.Stop();
+            
+            // slice + decode length of upcoming data and then rest of data
+            var dataLengthData = result.Buffer[33..35];
+            if (BitConverter.IsLittleEndian) Array.Reverse(dataLengthData);
+            data = result.Buffer[35..(35 + BitConverter.ToUInt16(dataLengthData))];
         }
 
-        var data = Encoding.UTF8.GetString(result.Buffer);
-        var splitData = data.Split(';');
+        var splitData = Encoding.UTF8.GetString(data).Split(';');
 
         var motd = new ServerMotd(splitData[1]);
 
