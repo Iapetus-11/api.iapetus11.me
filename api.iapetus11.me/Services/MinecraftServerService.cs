@@ -24,6 +24,7 @@ public class MinecraftServerService : IMinecraftServerService
     {
         return await _cache.GetOrAddAsync(GetCacheKey(address), async () =>
         {
+            Console.WriteLine("add");
             try
             {
                 var server = new MinecraftServer(address);
@@ -36,7 +37,7 @@ public class MinecraftServerService : IMinecraftServerService
             }
 
             return new MinecraftServer("someValidOfflineAddress");
-        }, TimeSpan.FromMinutes(1));
+        }, DateTimeOffset.UtcNow.AddSeconds(30));
     }
 
     public async Task<MinecraftServerStatus> FetchServerStatus(string address)
