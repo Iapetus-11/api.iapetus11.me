@@ -24,7 +24,6 @@ public class MinecraftServerService : IMinecraftServerService
     {
         return await _cache.GetOrAddAsync(GetCacheKey(address), async () =>
         {
-            Console.WriteLine("add");
             try
             {
                 var server = new MinecraftServer(address);

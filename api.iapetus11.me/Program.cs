@@ -1,6 +1,9 @@
 using api.iapetus11.me.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.ConfigureAppConfiguration((_, config) => config.AddJsonFile("secrets.json"));
 
 builder.Services.AddControllers();
 
@@ -17,6 +20,17 @@ builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetSe
 var staticAssetsService = new StaticAssetsService();
 staticAssetsService.CacheAllAssets();
 builder.Services.AddSingleton<IStaticAssetsService>(staticAssetsService);
+
+// add seq logging
+if (builder.Environment.IsProduction())
+{
+    var seqConfig = builder.Configuration.GetSection("Seq");
+    builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSeq(serverUrl: seqConfig["Url"], apiKey: seqConfig["Key"]));
+}
+else
+{
+    builder.Services.AddLogging();
+}
 
 var app = builder.Build();
 
