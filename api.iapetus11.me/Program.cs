@@ -16,6 +16,8 @@ builder.Host.UseSerilog((host, provider, config) =>
     }
 });
 
+builder.Services.AddControllers();
+
 builder.Services.AddLazyCache();
 builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
