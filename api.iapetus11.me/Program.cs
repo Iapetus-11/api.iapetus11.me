@@ -1,8 +1,11 @@
 using api.iapetus11.me.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ConfigureAppConfiguration((_, config) => config.AddJsonFile("secrets.json"));
+
+builder.Host.UseSerilog((host, provider, config) => config.WriteTo.Console());
 
 builder.Services.AddControllers();
 
