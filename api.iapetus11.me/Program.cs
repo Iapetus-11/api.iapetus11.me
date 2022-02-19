@@ -5,20 +5,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ConfigureAppConfiguration((_, config) => config.AddJsonFile("secrets.json"));
 
-builder.Host.UseSerilog((host, provider, config) => config.WriteTo.Console());
-
-builder.Services.AddControllers();
+builder.Host.UseSerilog((host, provider, config) =>
+{
+    config.WriteTo.Console();
+    
+    if (builder.Environment.IsProduction())
+    {
+        var seqConfig = builder.Configuration.GetSection("Seq");
+        config.WriteTo.Seq(seqConfig["Url"], apiKey: seqConfig["Key"]);
+    }
+});
 
 builder.Services.AddLazyCache();
 builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
-
-// logging with datalust seq
-if (builder.Environment.IsProduction())
-{
-    var seqConfig = builder.Configuration.GetSection("Seq");
-    builder.Logging.AddSeq(seqConfig["Url"], seqConfig["Key"]);
-}
 
 builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
 builder.Services.AddScoped<IMinecraftImageService, MinecraftImageService>();
