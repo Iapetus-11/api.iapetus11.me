@@ -1,5 +1,6 @@
 using api.iapetus11.me.Services;
 using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,7 @@ builder.Host.ConfigureAppConfiguration((_, config) => config.AddJsonFile("secret
 
 builder.Host.UseSerilog((host, provider, config) =>
 {
-    config.WriteTo.Console();
+    config.MinimumLevel.Override("Microsoft", LogEventLevel.Warning).WriteTo.Console();
     
     if (builder.Environment.IsProduction())
     {
