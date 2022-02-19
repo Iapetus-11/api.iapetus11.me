@@ -13,17 +13,21 @@ public class MinecraftServerService : IMinecraftServerService
 {
     private readonly IAppCache _cache;
     private readonly IStaticAssetsService _assets;
+    private readonly ILogger<MinecraftServerService> _log;
 
-    public MinecraftServerService(IAppCache cache, IStaticAssetsService assets)
+    public MinecraftServerService(IAppCache cache, IStaticAssetsService assets, ILogger<MinecraftServerService> log)
     {
         _cache = cache;
         _assets = assets;
+        _log = log;
     }
     
     private async Task<MinecraftServer> FetchServer(string address, bool suppressErrors = false)
     {
         return await _cache.GetOrAddAsync(GetCacheKey(address), async () =>
         {
+            _log.LogInformation("Fetching status of server {Address}", address);
+            
             try
             {
                 var server = new MinecraftServer(address);
