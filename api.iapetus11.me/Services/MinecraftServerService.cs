@@ -26,8 +26,8 @@ public class MinecraftServerService : IMinecraftServerService
     {
         return await _cache.GetOrAddAsync(GetCacheKey(address), async () =>
         {
-            _log.LogInformation("Fetching status of server {Address}", address);
-            
+            _log.LogInformation("Start fetching status of server {Address}", address);
+
             try
             {
                 var server = new MinecraftServer(address);
@@ -37,6 +37,10 @@ public class MinecraftServerService : IMinecraftServerService
             catch (Exception)
             {
                 if (!suppressErrors) throw;
+            }
+            finally
+            {
+                _log.LogInformation("End fetching status of server {Address}", address);
             }
 
             return new MinecraftServer("someValidOfflineAddress");

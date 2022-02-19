@@ -1,5 +1,4 @@
 using api.iapetus11.me.Services;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,28 +10,29 @@ builder.Services.AddLazyCache();
 builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
-builder.Services.AddScoped<IMinecraftImageService, MinecraftImageService>();
-
-builder.Services.AddSingleton<IRedditPostFetcher, RedditPostFetcher>();
-builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetService<IRedditPostFetcher>());
-
-var staticAssetsService = new StaticAssetsService();
-staticAssetsService.CacheAllAssets();
-builder.Services.AddSingleton<IStaticAssetsService>(staticAssetsService);
-
-// add seq logging
+// add logging
 if (builder.Environment.IsProduction())
 {
+    // logging with datalust seq
     var seqConfig = builder.Configuration.GetSection("Seq");
-    builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSeq(serverUrl: seqConfig["Url"], apiKey: seqConfig["Key"]));
+    builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSeq(seqConfig["Url"], seqConfig["Key"]));
 }
 else
 {
     builder.Services.AddLogging();
 }
 
+builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
+builder.Services.AddScoped<IMinecraftImageService, MinecraftImageService>();
+
+builder.Services.AddSingleton<IRedditPostFetcher, RedditPostFetcher>();
+builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetService<IRedditPostFetcher>()!);
+
+builder.Services.AddSingleton<IStaticAssetsService, StaticAssetsService>();
+
 var app = builder.Build();
+
+app.Services.GetService<IStaticAssetsService>()!.CacheAllAssets();
 
 app.UseRouting();
 app.UseCors();
