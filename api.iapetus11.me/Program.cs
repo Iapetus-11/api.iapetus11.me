@@ -13,16 +13,11 @@ builder.Services.AddLazyCache();
 builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 
-// add logging
+// logging with datalust seq
 if (builder.Environment.IsProduction())
 {
-    // logging with datalust seq
     var seqConfig = builder.Configuration.GetSection("Seq");
-    builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSeq(seqConfig["Url"], seqConfig["Key"]));
-}
-else
-{
-    builder.Services.AddLogging();
+    builder.Logging.AddSeq(seqConfig["Url"], seqConfig["Key"]);
 }
 
 builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
