@@ -93,11 +93,13 @@ public class ServerImage
             Color.White, 22, 324,
             HorizontalAlignment.Center, out _));
         
-        image.Mutate(x => x.DrawImage(favicon, new Point(6, 6), 1.0f));
+        image.Mutate(x =>
+        {
+            x.DrawImage(favicon, new Point(6, 6), 1.0f);
+            if (favicon != _assets.DefaultFaviconImage) favicon.Dispose();
+        });
         
         image.Mutate(x => x.RoundCorners(4));
-        
-        if (favicon != _assets.DefaultFaviconImage) favicon.Dispose();
 
         return image;
     }
