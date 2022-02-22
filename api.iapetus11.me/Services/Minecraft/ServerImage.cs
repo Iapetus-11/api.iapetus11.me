@@ -3,6 +3,7 @@ using api.iapetus11.me.Models;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Memory;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
@@ -75,10 +76,17 @@ public class ServerImage
         var favicon = string.IsNullOrWhiteSpace(_status.Favicon)
             ? _assets.DefaultFaviconImage
             : api.iapetus11.me.Extensions.ImageExtensions.FromB64Png(_status.Favicon);
-        
-        favicon.Mutate(x => x
-            .SetGraphicsOptions(new GraphicsOptions {Antialias = false})
-            .Resize(128, 128, new NearestNeighborResampler()));
+
+        try
+        {
+            favicon.Mutate(x => x
+                .SetGraphicsOptions(new GraphicsOptions {Antialias = false})
+                .Resize(128, 128, new NearestNeighborResampler()));
+        }
+        catch (InvalidMemoryOperationException)
+        {
+            favicon = _assets.DefaultFaviconImage;
+        }
 
         image.Mutate(DrawMotd);
 
