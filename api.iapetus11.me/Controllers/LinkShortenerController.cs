@@ -1,5 +1,6 @@
 ﻿using api.iapetus11.me.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 
 namespace api.iapetus11.me.Controllers;
 
@@ -19,10 +20,16 @@ public class LinkShortenerController : ControllerBase
     [HttpGet("{slug}")]
     public async Task<IActionResult> ShortenedLinkRedirect(string slug)
     {
-        var remoteAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-        var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+        var headers = HttpContext.Request.Headers;
+        var userAgent = headers["User-Agent"].ToString();
         
-        var redirect = await _linkShortener.GetRedirectUrl(slug, remoteAddress, userAgent);
+        StringValues ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+
+        headers.TryGetValue("X-Forwarded-For", out ipAddress);
+        headers.TryGetValue("Host", out ipAddress);
+        headers.TryGetValue("CF-Connecting-IP", out ipAddress);
+        
+        var redirect = await _linkShortener.GetRedirectUrl(slug, ipAddress, userAgent);
 
         if (redirect == null)
         {
