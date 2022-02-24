@@ -1,6 +1,9 @@
+using api.iapetus11.me.Data;
 using api.iapetus11.me.Services;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +20,20 @@ builder.Host.UseSerilog((host, provider, config) =>
     }
 });
 
-builder.Services.AddControllers();
+builder.Services.AddCors(options => {
+    options.AddDefaultPolicy(
+        policyBuilder =>
+        {
+            policyBuilder.AllowAnyOrigin();
+            policyBuilder.AllowAnyHeader();
+            policyBuilder.AllowAnyMethod();
+        });
+});
+
+var databaseConfig = builder.Configuration.GetSection("Database");
+var connectionString = string.Join(";", databaseConfig.GetChildren().Select(c => $"{c.Key}={c.Value}"));
+Console.WriteLine(connectionString);
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddLazyCache();
 builder.Services.AddHttpClient();
@@ -25,13 +41,22 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
 builder.Services.AddScoped<IMinecraftImageService, MinecraftImageService>();
+builder.Services.AddScoped<ILinkShortenerService, LinkShortenerService>();
 
 builder.Services.AddSingleton<IRedditPostFetcher, RedditPostFetcher>();
 builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetService<IRedditPostFetcher>()!);
 
 builder.Services.AddSingleton<IStaticAssetsService, StaticAssetsService>();
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
+
+// create scope, inject database context, and update migrations
+using var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+context.Database.Migrate();
+
 
 app.Services.GetService<IStaticAssetsService>()!.CacheAllAssets();
 

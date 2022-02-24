@@ -9,7 +9,12 @@
     <ItemGroup>
       <PackageReference Include="DnsClient" Version="1.6.0" />
       <PackageReference Include="LazyCache.AspNetCore" Version="2.4.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0-preview.1" />
       <PackageReference Include="Seq.Extensions.Logging" Version="6.1.0-dev-00091" />
       <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
       <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.2-dev-00222" />
@@ -20,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Content\Images" />
+      <Folder Include="Content\" />
     </ItemGroup>
 
 </Project>
