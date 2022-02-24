@@ -16,7 +16,7 @@ builder.Host.UseSerilog((host, provider, config) =>
     if (builder.Environment.IsProduction())
     {
         var seqConfig = builder.Configuration.GetSection("Seq");
-        config.WriteTo.Seq(seqConfig["Url"], apiKey: seqConfig["Key"]);
+        config.WriteTo.Seq(seqConfig["Url"]!, apiKey: seqConfig["Key"]!);
     }
 });
 
@@ -31,9 +31,8 @@ builder.Services.AddCors(options => {
 });
 
 var databaseConfig = builder.Configuration.GetSection("Database");
-var connectionString = string.Join(";", databaseConfig.GetChildren().Select(c => $"{c.Key}={c.Value}"));
-Console.WriteLine(connectionString);
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(string.Join(";", databaseConfig.GetChildren().Select(c => $"{c.Key}={c.Value}"))));
 
 builder.Services.AddLazyCache();
 builder.Services.AddHttpClient();
