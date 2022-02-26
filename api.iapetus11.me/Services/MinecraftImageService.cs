@@ -8,7 +8,7 @@ namespace api.iapetus11.me.Services;
 
 public class MinecraftImageService : IMinecraftImageService
 {
-    private static readonly PointF _splashTextPos = new PointF(556+5, 98+10);
+    private static readonly PointF _splashTextPos = new(556+5, 98+10);
 
     private readonly IStaticAssetsService _assets;
 

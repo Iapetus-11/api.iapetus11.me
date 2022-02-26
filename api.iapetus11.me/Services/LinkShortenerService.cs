@@ -14,7 +14,7 @@ public class LinkShortenerService : ILinkShortenerService
         _db = db;
     }
     
-    public async Task<string?> GetRedirectUrl(string slug, string ipAddress, string? userAgent)
+    public async Task<string?> GetRedirectUrl(string slug, string? ipAddress, string? userAgent)
     {
         slug = slug.ToLower();
 
@@ -26,7 +26,7 @@ public class LinkShortenerService : ILinkShortenerService
             return null;
         }
 
-        await _db.LinkHits.AddAsync(new AppDbContext.LinkHit
+        _db.LinkHits.Add(new AppDbContext.LinkHit
         {
             IpAddress = ipAddress,
             UserAgent = userAgent,

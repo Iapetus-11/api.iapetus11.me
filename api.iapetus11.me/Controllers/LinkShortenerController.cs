@@ -20,7 +20,7 @@ public class LinkShortenerController : ControllerBase
     [HttpGet("{slug}")]
     public async Task<IActionResult> ShortenedLinkRedirect(string slug)
     {
-        var headers = HttpContext.Request.Headers;
+        var headers = HttpContext.Request.Headers ?? throw new InvalidOperationException();
         var userAgent = headers["User-Agent"].ToString();
         
         StringValues ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
@@ -31,10 +31,7 @@ public class LinkShortenerController : ControllerBase
         
         var redirect = await _linkShortener.GetRedirectUrl(slug, ipAddress, userAgent);
 
-        if (redirect == null)
-        {
-            return NotFound($"No suitable redirect found for {slug}");
-        }
+        if (redirect == null) return NotFound($"No suitable redirect found for {slug}");
 
         return Redirect(redirect);
     }
