@@ -22,22 +22,25 @@ public class MinecraftServerService : IMinecraftServerService
         _log = log;
     }
     
-    private async Task<MinecraftServer> FetchServer(string address, bool suppressErrors = false)
+    private async Task<MinecraftServer> FetchServer(string address)
     {
         return await _cache.GetOrAddAsync(GetCacheKey(address), async () =>
         {
             _log.LogInformation("Start fetching server {ServerAddress}", address);
 
-            var server = new MinecraftServer("someValidOfflineAddress");
-            
-            try
+            MinecraftServer.TryParseAddress(address, out var host, out var port, out var invalidAddress);
+            var server = new MinecraftServer(host, port);
+
+            if (!invalidAddress)
             {
-                server = new MinecraftServer(address);
-                await server.FetchStatus();
-            }
-            catch (Exception)
-            {
-                if (!suppressErrors) throw;
+                try
+                {
+                    await server.FetchStatus();
+                }
+                catch (Exception e)
+                {
+                    _log.LogError("An error occurred while fetching the status of a server: {@Exception}", e);
+                }
             }
             
             _log.LogInformation("End fetching server {ServerAddress} {@Server}", address, server);

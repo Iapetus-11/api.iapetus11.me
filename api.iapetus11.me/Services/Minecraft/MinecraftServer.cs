@@ -35,18 +35,12 @@ public class MinecraftServer
     private string _host;
     private int _port;
 
-    public MinecraftServerStatus Status { get; private set; } = null!;
+    public MinecraftServerStatus Status { get; private set; }
 
-    public MinecraftServer(string address)
+    public MinecraftServer(string host, int port)
     {
-        try
-        {
-            (_host, _port) = ParseAddress(address);
-        }
-        catch (Exception e)
-        {
-            throw new InvalidServerAddressException(address, e);
-        }
+        _host = host;
+        _port = port;
 
         Status = DefaultStatus();
     }
@@ -78,6 +72,23 @@ public class MinecraftServer
         }
 
         return new Tuple<string, int>(host, port);
+    }
+
+    public static void TryParseAddress(string address, out string host, out int port, out bool invalidAddress)
+    {
+        try
+        {
+            var (h, p) = ParseAddress(address);
+            host = h;
+            port = p;
+            invalidAddress = false;
+        }
+        catch (Exception)
+        {
+            host = address;
+            port = -1;
+            invalidAddress = true;
+        }
     }
 
     private MinecraftServerStatus DefaultStatus()
