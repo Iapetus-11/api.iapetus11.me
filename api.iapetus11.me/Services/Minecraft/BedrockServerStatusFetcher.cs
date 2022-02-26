@@ -30,7 +30,7 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
             stopwatch.Start();
             
             await client.SendAsync(_bedrockStatusRequest);
-            var result = await client.ReceiveAsync();
+            var result = await client.ReceiveAsync().WaitAsync(TimeSpan.FromSeconds(2.5));
             
             stopwatch.Stop();
             

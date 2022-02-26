@@ -383,14 +383,14 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
 
         using (var connection = new JavaServerConnection(_host, _port))
         {
-            await connection.Connect();
-            await connection.SendHandShakePacket();
-            statusData = await connection.FetchStatus();
-            latency = await connection.FetchPing();
+            await connection.Connect().WaitAsync(TimeSpan.FromSeconds(2.5));
+            await connection.SendHandShakePacket().WaitAsync(TimeSpan.FromSeconds(2.5));
+            statusData = await connection.FetchStatus().WaitAsync(TimeSpan.FromSeconds(2.5));
+            latency = await connection.FetchPing().WaitAsync(TimeSpan.FromSeconds(2.5));
         }
 
         var players = statusData["players"]?["sample"]?.Select(p =>
-            new MinecraftServerStatusPlayer(p["name"].Value<string>(), p["id"].Value<string>())).ToArray() ?? new MinecraftServerStatusPlayer[]{};
+            new MinecraftServerStatusPlayer(p["name"]!.Value<string>()!, p["id"]!.Value<string>()!)).ToArray() ?? Array.Empty<MinecraftServerStatusPlayer>();
 
         var motd = new ServerMotd(statusData["description"]);
 
