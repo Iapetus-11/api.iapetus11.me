@@ -135,9 +135,11 @@ public class MinecraftServer
 
             try
             {
-                Status =  await statusTask;
+                Status = await statusTask;
                 break;
-            } catch (SocketException) {}
+            }
+            catch (SocketException) { }
+            catch (IOException) { }
         }
 
         return Status ??= await defaultStatusTask;
