@@ -57,7 +57,7 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
             motd.Motd,
             motd.MotdClean,
             null,
-            splitData.Length >= 6 ? splitData[7] : null,
-            splitData.Length >= 7 ? splitData[8]: null);
+            splitData.Length > 7 ? splitData[7] : null,
+            splitData.Length > 8 ? splitData[8] : null);
     }
 }
