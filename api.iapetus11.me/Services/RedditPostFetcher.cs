@@ -43,9 +43,10 @@ public class RedditPostFetcher : IRedditPostFetcher
             {
                 var lastRequesterPosts = _lastPosts[requesterId];
 
-                for (var i = 0; i < 20; i++)
+                for (var i = 0; i < 40; i++)
                 {
-                    if (lastRequesterPosts.Any(p => p.Equals(post.Id))) break;
+                    if (!lastRequesterPosts.Any(p => p.Equals(post.Id))) break;
+                    Console.WriteLine("retrying.");
                     post = posts[_rand.Next(0, posts.Length)];
                 }
                 
