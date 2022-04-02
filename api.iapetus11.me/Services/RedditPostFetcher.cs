@@ -26,10 +26,13 @@ public class RedditPostFetcher : IRedditPostFetcher
     private readonly Dictionary<string, List<string>> _lastPosts = new();
     private Timer _timer = null!;
 
+    private readonly DateTime _lastClearTime;
+
     public RedditPostFetcher(HttpClient http, ILogger<RedditPostFetcher> log)
     {
         _http = http;
         _log = log;
+        _lastClearTime = DateTime.Now;
     }
 
     public RedditPost FetchRandomPost(string subredditGroup, string? requesterId)
@@ -69,6 +72,12 @@ public class RedditPostFetcher : IRedditPostFetcher
 
     private async void BackgroundFetchPosts(object? state)
     {
+        if (DateTime.Now > _lastClearTime.AddHours(6))
+        {
+            _lastPosts.Clear();
+            _postGroups.Clear();
+        }
+        
         foreach (var (subredditGroup, subreddits) in _subredditGroups)
         {
             RedditListing? data;
