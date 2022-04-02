@@ -97,15 +97,14 @@ public class MinecraftServer
             new MinecraftServerStatusPlayer[] {}, null, null, null, null, null, null);
     }
 
-    private async Task DnsLookup()
+    private async Task<(string?, int?)> DnsLookup()
     {
         var result = await new LookupClient().QueryAsync($"_minecraft._tcp.{_host}", QueryType.SRV);
         var record = result.Answers.SrvRecords().FirstOrDefault();
 
-        if (record == null) return;
-        
-        _host = record.Target;
-        _port = record.Port;
+        if (record == null) return (null, null);
+
+        return (record.Target, record.Port);
     }
 
     private async Task<MinecraftServerStatus> FetchDefaultStatus()
@@ -114,16 +113,27 @@ public class MinecraftServer
         return DefaultStatus();
     }
 
+    public async Task<MinecraftServerStatus> JavaServerStatusWithDns()
+    {
+        var (dnsHost, dnsPort) = await DnsLookup();
+
+        if (dnsHost is not null && dnsPort is not null)
+        {
+            return await new JavaServerStatusFetcher(dnsHost, (int) dnsPort).FetchStatus();
+        }
+
+        return await new JavaServerStatusFetcher(_host, _port).FetchStatus();
+    }
+
     public async Task<MinecraftServerStatus> FetchStatus()
     {
-        await DnsLookup();
-        
         var defaultStatusTask = FetchDefaultStatus();
         var statusTasks = new List<Task<MinecraftServerStatus>>()
         {
             defaultStatusTask,
             new JavaServerStatusFetcher(_host, _port).FetchStatus(),
-            new BedrockServerStatusFetcher(_host, _port).FetchStatus()
+            new BedrockServerStatusFetcher(_host, _port).FetchStatus(),
+            JavaServerStatusWithDns(),
         };
 
         while (statusTasks.Any())
@@ -142,6 +152,6 @@ public class MinecraftServer
             catch (IOException) { }
         }
 
-        return Status ??= await defaultStatusTask;
+        return Status;
     }
 }
