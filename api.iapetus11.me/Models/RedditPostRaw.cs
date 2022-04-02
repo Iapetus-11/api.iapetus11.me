@@ -106,7 +106,7 @@ public class RedditPostRawData
     [J("pinned")] public bool Pinned { get; set; }
     [J("over_18")] public bool Over18 { get; set; }
     [J("preview")] public RedditPreview RedditPreview { get; set; }
-    [J("all_awardings")] public RedditAllAwarding[] AllAwardings { get; set; }
+    // [J("all_awardings")] public RedditAllAwarding[] AllAwardings { get; set; }
     [J("awarders")] public object[] Awarders { get; set; }
     [J("media_only")] public bool MediaOnly { get; set; }
     [J("can_gild")] public bool CanGild { get; set; }
@@ -146,42 +146,42 @@ public class RedditPostRawData
     [J("is_video")] public bool IsVideo { get; set; }
 }
 
-public class RedditAllAwarding
-{
-    [J("giver_coin_reward")] public long? GiverCoinReward { get; set; }
-    [J("subreddit_id")] public object SubredditId { get; set; }
-    [J("is_new")] public bool IsNew { get; set; }
-    [J("days_of_drip_extension")] public long DaysOfDripExtension { get; set; }
-    [J("coin_price")] public long CoinPrice { get; set; }
-    [J("id")] public string Id { get; set; }
-    [J("penny_donate")] public long? PennyDonate { get; set; }
-    [J("award_sub_type")] public string AwardSubType { get; set; }
-    [J("coin_reward")] public long CoinReward { get; set; }
-    [J("icon_url")] public Uri IconUrl { get; set; }
-    [J("days_of_premium")] public long DaysOfPremium { get; set; }
-    [J("tiers_by_required_awardings")] public object TiersByRequiredAwardings { get; set; }
-    [J("resized_icons")] public RedditResizedIcon[] ResizedIcons { get; set; }
-    [J("icon_width")] public long IconWidth { get; set; }
-    [J("static_icon_width")] public long StaticIconWidth { get; set; }
-    [J("start_date")] public object StartDate { get; set; }
-    [J("is_enabled")] public bool IsEnabled { get; set; }
-
-    [J("awardings_required_to_grant_benefits")]
-    public object AwardingsRequiredToGrantBenefits { get; set; }
-
-    [J("description")] public string Description { get; set; }
-    [J("end_date")] public object EndDate { get; set; }
-    [J("subreddit_coin_reward")] public long SubredditCoinReward { get; set; }
-    [J("count")] public long Count { get; set; }
-    [J("static_icon_height")] public long StaticIconHeight { get; set; }
-    [J("name")] public string Name { get; set; }
-    [J("resized_static_icons")] public RedditResizedIcon[] ResizedStaticIcons { get; set; }
-    [J("icon_format")] public string IconFormat { get; set; }
-    [J("icon_height")] public long IconHeight { get; set; }
-    [J("penny_price")] public long? PennyPrice { get; set; }
-    [J("award_type")] public string AwardType { get; set; }
-    [J("static_icon_url")] public Uri StaticIconUrl { get; set; }
-}
+// public class RedditAllAwarding
+// {
+//     [J("giver_coin_reward")] public long? GiverCoinReward { get; set; }
+//     [J("subreddit_id")] public object SubredditId { get; set; }
+//     [J("is_new")] public bool IsNew { get; set; }
+//     [J("days_of_drip_extension")] public long? DaysOfDripExtension { get; set; }
+//     [J("coin_price")] public long CoinPrice { get; set; }
+//     [J("id")] public string Id { get; set; }
+//     [J("penny_donate")] public long? PennyDonate { get; set; }
+//     [J("award_sub_type")] public string AwardSubType { get; set; }
+//     [J("coin_reward")] public long CoinReward { get; set; }
+//     [J("icon_url")] public Uri IconUrl { get; set; }
+//     [J("days_of_premium")] public long DaysOfPremium { get; set; }
+//     [J("tiers_by_required_awardings")] public object TiersByRequiredAwardings { get; set; }
+//     [J("resized_icons")] public RedditResizedIcon[] ResizedIcons { get; set; }
+//     [J("icon_width")] public long IconWidth { get; set; }
+//     [J("static_icon_width")] public long StaticIconWidth { get; set; }
+//     [J("start_date")] public object StartDate { get; set; }
+//     [J("is_enabled")] public bool IsEnabled { get; set; }
+//
+//     [J("awardings_required_to_grant_benefits")]
+//     public object AwardingsRequiredToGrantBenefits { get; set; }
+//
+//     [J("description")] public string Description { get; set; }
+//     [J("end_date")] public object EndDate { get; set; }
+//     [J("subreddit_coin_reward")] public long SubredditCoinReward { get; set; }
+//     [J("count")] public long Count { get; set; }
+//     [J("static_icon_height")] public long StaticIconHeight { get; set; }
+//     [J("name")] public string Name { get; set; }
+//     [J("resized_static_icons")] public RedditResizedIcon[] ResizedStaticIcons { get; set; }
+//     [J("icon_format")] public string IconFormat { get; set; }
+//     [J("icon_height")] public long IconHeight { get; set; }
+//     [J("penny_price")] public long? PennyPrice { get; set; }
+//     [J("award_type")] public string AwardType { get; set; }
+//     [J("static_icon_url")] public Uri StaticIconUrl { get; set; }
+// }
 
 public class RedditResizedIcon
 {
