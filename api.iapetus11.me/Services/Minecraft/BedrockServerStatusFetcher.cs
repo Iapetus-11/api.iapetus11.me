@@ -13,11 +13,13 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
 
     private readonly string _host;
     private readonly int _port;
+    private readonly TimeSpan _timeout;
 
-    public BedrockServerStatusFetcher(string host, int port)
+    public BedrockServerStatusFetcher(string host, int? port, float timeoutSeconds)
     {
         _host = host;
-        _port = port is > 0 and < 65535 ? port : 19132;
+        _port = port is > 0 and < 65535 ? (int) port : 19132;
+        _timeout = TimeSpan.FromSeconds(timeoutSeconds);
     }
     
     public async Task<MinecraftServerStatus> FetchStatus()
@@ -30,7 +32,7 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
             stopwatch.Start();
             
             await client.SendAsync(_bedrockStatusRequest);
-            var result = await client.ReceiveAsync().WaitAsync(TimeSpan.FromSeconds(2.5));
+            var result = await client.ReceiveAsync().WaitAsync(_timeout);
             
             stopwatch.Stop();
             
@@ -59,5 +61,18 @@ public class BedrockServerStatusFetcher : IServerStatusFetcher
             null,
             splitData.Length > 7 ? splitData[7] : null,
             splitData.Length > 8 ? splitData[8] : null);
+    }
+
+    public async Task<MinecraftServerStatus?> FetchStatusQuiet()
+    {
+        try
+        {
+            return await FetchStatus();
+        }
+        catch (SocketException) { }
+        catch (IOException) { }
+        catch (TimeoutException) { }
+
+        return null;
     }
 }

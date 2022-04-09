@@ -39,7 +39,7 @@ public class MinecraftServerService : IMinecraftServerService
                 }
                 catch (Exception e)
                 {
-                    _log.LogError("An error occurred while fetching the status of a server: {@Exception}", e);
+                    _log.LogError(e, "An error occurred while fetching the status of a server");
                 }
             }
             
@@ -58,10 +58,9 @@ public class MinecraftServerService : IMinecraftServerService
     {
         var status = await FetchServerStatus(address);
 
-        using (var image = new ServerImage(status, _assets).Generate(name))
-        {
-            return image.ToPngStream();
-        }
+        using var image = new ServerImage(status, _assets).Generate(name);
+        
+        return image.ToPngStream();
     }
 
     public async Task<Stream> FetchServerFavicon(string address)

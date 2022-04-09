@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using api.iapetus11.me.Models;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace api.iapetus11.me.Services.Minecraft;
 
@@ -12,7 +13,7 @@ internal class Buffer
 
     public Buffer()
     {
-        _buffer = new();
+        _buffer = new List<byte>();
     }
 
     public Buffer(IEnumerable<byte> data)
@@ -253,17 +254,11 @@ internal class JavaServerConnection : IDisposable
 
     public void Dispose()
     {
-        if (_stream != null)
-        {
-            _stream.Close();
-            _stream.Dispose();
-        }
-
-        if (_client != null)
-        {
-            _client.Close();
-            _client.Dispose();
-        }
+        _stream?.Close();
+        _stream?.Dispose();
+        
+        _client?.Close();
+        _client?.Dispose();
     }
 
     private async Task<byte[]> Read(int n)
@@ -283,7 +278,6 @@ internal class JavaServerConnection : IDisposable
 
     private async Task<Buffer> ReadPacket()
     {
-        // TODO: replace with something that won't duplicate VarInt reading code
         var packetLength = 0;
         var varIntLength = 0;
 
@@ -369,11 +363,13 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
 {
     private readonly string _host;
     private readonly int _port;
+    private readonly TimeSpan _timeout;
 
-    public JavaServerStatusFetcher(string host, int port)
+    public JavaServerStatusFetcher(string host, int? port, float timeoutSeconds)
     {
         _host = host;
-        _port = port is > 0 and < 65535 ? port : 25565;
+        _port = port is > 0 and < 65535 ? (int) port : 25565;
+        _timeout = TimeSpan.FromSeconds(timeoutSeconds);
     }
 
     public async Task<MinecraftServerStatus> FetchStatus()
@@ -383,10 +379,10 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
 
         using (var connection = new JavaServerConnection(_host, _port))
         {
-            await connection.Connect().WaitAsync(TimeSpan.FromSeconds(2.5));
-            await connection.SendHandShakePacket().WaitAsync(TimeSpan.FromSeconds(2.5));
-            statusData = await connection.FetchStatus().WaitAsync(TimeSpan.FromSeconds(2.5));
-            latency = await connection.FetchPing().WaitAsync(TimeSpan.FromSeconds(2.5));
+            await connection.Connect().WaitAsync(_timeout);
+            await connection.SendHandShakePacket().WaitAsync(_timeout);
+            statusData = await connection.FetchStatus().WaitAsync(_timeout);
+            latency = await connection.FetchPing().WaitAsync(_timeout);
         }
 
         var players = statusData["players"]?["sample"]?.Select(p =>
@@ -402,13 +398,26 @@ public class JavaServerStatusFetcher : IServerStatusFetcher
             statusData["players"]?["online"]?.Value<int>() ?? 0,
             statusData["players"]?["max"]?.Value<int>() ?? 0,
             players,
-            new MinecraftServerStatusVersion("Java Edition", statusData["version"]["name"].Value<string>(),
-                statusData["version"]["protocol"].Value<int>()),
+            new MinecraftServerStatusVersion("Java Edition", statusData["version"]?["name"]?.Value<string>(),
+                statusData["version"]?["protocol"]?.Value<int>()),
             motd.Motd,
             motd.MotdClean,
             statusData["favicon"]?.Value<string>(),
             null,
             null
         );
+    }
+    
+    public async Task<MinecraftServerStatus?> FetchStatusQuiet()
+    {
+        try
+        {
+            return await FetchStatus();
+        }
+        catch (SocketException) { }
+        catch (IOException) { }
+        catch (TimeoutException) { }
+
+        return null;
     }
 }

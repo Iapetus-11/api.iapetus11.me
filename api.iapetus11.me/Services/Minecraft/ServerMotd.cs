@@ -74,6 +74,7 @@ public class MinecraftColor
 
 public class ServerMotd
 {
+    private const char _section = '§';
     
     private static readonly Regex _hexCodeRegex = new(
         @"^#(?:[0-9a-fA-F]{3}){1,2}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -89,22 +90,54 @@ public class ServerMotd
 
     public ServerMotd(JToken? motd) => (Motd, MotdClean) = ParseJsonMotd(motd);
 
-    private static Tuple<string, string> ParseJsonMotd(JToken? motdJson)
+    private static bool TryParseMotdColor(string? color, out string? standardColor)
     {
-        if (motdJson == null) return new Tuple<string, string>("", "");
+        standardColor = null;
+        
+        if (string.IsNullOrWhiteSpace(color)) return false;
+        
+        // some servers don't use mc color codes, they use hex
+        if (_hexCodeRegex.IsMatch("#" + color.Replace("#", "")))
+        {
+            var hexNice = color.ToUpper().Replace("#", "");
+
+            foreach (var mcColor in MinecraftColor.GetColors())
+            {
+                if (hexNice == mcColor.Hex)
+                {
+                    standardColor = $"{_section}{mcColor.Code}";
+                    return true;
+                }
+            }
+        }
+        else // isn't a hex code, should be a normal mc color code
+        {
+            try
+            {
+                standardColor = $"{_section}{MinecraftColor.GetColorByKey(color).Code}";
+                return true;
+            }
+            catch (KeyNotFoundException) { }
+        }
+
+        return false;
+    }
+
+    private static (string, string) ParseJsonMotd(JToken? motdJson)
+    {
+        if (motdJson == null) return ("", "");
 
         if (motdJson.Type == JTokenType.String)
         {
             var text = motdJson.Value<string>() ?? "";
-            return new Tuple<string, string>(text, text);
+            return (text, StripColorCodes(text));
         }
         
         var motdOut = new StringBuilder();
-        var motdCleanOut = new StringBuilder();
 
-        List<JToken> motdEntries = motdJson.Type switch
+        var motdEntries = motdJson.Type switch
         {
-            JTokenType.Object => motdJson["extra"]?.ToList() ?? new(),
+            JTokenType.Object => motdJson["extra"]?.ToList() ?? new List<JToken>(),
             JTokenType.Array => motdJson.ToList(),
             _ => throw new Exception($"Unsupported data type: {motdJson.Type}")
         };
@@ -118,49 +151,27 @@ public class ServerMotd
 
             var color = entry["color"]?.Value<string>();
 
-            if (string.IsNullOrEmpty(color)) continue;
-            
-            // some servers don't use mc color codes, they use hex
-            if (_hexCodeRegex.IsMatch("#" + color.Replace("#", "")))
-            {
-                var hexNice = color.ToUpper().Replace("#", "");
-                
-                foreach (var mcColor in MinecraftColor.GetColors())
-                {
-                    if (hexNice == mcColor.Hex)
-                    {
-                        motdOut.Append($"§{mcColor.Code}");
-                        break;
-                    }
-                }
-            }
-            else // isn't a hex code, should be a normal mc color code
-            {
-                try
-                {
-                    motdOut.Append($"§{MinecraftColor.GetColorByKey(color).Code}");
-                }
-                catch (KeyNotFoundException) {}
-            }
+            if (TryParseMotdColor(color, out var standardColor))
+                motdOut.Append(standardColor);
 
-            var text = entry["text"]?.Value<string>();
-            if (text != null)
-            {
-                motdOut.Append(text);
-                motdCleanOut.Append(text);
-            }
+            motdOut.Append(entry["text"]?.Value<string>());
         }
 
         var endText = motdJson["text"]?.Value<string>() ?? "";
         motdOut.Append(endText);
-        motdCleanOut.Append(endText);
 
-        return new Tuple<string, string>(motdOut.ToString(), motdCleanOut.ToString());
+        var motdOutString = motdOut.ToString(); 
+
+        return (motdOutString, StripColorCodes(motdOutString));
     }
 
     private static string StripColorCodes(string text)
     {
+        if (string.IsNullOrWhiteSpace(text)) return text;
+        
         var outText = new StringBuilder();
+
+        if (text[0] != _section) outText.Append(text[0]);
         
         for (var i = 1; i < text.Length; i++)
         {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
-using System.Net.Sockets;
-using api.iapetus11.me.Extensions;
+using api.iapetus11.me.Common;
 using api.iapetus11.me.Models;
 using DnsClient;
+using DnsClient.Protocol;
 
 namespace api.iapetus11.me.Services.Minecraft;
 
@@ -30,10 +30,12 @@ public class InvalidServerAddressException : ServerStatusException
 
 public class MinecraftServer
 {
+    private const float _timeout = 2.5f;
+    
     private static readonly ImmutableHashSet<char> _validAddressChars = "abcdefghijklmnopqrstuvwxyz0123456789.-_".ToImmutableHashSet();
 
-    private string _host;
-    private int _port;
+    private readonly string _host;
+    private readonly int _port;
 
     public MinecraftServerStatus Status { get; private set; }
 
@@ -45,7 +47,7 @@ public class MinecraftServer
         Status = DefaultStatus();
     }
 
-    private static Tuple<string, int> ParseAddress(string address)
+    private static (string, int) ParseAddress(string address)
     {
         var addressSplit = address.Split(':');
         string host;
@@ -64,23 +66,20 @@ public class MinecraftServer
                 throw new InvalidServerAddressException(address);
         }
 
-        if (port is not (> 0 and < 65535) && port != -1) throw new InvalidServerAddressException(address);
+        if (port is not (> 0 and < 65535) && port != -1)
+            throw new InvalidServerAddressException(address);
 
         if (host.ToLower().Any(c => !_validAddressChars.Contains(c)))
-        {
             throw new InvalidServerAddressException(address);
-        }
 
-        return new Tuple<string, int>(host, port);
+        return (host, port);
     }
 
     public static void TryParseAddress(string address, out string host, out int port, out bool invalidAddress)
     {
         try
         {
-            var (h, p) = ParseAddress(address);
-            host = h;
-            port = p;
+            (host, port) = ParseAddress(address);
             invalidAddress = false;
         }
         catch (Exception)
@@ -94,64 +93,69 @@ public class MinecraftServer
     private MinecraftServerStatus DefaultStatus()
     {
         return new MinecraftServerStatus(_host, _port,false, -1f, 0, 0,
-            new MinecraftServerStatusPlayer[] {}, null, null, null, null, null, null);
-    }
-
-    private async Task<(string?, int?)> DnsLookup()
-    {
-        var result = await new LookupClient().QueryAsync($"_minecraft._tcp.{_host}", QueryType.SRV);
-        var record = result.Answers.SrvRecords().FirstOrDefault();
-
-        if (record == null) return (null, null);
-
-        return (record.Target, record.Port);
+            Array.Empty<MinecraftServerStatusPlayer>(), null, null, null, null, null, null);
     }
 
     private async Task<MinecraftServerStatus> FetchDefaultStatus()
     {
-        await Task.Delay(2000);
+        await Task.Delay((int) (_timeout * 1000) + 1000);
         return DefaultStatus();
     }
 
-    public async Task<MinecraftServerStatus> JavaServerStatusWithDns()
+    private async Task<(string?, int?)> DnsLookup()
     {
-        var (dnsHost, dnsPort) = await DnsLookup();
-
-        if (dnsHost is not null && dnsPort is not null)
+        var dnsClient = new LookupClient(new LookupClientOptions(NameServer.Cloudflare, NameServer.Cloudflare2)
         {
-            return await new JavaServerStatusFetcher(dnsHost, (int) dnsPort).FetchStatus();
+            UseTcpOnly = true,
+            Timeout = TimeSpan.FromSeconds(_timeout)
+        });
+
+        SrvRecord? srvRecord;
+
+        try
+        {
+            var result = await dnsClient.QueryAsync($"_minecraft._tcp.{_host}", QueryType.SRV);
+            srvRecord = result.Answers.SrvRecords().OrderBy(r => r.Priority).FirstOrDefault();
+        }
+        catch (DnsResponseException)
+        {
+            return (null, null);
         }
 
-        return await new JavaServerStatusFetcher(_host, _port).FetchStatus();
+        var host = (string?) srvRecord?.Target;
+        var port = srvRecord?.Port;
+
+        try
+        {
+            var result = await dnsClient.QueryAsync(host, QueryType.CNAME);
+            var cname = (string?) result.Answers.CnameRecords().FirstOrDefault()?.CanonicalName;
+
+            if (!string.IsNullOrEmpty(cname)) host = cname;
+        }
+        catch (DnsResponseException) { }
+
+        return (host, port);
+    }
+    
+    private async Task<MinecraftServerStatus?> FetchJavaStatusWithDns()
+    {
+        var (host, port) = await DnsLookup();
+
+        if (host is not null && port is not null)
+            return await new JavaServerStatusFetcher(host, port, _timeout).FetchStatusQuiet();
+
+        return null;
     }
 
-    public async Task<MinecraftServerStatus> FetchStatus()
+    public async Task FetchStatus()
     {
         var defaultStatusTask = FetchDefaultStatus();
-        var statusTasks = new List<Task<MinecraftServerStatus>>()
-        {
-            defaultStatusTask,
-            new JavaServerStatusFetcher(_host, _port).FetchStatus(),
-            new BedrockServerStatusFetcher(_host, _port).FetchStatus(),
-            JavaServerStatusWithDns(),
-        };
 
-        while (statusTasks.Any())
-        {
-            var statusTask = await Task.WhenAny(statusTasks);
-            statusTasks.Remove(statusTask);
+        var status = await AsyncHelpers.FirstNotNull(defaultStatusTask!,
+            new JavaServerStatusFetcher(_host, _port, _timeout).FetchStatusQuiet(),
+            new BedrockServerStatusFetcher(_host, _port, _timeout).FetchStatusQuiet(),
+            FetchJavaStatusWithDns());
 
-            if (statusTask == defaultStatusTask) break;
-
-            try
-            {
-                Status = await statusTask;
-                break;
-            }
-            catch (SocketException) { }
-            catch (IOException) { }
-        }
-
-        return Status;
+        Status = status ?? defaultStatusTask.Result;
     }
 }
