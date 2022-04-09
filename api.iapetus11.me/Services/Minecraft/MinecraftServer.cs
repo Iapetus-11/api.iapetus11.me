@@ -125,14 +125,17 @@ public class MinecraftServer
         var host = (string?) srvRecord?.Target;
         var port = srvRecord?.Port;
 
-        try
+        if (!string.IsNullOrEmpty(host))
         {
-            var result = await dnsClient.QueryAsync(host, QueryType.CNAME);
-            var cname = (string?) result.Answers.CnameRecords().FirstOrDefault()?.CanonicalName;
+            try
+            {
+                var result = await dnsClient.QueryAsync(host, QueryType.CNAME);
+                var cname = (string?) result.Answers.CnameRecords().FirstOrDefault()?.CanonicalName;
 
-            if (!string.IsNullOrEmpty(cname)) host = cname;
+                if (!string.IsNullOrEmpty(cname)) host = cname;
+            }
+            catch (DnsResponseException) { }
         }
-        catch (DnsResponseException) { }
 
         return (host, port);
     }
