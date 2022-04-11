@@ -49,7 +49,6 @@ public class RedditPostFetcher : IRedditPostFetcher
                 for (var i = 0; i < 40; i++)
                 {
                     if (!lastRequesterPosts.Any(p => p.Equals(post.Id))) break;
-                    Console.WriteLine("retrying.");
                     post = posts[_rand.Next(0, posts.Length)];
                 }
                 
@@ -70,6 +69,39 @@ public class RedditPostFetcher : IRedditPostFetcher
 
     public string[] GetSubredditGroups() => _subredditGroups.Keys.ToArray();
 
+    private async Task<RedditPost[]> FetchSubredditPosts(string subreddits)
+    {
+        RedditListing? data;
+
+        try
+        {
+            var res = await _http.GetAsync($"https://reddit.com/r/{subreddits}/hot/.json?limit=500");
+            data = JsonConvert.DeserializeObject<RedditListing>(await res.Content.ReadAsStringAsync());
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "error occurred while fetching and decoding data from Reddit");
+            return Array.Empty<RedditPost>();
+        }
+
+        if (data == null)
+        {
+            _log.LogWarning("data from Reddit couldn't be decoded properly");
+            return Array.Empty<RedditPost>();
+        }
+
+        var posts = data.Data.Children
+            .Select(p => p.Data)
+            .Where(p =>
+                !(p.RemovalReason != null || p.IsVideo || p.Pinned || p.Stickied || !string.IsNullOrEmpty(p.Selftext)))
+            .Where(p => p.Url != null && _validMediaExtensions.Contains(p.Url[^4..]))
+            .Select(p => new RedditPost(p.Id, p.Subreddit, p.Author, p.Title, "https://reddit.com" + p.Permalink, p.Url!, (int) p.Ups,
+                (int) p.Downs, p.Over18, p.Spoiler))
+            .ToArray();
+
+        return posts;
+    }
+
     private async void BackgroundFetchPosts(object? state)
     {
         if (DateTime.Now > _lastClearTime.AddHours(6))
@@ -80,34 +112,17 @@ public class RedditPostFetcher : IRedditPostFetcher
         
         foreach (var (subredditGroup, subreddits) in _subredditGroups)
         {
-            RedditListing? data;
+            var posts = await FetchSubredditPosts(subreddits);
 
-            try
+            for (var i = 0; i < 5; i++)
             {
-                var res = await _http.GetAsync($"https://reddit.com/r/{subreddits}/hot/.json?limit=500");
-                data = JsonConvert.DeserializeObject<RedditListing>(await res.Content.ReadAsStringAsync());
+                if (posts.Any()) break;
+                
+                _log.LogWarning("retrying fetching of reddit posts for subreddits: {Subreddits}", subreddits);
+                
+                posts = await FetchSubredditPosts(subreddits);    
             }
-            catch (Exception e)
-            {
-                _log.LogError(e, "error occurred while fetching and decoding data from Reddit");
-                continue;
-            }
-
-            if (data == null)
-            {
-                _log.LogWarning("data from Reddit couldn't be decoded properly");
-                continue;
-            }
-
-            var posts = data.Data.Children
-            .Select(p => p.Data)
-            .Where(p =>
-                !(p.RemovalReason != null || p.IsVideo || p.Pinned || p.Stickied || !string.IsNullOrEmpty(p.Selftext)))
-            .Where(p => p.Url != null && _validMediaExtensions.Contains(p.Url[^4..]))
-            .Select(p => new RedditPost(p.Id, p.Subreddit, p.Author, p.Title, "https://reddit.com" + p.Permalink, p.Url!, (int) p.Ups,
-                (int) p.Downs, p.Over18, p.Spoiler))
-            .ToArray();
-
+            
             if (posts.Any()) _postGroups[subredditGroup] = posts;
         }
     }
