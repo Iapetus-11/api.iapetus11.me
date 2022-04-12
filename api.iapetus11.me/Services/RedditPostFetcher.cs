@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using api.iapetus11.me.Extensions;
 using api.iapetus11.me.Models;
 using Newtonsoft.Json;
 
@@ -104,11 +105,7 @@ public class RedditPostFetcher : IRedditPostFetcher
 
     private async void BackgroundFetchPosts(object? state)
     {
-        if (DateTime.Now > _lastClearTime.AddHours(6))
-        {
-            _lastPosts.Clear();
-            _postGroups.Clear();
-        }
+        var newPostGroups = new Dictionary<string, RedditPost[]>();
         
         foreach (var (subredditGroup, subreddits) in _subredditGroups)
         {
@@ -123,8 +120,16 @@ public class RedditPostFetcher : IRedditPostFetcher
                 posts = await FetchSubredditPosts(subreddits);    
             }
             
-            if (posts.Any()) _postGroups[subredditGroup] = posts;
+            if (posts.Any()) newPostGroups[subredditGroup] = posts;
         }
+        
+        if (DateTime.Now > _lastClearTime.AddHours(6))
+        {
+            _lastPosts.Clear();
+            _postGroups.Clear();
+        }
+        
+        _postGroups.UpdateWith(newPostGroups);
     }
 
     public Task StartAsync(CancellationToken stoppingToken)
