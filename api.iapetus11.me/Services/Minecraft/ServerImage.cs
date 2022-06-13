@@ -73,19 +73,17 @@ public class ServerImage
         var nameTextWidth = 0f;
         var playerTextWidth = 0f;
 
-        var favicon = string.IsNullOrWhiteSpace(_status.Favicon)
-            ? _assets.DefaultFaviconImage
-            : api.iapetus11.me.Extensions.ImageExtensions.FromB64Png(_status.Favicon);
-
-        try
+        var favicon = _assets.DefaultFaviconImage;
+        if (!string.IsNullOrWhiteSpace(_status.Favicon))
         {
-            favicon.Mutate(x => x
-                .SetGraphicsOptions(new GraphicsOptions {Antialias = false})
-                .Resize(128, 128, new NearestNeighborResampler()));
-        }
-        catch (InvalidMemoryOperationException)
-        {
-            favicon = _assets.DefaultFaviconImage;
+            try
+            {
+                favicon = api.iapetus11.me.Extensions.ImageExtensions.FromB64Png(_status.Favicon);
+                favicon.Mutate(x => x
+                    .SetGraphicsOptions(new GraphicsOptions() {Antialias = false})
+                    .Resize(128, 128, new NearestNeighborResampler()));
+            }
+            catch (InvalidMemoryOperationException) { }
         }
 
         image.Mutate(DrawMotd);

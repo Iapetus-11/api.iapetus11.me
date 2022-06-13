@@ -13,7 +13,7 @@ public class StaticAssetsService : IStaticAssetsService
     public Image SplashBaseImage { get; private set; } = null!;
     public FontFamily MinecraftiaFontFamily { get; private set; }
 
-    private ILogger<StaticAssetsService> _log;
+    private readonly ILogger<StaticAssetsService> _log;
 
     public StaticAssetsService(ILogger<StaticAssetsService> log)
     {
