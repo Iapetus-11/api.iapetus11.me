@@ -1,7 +1,10 @@
 ﻿using System.Collections.Immutable;
+using System.Text.Json;
 using api.iapetus11.me.Extensions;
 using api.iapetus11.me.Models;
+using Flurl.Http;
 using Newtonsoft.Json;
+using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace api.iapetus11.me.Services;
 
@@ -20,7 +23,7 @@ public class RedditPostFetcher : IRedditPostFetcher
 
     private static readonly Random _rand = new();
     
-    private readonly HttpClient _http;
+    private readonly IFlurlClient _http;
     private readonly ILogger<RedditPostFetcher> _log;
 
     private readonly Dictionary<string, RedditPost[]> _postGroups = new();
@@ -29,7 +32,7 @@ public class RedditPostFetcher : IRedditPostFetcher
 
     private readonly DateTime _lastClearTime;
 
-    public RedditPostFetcher(HttpClient http, ILogger<RedditPostFetcher> log)
+    public RedditPostFetcher(IFlurlClient http, ILogger<RedditPostFetcher> log)
     {
         _http = http;
         _log = log;
@@ -76,8 +79,9 @@ public class RedditPostFetcher : IRedditPostFetcher
 
         try
         {
-            var res = await _http.GetAsync($"https://reddit.com/r/{subreddits}/hot/.json?limit=500");
-            data = JsonConvert.DeserializeObject<RedditListing>(await res.Content.ReadAsStringAsync());
+            data = await _http
+                .Request($"https://reddit.com/r/{subreddits}/hot/.json?limit=500")
+                .GetJsonAsync<RedditListing>();
         }
         catch (Exception e)
         {
@@ -85,7 +89,7 @@ public class RedditPostFetcher : IRedditPostFetcher
             return Array.Empty<RedditPost>();
         }
 
-        if (data == null)
+        if (data?.Data is null)
         {
             _log.LogWarning("data from Reddit couldn't be decoded properly");
             return Array.Empty<RedditPost>();

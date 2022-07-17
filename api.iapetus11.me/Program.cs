@@ -1,5 +1,6 @@
 using api.iapetus11.me.Data;
 using api.iapetus11.me.Services;
+using Flurl.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
@@ -35,12 +36,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(string.Join(";", databaseConfig.GetChildren().Select(c => $"{c.Key}={c.Value}"))));
 
 builder.Services.AddLazyCache();
-builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton<IFlurlClient, FlurlClient>();
 
 builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
 builder.Services.AddScoped<IMinecraftImageService, MinecraftImageService>();
 builder.Services.AddScoped<ILinkShortenerService, LinkShortenerService>();
+builder.Services.AddScoped<IGitHubService, GitHubService>();
 
 builder.Services.AddSingleton<IRedditPostFetcher, RedditPostFetcher>();
 builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetService<IRedditPostFetcher>()!);
@@ -55,7 +58,6 @@ var app = builder.Build();
 using var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 context.Database.Migrate();
-
 
 app.Services.GetService<IStaticAssetsService>()!.CacheAllAssets();
 

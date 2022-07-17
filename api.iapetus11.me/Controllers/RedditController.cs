@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.iapetus11.me.Controllers;
 
 [ApiController]
+[Route("reddit")]
 public class RedditController : Controller
 {
     private readonly IRedditPostFetcher _reddit;
 
     public RedditController(IRedditPostFetcher reddit) => _reddit = reddit;
 
-    [HttpGet("/reddit/{subredditGroup}")]
+    [HttpGet("{subredditGroup}")]
     public IActionResult GetRedditPost(string subredditGroup,
         [FromQuery(Name = "requesterId")] string? requesterId = null)
     {

@@ -1,15 +1,14 @@
 ﻿#pragma warning disable CS8618
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 // auto generated models
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace api.iapetus11.me.Models;
 
-using J = JsonPropertyAttribute;
-using R = Required;
-using N = NullValueHandling;
+using J = JsonPropertyNameAttribute;
 
 public class RedditListing
 {
@@ -78,7 +77,7 @@ public class RedditPostRawData
     [J("is_created_from_ads_ui")] public bool IsCreatedFromAdsUi { get; set; }
     [J("author_premium")] public bool AuthorPremium { get; set; }
     [J("thumbnail")] public Uri Thumbnail { get; set; }
-    [J("edited")] public bool Edited { get; set; }
+    [J("edited")] public object Edited { get; set; }
     [J("author_flair_css_class")] public object AuthorFlairCssClass { get; set; }
     [J("author_flair_richtext")] public RedditAuthorFlairRichtext[] AuthorFlairRichtext { get; set; }
     [J("gildings")] public RedditGildings RedditGildings { get; set; }
@@ -86,7 +85,7 @@ public class RedditPostRawData
     [J("content_categories")] public object ContentCategories { get; set; }
     [J("is_self")] public bool IsSelf { get; set; }
     [J("mod_note")] public object ModNote { get; set; }
-    [J("created")] public long Created { get; set; }
+    [J("created")] public double Created { get; set; }
     [J("link_flair_type")] public string LinkFlairType { get; set; }
     [J("wls")] public long? Wls { get; set; }
     [J("removed_by_category")] public object RemovedByCategory { get; set; }
@@ -140,7 +139,7 @@ public class RedditPostRawData
     [J("stickied")] public bool Stickied { get; set; }
     [J("url")] public string? Url { get; set; }
     [J("subreddit_subscribers")] public long SubredditSubscribers { get; set; }
-    [J("created_utc")] public long CreatedUtc { get; set; }
+    [J("created_utc")] public double CreatedUtc { get; set; }
     [J("num_crossposts")] public long NumCrossposts { get; set; }
     [J("media")] public RedditMedia RedditMedia { get; set; }
     [J("is_video")] public bool IsVideo { get; set; }
@@ -247,10 +246,10 @@ public class RedditImageSource
 
 public class RedditVariants
 {
-    [J("gif", NullValueHandling = N.Ignore)]
+    [J("gif")]
     public RedditGif RedditGif { get; set; }
 
-    [J("mp4", NullValueHandling = N.Ignore)]
+    [J("mp4")]
     public RedditGif Mp4 { get; set; }
 }
 
