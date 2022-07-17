@@ -118,12 +118,12 @@ public class GitHubService : IGitHubService
 
     private async Task<string> BaseShieldSvg(string label, object value, ShieldQueryParams shieldParams)
     {
-        return await _http
+        return await _cache.GetOrAddAsync($"ShieldSvg:{label},{value},{shieldParams.ToString()}", async () => await _http
             .Request("https://img.shields.io/static/v1")
             .SetQueryParam("label", label)
             .SetQueryParam("message", value)
             .SetShieldQueryParams(shieldParams)
-            .GetStringAsync();
+            .GetStringAsync(), DateTimeOffset.Now.AddMinutes(2));
     }
 
     public async Task<string> GetUserEarnedStarsCardSvg(string userName, ShieldQueryParams shieldParams)

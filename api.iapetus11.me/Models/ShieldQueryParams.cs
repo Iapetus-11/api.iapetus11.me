@@ -22,4 +22,6 @@ public record ShieldQueryParams
 
     [JsonPropertyName("link"), JsonProperty("link")]
     public string? Link { get; init; }
+
+    public override string ToString() => JsonConvert.SerializeObject(this);
 }
