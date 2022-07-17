@@ -8,7 +8,7 @@ public interface IGitHubService
     public Task<int> GetUserEarnedStars(string userName);
     public Task<int> GetUserMergedPullRequests(string userName);
     public Task<int> GetUserOpenedIssues(string userName);
-    public Task<string> GetUserEarnedStarsCardSvg(string userName, ShieldQueryParams shieldParams);
-    public Task<string> GetUserMergedPullRequestsCardSvg(string userName, ShieldQueryParams shieldParams);
-    public Task<string> GetUserOpenedIssuesCardSvg(string userName, ShieldQueryParams shieldParams);
+    public Task<string> GetUserEarnedStarsShieldSvg(string userName, ShieldQueryParams shieldParams);
+    public Task<string> GetUserMergedPullRequestsShieldSvg(string userName, ShieldQueryParams shieldParams);
+    public Task<string> GetUserOpenedIssuesShieldSvg(string userName, ShieldQueryParams shieldParams);
 }

@@ -26,12 +26,12 @@ public class GitHubStatsController : ControllerBase
         return Ok(new
         {
             EarnedStars = await _gitHub.GetUserEarnedStars(userName),
-            MergedPRs = await _gitHub.GetUserMergedPullRequests(userName),
+            MergedPullRequests = await _gitHub.GetUserMergedPullRequests(userName),
             OpenedIssues = await _gitHub.GetUserOpenedIssues(userName),
         });
     }
 
-    [HttpGet("{userName}/card/stars")]
+    [HttpGet("{userName}/shield/stars")]
     public async Task<IActionResult> GetGitHubUserStarCard(string userName, [FromQuery] ShieldQueryParams shieldParams)
     {
         if (!_gitHub.IsValidUserName(userName))
@@ -39,10 +39,10 @@ public class GitHubStatsController : ControllerBase
             return BadRequest("Invalid GitHub username provided.");
         }
 
-        return Content(await _gitHub.GetUserEarnedStarsCardSvg(userName, shieldParams), "image/svg+xml");
+        return Content(await _gitHub.GetUserEarnedStarsShieldSvg(userName, shieldParams), "image/svg+xml");
     }
 
-    [HttpGet("{userName}/card/prs")]
+    [HttpGet("{userName}/shield/prs")]
     public async Task<IActionResult> GetGitHubUserPRsCard(string userName, [FromQuery] ShieldQueryParams shieldParams)
     {
         if (!_gitHub.IsValidUserName(userName))
@@ -50,10 +50,10 @@ public class GitHubStatsController : ControllerBase
             return BadRequest("Invalid GitHub username provided.");
         }
 
-        return Content(await _gitHub.GetUserMergedPullRequestsCardSvg(userName, shieldParams), "image/svg+xml");
+        return Content(await _gitHub.GetUserMergedPullRequestsShieldSvg(userName, shieldParams), "image/svg+xml");
     }
 
-    [HttpGet("{userName}/card/issues")]
+    [HttpGet("{userName}/shield/issues")]
     public async Task<IActionResult> GetGitHubUserIssuesCard(string userName, [FromQuery] ShieldQueryParams shieldParams)
     {
         if (!_gitHub.IsValidUserName(userName))
@@ -61,6 +61,6 @@ public class GitHubStatsController : ControllerBase
             return BadRequest("Invalid GitHub username provided.");
         }
 
-        return Content(await _gitHub.GetUserOpenedIssuesCardSvg(userName, shieldParams), "image/svg+xml");
+        return Content(await _gitHub.GetUserOpenedIssuesShieldSvg(userName, shieldParams), "image/svg+xml");
     }
 }

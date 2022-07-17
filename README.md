@@ -13,3 +13,34 @@
 - Minecraft Java & Bedrock server status
 - Link shortener with IP logging
 - Meme endpoints
+
+## Documentation
+### Reddit Posts
+- `GET reddit/{subredditGroup}?requesterId={uniquePerSomething}` - *Returns a random image post from the specified subreddit group*
+  - `subredditGroup` - *Must be one of `meme`, `cursedMinecraft`, `greentext`, `comic`*
+  - `requesterId` (optional) - *Unique ID to prevent duplicate posts from being returned, for example if used in a Discord bot, this could be the channel ID the command was summoned in*
+### GitHub Stats
+- `GET github/stats/{userName}` - *Returns a GitHub user's earned stars, opened issues, and opened PRs which were merged*
+  - `userName` - *Must be a valid GitHub username*
+- `GET github/stats/{userName}/shield/stars` - *Returns an image/shield/badge showing a user's earned stars*
+  - `userName` - *Must be a valid GitHub username*
+  - [shields.io](https://shields.io/) is used for image generation, this endpoint supports [these](https://shields.io/#your-badge) query parameters.
+- `GET github/stats/{userName}/shield/prs` - *Returns an image/shield/badge showing a user's opened and then merged pull requests*
+  - `userName` - *Must be a valid GitHub username*
+  - [shields.io](https://shields.io/) is used for image generation, this endpoint supports [these](https://shields.io/#your-badge) query parameters.
+- `GET github/stats/{userName}/shield/issues` - *Returns an image/shield/badge showing a user's opened issues*
+  - `userName` - *Must be a valid GitHub username*
+  - [shields.io](https://shields.io/) is used for image generation, this endpoint supports [these](https://shields.io/#your-badge) query parameters.
+### Minecraft Servers
+- `GET mc/server/status/{serverAddress}` - *Returns the status of the specified Minecraft server, this supports all versions of Minecraft except those below 1.8 and realms*
+  - `serverAddress` - *Any host, port is optional, an example would be `example.com:25565`*
+- `GET mc/server/status/{serverAddress}/image?customName={custom name}` - *Returns an image showing the status of the specified Minecraft server, this supports all version of Minecraft except those below 1.8 and realms*
+  - `serverAddress` - *Any host, port is optional, an example would be `example.com:25565`*
+  - `customName` (optional) - *Custom name to display on the image instead of the specified server address*
+- `GET mc/server/status/{serverAddress}/image/favicon` - *Returns the server's favicon / server icon, supports all Java Edition versions of Minecraft except those below 1.8 and realms*
+  - `serverAddress` - *Any host, port is optional, an example would be `example.com:25565`*
+### Minecraft Images
+- `GET mc/image/achievement/{text}` - *Returns an image saying "Achievement Get" and the specified text*
+  - `text` - *Any text, must be within 1-30 characters*
+- `GET mc/image/splash/{text}` - *Returns an image of the splash screen with the specified text displayed on it*
+  - `text` - *Any text, must be within 1-30 characters*

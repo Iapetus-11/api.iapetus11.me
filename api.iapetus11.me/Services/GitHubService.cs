@@ -126,17 +126,17 @@ public class GitHubService : IGitHubService
             .GetStringAsync(), DateTimeOffset.Now.AddMinutes(2));
     }
 
-    public async Task<string> GetUserEarnedStarsCardSvg(string userName, ShieldQueryParams shieldParams)
+    public async Task<string> GetUserEarnedStarsShieldSvg(string userName, ShieldQueryParams shieldParams)
     {
         return await BaseShieldSvg("Earned Stars", await GetUserEarnedStars(userName), shieldParams);
     }
 
-    public async Task<string> GetUserMergedPullRequestsCardSvg(string userName, ShieldQueryParams shieldParams)
+    public async Task<string> GetUserMergedPullRequestsShieldSvg(string userName, ShieldQueryParams shieldParams)
     {
         return await BaseShieldSvg("Merged PRs", await GetUserMergedPullRequests(userName), shieldParams);
     }
 
-    public async Task<string> GetUserOpenedIssuesCardSvg(string userName, ShieldQueryParams shieldParams)
+    public async Task<string> GetUserOpenedIssuesShieldSvg(string userName, ShieldQueryParams shieldParams)
     {
         return await BaseShieldSvg("Opened Issues", await GetUserOpenedIssues(userName), shieldParams);
     }
