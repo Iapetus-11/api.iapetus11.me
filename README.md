@@ -11,8 +11,8 @@
 ## Features
 - Image generation
 - Minecraft Java & Bedrock server status
-- Link shortener with IP logging
-- Meme endpoints
+- Reddit meme endpoint
+- GitHub stat shields/cards/badges
 
 ## Documentation
 ### Reddit Posts
