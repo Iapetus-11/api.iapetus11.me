@@ -31,7 +31,7 @@ public class GitHubStatsController : ControllerBase
         });
     }
 
-    [HttpGet("{userName}/shield/stars")]
+    [HttpGet("{userName}/shield/stars"), ResponseCache(Duration = 1800)]
     public async Task<IActionResult> GetGitHubUserStarCard(string userName, [FromQuery] ShieldQueryParams shieldParams)
     {
         if (!_gitHub.IsValidUserName(userName))
@@ -42,7 +42,7 @@ public class GitHubStatsController : ControllerBase
         return Content(await _gitHub.GetUserEarnedStarsShieldSvg(userName, shieldParams), "image/svg+xml");
     }
 
-    [HttpGet("{userName}/shield/prs")]
+    [HttpGet("{userName}/shield/prs"), ResponseCache(Duration = 1800)]
     public async Task<IActionResult> GetGitHubUserPRsCard(string userName, [FromQuery] ShieldQueryParams shieldParams)
     {
         if (!_gitHub.IsValidUserName(userName))
@@ -53,7 +53,7 @@ public class GitHubStatsController : ControllerBase
         return Content(await _gitHub.GetUserMergedPullRequestsShieldSvg(userName, shieldParams), "image/svg+xml");
     }
 
-    [HttpGet("{userName}/shield/issues")]
+    [HttpGet("{userName}/shield/issues"), ResponseCache(Duration = 1800)]
     public async Task<IActionResult> GetGitHubUserIssuesCard(string userName, [FromQuery] ShieldQueryParams shieldParams)
     {
         if (!_gitHub.IsValidUserName(userName))
