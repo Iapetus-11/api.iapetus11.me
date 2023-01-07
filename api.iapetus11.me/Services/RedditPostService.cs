@@ -8,7 +8,7 @@ using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace api.iapetus11.me.Services;
 
-public class RedditPostFetcher : IRedditPostFetcher
+public class RedditPostService : IRedditPostService
 {
     private static readonly IReadOnlyDictionary<string, string> _subredditGroups = new Dictionary<string, string>
     {
@@ -24,7 +24,7 @@ public class RedditPostFetcher : IRedditPostFetcher
     private static readonly Random _rand = new();
     
     private readonly IFlurlClient _http;
-    private readonly ILogger<RedditPostFetcher> _log;
+    private readonly ILogger<RedditPostService> _log;
 
     private readonly Dictionary<string, RedditPost[]> _postGroups = new();
     private readonly Dictionary<string, List<string>> _lastPosts = new();
@@ -32,12 +32,16 @@ public class RedditPostFetcher : IRedditPostFetcher
 
     private readonly DateTime _lastClearTime;
 
-    public RedditPostFetcher(IFlurlClient http, ILogger<RedditPostFetcher> log)
+    public RedditPostService(IFlurlClient http, ILogger<RedditPostService> log)
     {
         _http = http;
         _log = log;
         _lastClearTime = DateTime.Now;
     }
+
+    public int GetPostsCacheCount() => _postGroups.SelectMany(kv => kv.Value).Count();
+
+    public int GetLastPostsCacheCount() => _lastPosts.Select(kv => kv.Value).Count();
 
     public RedditPost FetchRandomPost(string subredditGroup, string? requesterId)
     {

@@ -14,16 +14,21 @@ public class MinecraftServerService : IMinecraftServerService
     private readonly IAppCache _cache;
     private readonly IStaticAssetsService _assets;
     private readonly ILogger<MinecraftServerService> _log;
+    private readonly ICacheTrackerService _cacheTrack;
 
-    public MinecraftServerService(IAppCache cache, IStaticAssetsService assets, ILogger<MinecraftServerService> log)
+    public MinecraftServerService(IAppCache cache, IStaticAssetsService assets, ILogger<MinecraftServerService> log, ICacheTrackerService cacheTrack)
     {
         _cache = cache;
         _assets = assets;
         _log = log;
+        _cacheTrack = cacheTrack;
     }
     
     private async Task<MinecraftServer> FetchServer(string address)
     {
+        var key = GetCacheKey(address);
+        _cacheTrack.AddCacheKey(key);
+        
         return await _cache.GetOrAddAsync(GetCacheKey(address), async () =>
         {
             _log.LogInformation("Start fetching server {ServerAddress}", address);

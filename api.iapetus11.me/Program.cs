@@ -36,13 +36,13 @@ builder.Services.AddSingleton<IFlurlClient, FlurlClient>();
 
 builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
 builder.Services.AddScoped<IMinecraftImageService, MinecraftImageService>();
-builder.Services.AddScoped<ILinkShortenerService, LinkShortenerService>();
 builder.Services.AddScoped<IGitHubService, GitHubService>();
 
-builder.Services.AddSingleton<IRedditPostFetcher, RedditPostFetcher>();
-builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetService<IRedditPostFetcher>()!);
+builder.Services.AddSingleton<IRedditPostService, RedditPostService>();
+builder.Services.AddHostedService<IRedditPostService>(provider => provider.GetService<IRedditPostService>()!);
 
 builder.Services.AddSingleton<IStaticAssetsService, StaticAssetsService>();
+builder.Services.AddSingleton<ICacheTrackerService, CacheTrackerService>();
 
 builder.Services.AddControllers();
 

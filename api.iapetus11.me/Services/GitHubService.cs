@@ -12,12 +12,14 @@ public class GitHubService : IGitHubService
     private readonly IFlurlClient _http;
     private readonly IAppCache _cache;
     private readonly ILogger<GitHubService> _log;
+    private readonly ICacheTrackerService _cacheTrack;
     
-    public GitHubService(IFlurlClient http, IAppCache cache, ILogger<GitHubService> log)
+    public GitHubService(IFlurlClient http, IAppCache cache, ILogger<GitHubService> log, ICacheTrackerService cacheTrack)
     {
         _http = http;
         _cache = cache;
         _log = log;
+        _cacheTrack = cacheTrack;
     }
 
     public bool IsValidUserName(string userName)
@@ -35,7 +37,10 @@ public class GitHubService : IGitHubService
     
     private async Task<List<Repository>> GetUserRepositories(string userName)
     {
-        return await _cache.GetOrAddAsync($"GitHubUserRepos:{userName}", async () =>
+        var key = $"GitHubUserRepos:{userName}";
+        _cacheTrack.AddCacheKey(key);
+
+        return await _cache.GetOrAddAsync(key, async () =>
         {
             var repos = new List<Repository>();
             var i = 0;
@@ -62,7 +67,10 @@ public class GitHubService : IGitHubService
 
     private async Task<SearchResult> SearchIssues(string query, int perPage, int pages)
     {
-        return await _cache.GetOrAddAsync($"IssueSearchResult:{query},{perPage},{pages}", async () =>
+        var key = $"IssueSearchResult:{query},{perPage},{pages}";
+        _cacheTrack.AddCacheKey(key);
+        
+        return await _cache.GetOrAddAsync(key, async () =>
         {
             var items = new List<SearchItem>();
             var incompleteResults = false;
@@ -118,7 +126,10 @@ public class GitHubService : IGitHubService
 
     private async Task<string> BaseShieldSvg(string label, object value, ShieldQueryParams shieldParams)
     {
-        return await _cache.GetOrAddAsync($"ShieldSvg:{label},{value},{shieldParams.ToString()}", async () => await _http
+        var key = $"ShieldSvg:{label},{value},{shieldParams}";
+        _cacheTrack.AddCacheKey(key);
+        
+        return await _cache.GetOrAddAsync(key, async () => await _http
             .Request("https://img.shields.io/static/v1")
             .SetQueryParam("label", label)
             .SetQueryParam("message", value)
