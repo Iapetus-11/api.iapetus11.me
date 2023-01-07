@@ -6,7 +6,7 @@ using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureAppConfiguration((_, config) => config.AddJsonFile("secrets.json"));
+builder.Configuration.AddJsonFile("secrets.json");
 
 builder.Host.UseSerilog((host, provider, config) =>
 {
@@ -66,5 +66,7 @@ app.MapGet("/", () => new
     Author = "Iapetus11 / Milo Weinberg",
     Repository = "https://github.com/Iapetus-11/api.iapetus11.me"
 });
+
+app.Services.GetService<ILogger<object>>()!.LogInformation("Starting up api.iapetus11.me!");
 
 app.Run();
