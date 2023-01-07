@@ -18,4 +18,5 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build /app ./
 COPY api.iapetus11.me/Content Content
+COPY api.iapetus11.me/Properties Properties
 ENTRYPOINT ["dotnet", "api.iapetus11.me.dll"]
