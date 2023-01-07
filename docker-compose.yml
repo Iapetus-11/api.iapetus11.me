@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  backend:
+    build:
+      context: .
+    ports:
+      - "2741:2741"
+    volumes:
+      - type: bind
+        source: ./api.iapetus11.me/secrets.json
+        target: /app/secrets.json
+    init: true

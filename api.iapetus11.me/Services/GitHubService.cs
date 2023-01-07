@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using api.iapetus11.me.Extensions;
+﻿using api.iapetus11.me.Extensions;
 using api.iapetus11.me.Models;
 using api.iapetus11.me.Models.GitHub;
 using Flurl.Http;
