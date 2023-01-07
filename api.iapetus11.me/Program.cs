@@ -1,7 +1,5 @@
-using api.iapetus11.me.Data;
 using api.iapetus11.me.Services;
 using Flurl.Http;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 
@@ -31,10 +29,6 @@ builder.Services.AddCors(options => {
         });
 });
 
-var databaseConfig = builder.Configuration.GetSection("Database");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(string.Join(";", databaseConfig.GetChildren().Select(c => $"{c.Key}={c.Value}"))));
-
 builder.Services.AddLazyCache();
 builder.Services.AddSwaggerGen();
 
@@ -53,11 +47,6 @@ builder.Services.AddSingleton<IStaticAssetsService, StaticAssetsService>();
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
-// create scope, inject database context, and update migrations
-using var scope = app.Services.CreateScope();
-var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-context.Database.Migrate();
 
 app.Services.GetService<IStaticAssetsService>()!.CacheAllAssets();
 
