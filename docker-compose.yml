@@ -2,7 +2,7 @@ version: "3.7"
 volumes:
   seq:
 networks:
-  api_and_seq:
+  seq:
 services:
   api:
     container_name: api
@@ -18,7 +18,7 @@ services:
     depends_on:
       - seq
     networks:
-      - api_and_seq
+      - seq
   seq:
     container_name: seq
     hostname: seq
@@ -39,4 +39,4 @@ services:
       - BASE_URI=${SEQ_BASE_URL}
       - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_PASSWORD}
     networks:
-      - api_and_seq
+      - seq
