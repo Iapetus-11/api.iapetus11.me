@@ -3,6 +3,7 @@ volumes:
   seq:
 services:
   api:
+    container_name: api
     build:
       context: .
     ports:
@@ -15,6 +16,8 @@ services:
     depends_on:
       - seq
   seq:
+    container_name: seq
+    hostname: seq
     image: datalust/seq:latest
 #    deploy:
 #      resources:
