@@ -27,5 +27,5 @@ services:
       - seq:/seq:ro
     environment:
       - ACCEPT_EULA=Y
-      - BASE_URI=https://api-logs.iapetus11.me/
+      - BASE_URI=${SEQ_BASE_URL}
       - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_PASSWORD}
