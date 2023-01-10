@@ -1,6 +1,8 @@
 version: "3.7"
 volumes:
   seq:
+networks:
+  api_and_seq:
 services:
   api:
     container_name: api
@@ -15,6 +17,8 @@ services:
     init: true
     depends_on:
       - seq
+    networks:
+      - api_and_seq
   seq:
     container_name: seq
     hostname: seq
@@ -34,3 +38,5 @@ services:
       - ACCEPT_EULA=Y
       - BASE_URI=${SEQ_BASE_URL}
       - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_PASSWORD}
+    networks:
+      - api_and_seq
