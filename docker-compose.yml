@@ -1,8 +1,6 @@
 version: "3.7"
 volumes:
   seq:
-networks:
-  seq:
 services:
   api:
     container_name: api
@@ -17,11 +15,7 @@ services:
     init: true
     depends_on:
       - seq
-    networks:
-      - seq
   seq:
-    container_name: seq
-    hostname: seq
     image: datalust/seq:latest
 #    deploy:
 #      resources:
@@ -38,5 +32,3 @@ services:
       - ACCEPT_EULA=Y
       - BASE_URI=${SEQ_BASE_URL}
       - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_PASSWORD}
-    networks:
-      - seq
