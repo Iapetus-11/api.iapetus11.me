@@ -12,6 +12,8 @@ services:
         source: ./api.iapetus11.me/secrets.json
         target: /app/secrets.json
     init: true
+    depends_on:
+      - seq
   seq:
     image: datalust/seq:latest
 #    deploy:
