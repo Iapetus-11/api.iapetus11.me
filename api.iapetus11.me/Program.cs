@@ -3,6 +3,7 @@ using Flurl.Http;
 using Serilog;
 using Serilog.Events;
 
+Serilog.Debugging.SelfLog.Enable(Console.Error);
 
 var builder = WebApplication.CreateBuilder(args);
 
