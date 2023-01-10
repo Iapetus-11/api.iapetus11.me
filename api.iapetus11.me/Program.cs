@@ -52,7 +52,7 @@ app.Services.GetService<IStaticAssetsService>()!.CacheAllAssets();
 
 app.UseRouting();
 app.UseCors();
-app.UseEndpoints(endpoints => endpoints.MapControllers());
+app.MapControllers();
 
 if (app.Environment.IsDevelopment())
 {
@@ -67,6 +67,7 @@ app.MapGet("/", () => new
     Repository = "https://github.com/Iapetus-11/api.iapetus11.me"
 });
 
-app.Services.GetService<ILogger<object>>()!.LogInformation("Starting up api.iapetus11.me!");
+app.Services.GetService<ILogger<object>>()!.LogInformation(
+    "Starting up api.iapetus11.me ({env})!", builder.Environment.IsProduction() ? "prod" : "dev");
 
 app.Run();

@@ -1,12 +1,31 @@
 version: "3.7"
+volumes:
+  seq:
 services:
-  backend:
+  api:
     build:
       context: .
     ports:
-      - "2741:2741"
+      - "2741:80"
     volumes:
       - type: bind
         source: ./api.iapetus11.me/secrets.json
         target: /app/secrets.json
     init: true
+  seq:
+    image: datalust/seq:latest
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 14G
+#        reservations:
+#          memory: 14G
+    ports:
+      - "5341:5341"
+      - "5342:80"
+    volumes:
+      - seq:/seq:ro
+    environment:
+      - ACCEPT_EULA=Y
+      - BASE_URI=https://api-logs.iapetus11.me/
+      - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_PASSWORD}

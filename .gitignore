@@ -2,3 +2,4 @@
 bin/
 obj/
 api.iapetus11.me/secrets.json
+.env
