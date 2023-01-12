@@ -1,14 +1,13 @@
-using api.iapetus11.me.Data;
 using api.iapetus11.me.Services;
 using Flurl.Http;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 
+Serilog.Debugging.SelfLog.Enable(Console.Error);
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureAppConfiguration((_, config) => config.AddJsonFile("secrets.json"));
+builder.Configuration.AddJsonFile("secrets.json");
 
 builder.Host.UseSerilog((host, provider, config) =>
 {
@@ -31,10 +30,6 @@ builder.Services.AddCors(options => {
         });
 });
 
-var databaseConfig = builder.Configuration.GetSection("Database");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(string.Join(";", databaseConfig.GetChildren().Select(c => $"{c.Key}={c.Value}"))));
-
 builder.Services.AddLazyCache();
 builder.Services.AddSwaggerGen();
 
@@ -42,28 +37,23 @@ builder.Services.AddSingleton<IFlurlClient, FlurlClient>();
 
 builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
 builder.Services.AddScoped<IMinecraftImageService, MinecraftImageService>();
-builder.Services.AddScoped<ILinkShortenerService, LinkShortenerService>();
 builder.Services.AddScoped<IGitHubService, GitHubService>();
 
-builder.Services.AddSingleton<IRedditPostFetcher, RedditPostFetcher>();
-builder.Services.AddHostedService<IRedditPostFetcher>(provider => provider.GetService<IRedditPostFetcher>()!);
+builder.Services.AddSingleton<IRedditPostService, RedditPostService>();
+builder.Services.AddHostedService<IRedditPostService>(provider => provider.GetService<IRedditPostService>()!);
 
 builder.Services.AddSingleton<IStaticAssetsService, StaticAssetsService>();
+builder.Services.AddSingleton<ICacheTrackerService, CacheTrackerService>();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// create scope, inject database context, and update migrations
-using var scope = app.Services.CreateScope();
-var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-context.Database.Migrate();
-
 app.Services.GetService<IStaticAssetsService>()!.CacheAllAssets();
 
 app.UseRouting();
 app.UseCors();
-app.UseEndpoints(endpoints => endpoints.MapControllers());
+app.MapControllers();
 
 if (app.Environment.IsDevelopment())
 {
@@ -77,5 +67,8 @@ app.MapGet("/", () => new
     Author = "Iapetus11 / Milo Weinberg",
     Repository = "https://github.com/Iapetus-11/api.iapetus11.me"
 });
+
+app.Services.GetService<ILogger<object>>()!.LogInformation(
+    "Starting up api.iapetus11.me ({env})!", builder.Environment.IsProduction() ? "prod" : "dev");
 
 app.Run();

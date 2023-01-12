@@ -7,9 +7,9 @@ namespace api.iapetus11.me.Controllers;
 [Route("reddit")]
 public class RedditController : Controller
 {
-    private readonly IRedditPostFetcher _reddit;
+    private readonly IRedditPostService _reddit;
 
-    public RedditController(IRedditPostFetcher reddit) => _reddit = reddit;
+    public RedditController(IRedditPostService reddit) => _reddit = reddit;
 
     [HttpGet("{subredditGroup}")]
     public IActionResult GetRedditPost(string subredditGroup,
