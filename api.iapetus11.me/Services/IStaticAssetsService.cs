@@ -10,5 +10,6 @@ public interface IStaticAssetsService
     public Image AchievementBaseImage { get; }
     public Image SplashBaseImage { get; }
     public FontFamily MinecraftiaFontFamily { get; }
+    public int[] FractalSeed { get; }
     public void CacheAllAssets();
 }

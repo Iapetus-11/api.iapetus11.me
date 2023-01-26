@@ -18,7 +18,7 @@ public class HealthController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetApiStatistics()
+    public IActionResult GetApiStatistics()
     {
         return Ok(new
         {

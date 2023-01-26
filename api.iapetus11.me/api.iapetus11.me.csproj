@@ -14,14 +14,18 @@
       <PackageReference Include="Seq.Extensions.Logging" Version="6.1.0-dev-00091" />
       <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
       <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.2-dev-00222" />
-      <PackageReference Include="SixLabors.ImageSharp" Version="2.0.0" />
-      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta14" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.2.3" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Content\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Fractals\Fractals.csproj" />
     </ItemGroup>
 
 </Project>

@@ -38,6 +38,7 @@ builder.Services.AddSingleton<IFlurlClient, FlurlClient>();
 builder.Services.AddScoped<IMinecraftServerService, MinecraftServerService>();
 builder.Services.AddScoped<IMinecraftImageService, MinecraftImageService>();
 builder.Services.AddScoped<IGitHubService, GitHubService>();
+builder.Services.AddScoped<IFractalsService, FractalsService>();
 
 builder.Services.AddSingleton<IRedditPostService, RedditPostService>();
 builder.Services.AddHostedService<IRedditPostService>(provider => provider.GetService<IRedditPostService>()!);
