@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
-namespace api.iapetus11.me.Services.Minecraft;
+namespace api.iapetus11.me.Common.Minecraft;
 
 public class MinecraftColor
 {

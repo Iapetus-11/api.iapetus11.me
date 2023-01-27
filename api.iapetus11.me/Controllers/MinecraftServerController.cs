@@ -1,5 +1,5 @@
 ﻿using api.iapetus11.me.Services;
-using api.iapetus11.me.Services.Minecraft;
+using api.iapetus11.me.Common.Minecraft;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.iapetus11.me.Controllers;
