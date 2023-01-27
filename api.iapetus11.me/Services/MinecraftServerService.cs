@@ -1,6 +1,6 @@
 ﻿using api.iapetus11.me.Extensions;
 using api.iapetus11.me.Models;
-using api.iapetus11.me.Services.Minecraft;
+using api.iapetus11.me.Common.Minecraft;
 using LazyCache;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;

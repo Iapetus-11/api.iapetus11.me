@@ -1,5 +1,5 @@
 ﻿using api.iapetus11.me.Models;
-using api.iapetus11.me.Services.Minecraft;
+using api.iapetus11.me.Common.Minecraft;
 
 namespace api.iapetus11.me.Services;
 

@@ -1,5 +1,6 @@
 ﻿using api.iapetus11.me.Extensions;
 using api.iapetus11.me.Models;
+using api.iapetus11.me.Services;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -7,9 +8,8 @@ using SixLabors.ImageSharp.Memory;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
-using ImageExtensions = SixLabors.ImageSharp.ImageExtensions;
 
-namespace api.iapetus11.me.Services.Minecraft;
+namespace api.iapetus11.me.Common.Minecraft;
 
 public class ServerImage
 {
@@ -78,7 +78,7 @@ public class ServerImage
         {
             try
             {
-                favicon = api.iapetus11.me.Extensions.ImageExtensions.FromB64Png(_status.Favicon);
+                favicon = Extensions.ImageExtensions.FromB64Png(_status.Favicon);
                 favicon.Mutate(x => x
                     .SetGraphicsOptions(new GraphicsOptions() {Antialias = false})
                     .Resize(128, 128, new NearestNeighborResampler()));

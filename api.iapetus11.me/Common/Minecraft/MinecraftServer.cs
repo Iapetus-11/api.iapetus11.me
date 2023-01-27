@@ -4,7 +4,7 @@ using api.iapetus11.me.Models;
 using DnsClient;
 using DnsClient.Protocol;
 
-namespace api.iapetus11.me.Services.Minecraft;
+namespace api.iapetus11.me.Common.Minecraft;
 
 public class ServerStatusException : Exception
 {
