@@ -4,5 +4,5 @@ namespace api.iapetus11.me.Services;
 
 public interface IFractalsService
 {
-    public Stream GenerateFractal(FractalQueryParams fractalQueryParams);
+    public byte[] GenerateFractal(FractalQueryParams fractalQueryParams);
 }
