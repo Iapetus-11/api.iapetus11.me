@@ -15,10 +15,21 @@
 - GitHub stat shields/cards/badges
 
 ## Documentation
-### Reddit Posts
-- `GET reddit/{subredditGroup}?requesterId={uniquePerSomething}` - *Returns a random image post from the specified subreddit group*
-  - `subredditGroup` - *Must be one of `meme`, `cursedMinecraft`, `greentext`, `comic`*
-  - `requesterId` (optional) - *Unique ID to prevent duplicate posts from being returned, for example if used in a Discord bot, this could be the channel ID the command was summoned in*
+### Fractals
+- `GET /fractal` - *Returns a png of the generated fractal*
+    - `resolution` - *The resolution of the returned image, any number between `512` and `2048`*
+    - `fractalVariation` - *The variation of flame fractal, valid values are: `Linear`, `Sine`, `Spherical`, `Horseshoe`, `Cross`, `Tangent`, `Bubble`, `RadTan`, `Tangle`, and `Diamond`*
+    - `colorA` - *The first color, in hex format*
+    - `colorB` - *The second color, in hex format*
+    - `coloring` - *The coloring strategy, valid values are: `Gradient`, `SigmoidGradient`, and `Experimental`
+    - `iterTransformX` - *Iterative X-axis transformation, any value between `0.0` and `5.0`*
+    - `iterTransformY` - *Iterative Y-axis tranformation, any value between `0.0` and `5.0`*
+    - `xShift` - *How much to shift the X axis by, any value between `-1.0` and `1.0`*
+    - `transform` - *Iterative transformation, any value between `0.0` and `5.0`*
+    - `iterations` - *How many iterations, any value between `1` and `5000000`*
+    - `mirrored` - *Whether or not to mirror the generated fractal, either `true` or `false`*
+    - `blur` - *How much to blur the image, any value between `1.0` and `4.0`*
+    - `sharpen` - *How much to sharpen the image, any value between `1.0` and `4.0`*
 ### GitHub Stats
 - `GET github/stats/{userName}` - *Returns a GitHub user's earned stars, opened issues, and opened PRs which were merged*
   - `userName` - *Must be a valid GitHub username*
@@ -31,6 +42,10 @@
 - `GET github/stats/{userName}/shield/issues` - *Returns an image/shield/badge showing a user's opened issues*
   - `userName` - *Must be a valid GitHub username*
   - [shields.io](https://shields.io/) is used for image generation, this endpoint supports [these](https://shields.io/#your-badge) query parameters.
+### Reddit Posts
+- `GET reddit/{subredditGroup}?requesterId={uniquePerSomething}` - *Returns a random image post from the specified subreddit group*
+  - `subredditGroup` - *Must be one of `meme`, `cursedMinecraft`, `greentext`, `comic`*
+  - `requesterId` (optional) - *Unique ID to prevent duplicate posts from being returned, for example if used in a Discord bot, this could be the channel ID the command was summoned in*
 ### Minecraft Servers
 - `GET mc/server/status/{serverAddress}` - *Returns the status of the specified Minecraft server, this supports all versions of Minecraft except those below 1.8 and realms*
   - `serverAddress` - *Any host, port is optional, an example would be `example.com:25565`*
