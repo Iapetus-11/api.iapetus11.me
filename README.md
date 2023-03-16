@@ -30,6 +30,8 @@
     - `mirrored` - *Whether or not to mirror the generated fractal, either `true` or `false`*
     - `blur` - *How much to blur the image, any value between `1.0` and `4.0`*
     - `sharpen` - *How much to sharpen the image, any value between `1.0` and `4.0`*
+- All generated fractal images are licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)
+
 ### GitHub Stats
 - `GET github/stats/{userName}` - *Returns a GitHub user's earned stars, opened issues, and opened PRs which were merged*
   - `userName` - *Must be a valid GitHub username*
