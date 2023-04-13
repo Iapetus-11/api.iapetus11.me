@@ -2,6 +2,7 @@
 using api.iapetus11.me.Models;
 using api.iapetus11.me.Models.GitHub;
 using Flurl.Http;
+using HtmlAgilityPack;
 using LazyCache;
 
 namespace api.iapetus11.me.Services;
@@ -12,8 +13,9 @@ public class GitHubService : IGitHubService
     private readonly IAppCache _cache;
     private readonly ILogger<GitHubService> _log;
     private readonly ICacheTrackerService _cacheTrack;
-    
-    public GitHubService(IFlurlClient http, IAppCache cache, ILogger<GitHubService> log, ICacheTrackerService cacheTrack)
+
+    public GitHubService(IFlurlClient http, IAppCache cache, ILogger<GitHubService> log,
+        ICacheTrackerService cacheTrack)
     {
         _http = http;
         _cache = cache;
@@ -33,7 +35,7 @@ public class GitHubService : IGitHubService
 
         return true;
     }
-    
+
     private async Task<List<Repository>> GetUserRepositories(string userName)
     {
         var key = $"GitHubUserRepos:{userName}";
@@ -47,17 +49,17 @@ public class GitHubService : IGitHubService
             while (true)
             {
                 i++;
-                
+
                 var newRepos = await _http
                     .Request($"https://api.github.com/users/{userName}/repos?page={i}")
                     .WithHeader("User-Agent", "api.iapetus11.me")
                     .GetJsonAsync<List<Repository>>();
-                
+
                 repos.AddRange(newRepos);
 
                 if (newRepos.Count < 30) break;
             }
-            
+
             _log.LogInformation("Fetched {RepoCount} GitHub repositories for user {User}", repos.Count, userName);
 
             return repos;
@@ -68,7 +70,7 @@ public class GitHubService : IGitHubService
     {
         var key = $"IssueSearchResult:{query},{perPage},{pages}";
         _cacheTrack.AddCacheKey(key);
-        
+
         return await _cache.GetOrAddAsync(key, async () =>
         {
             var items = new List<SearchItem>();
@@ -90,7 +92,7 @@ public class GitHubService : IGitHubService
 
                 items.AddRange(res.Items);
             }
-            
+
             _log.LogInformation("Fetched {ItemCount} items for issue search query {Query}", items.Count, query);
 
             return new SearchResult()
@@ -102,32 +104,114 @@ public class GitHubService : IGitHubService
         }, DateTimeOffset.Now.AddMinutes(5));
     }
 
+    private async Task<IEnumerable<string>> GetRepositoryDependants(string repository)
+    {
+        var cacheKey = $"RepositoryDependants:{repository}";
+
+        return await _cache.GetOrAddAsync(cacheKey, async () =>
+        {
+            var dependants = new List<string>();
+            var dependantsUrl = $"https://github.com/{repository}/network/dependents";
+
+            do
+            {
+                var response = await _http
+                    .Request(dependantsUrl)
+                    .GetStringAsync();
+
+                var soup = new HtmlDocument();
+                soup.LoadHtml(response);
+
+                dependants.AddRange(soup.DocumentNode
+                    .Descendants("div")
+                    .Where(node => node.HasClass("Box-row"))
+                    .Select(node =>
+                    {
+                        var repoAuthor = node
+                            .Descendants("a")
+                            .FirstOrDefault(anchor => anchor.Attributes.Any(
+                                attr => attr.Name == "data-hovercard-type" &&
+                                        (attr.Value == "user" || attr.Value == "organization")))
+                            ?.InnerText;
+
+                        var repoName = node
+                            .Descendants("a")
+                            .FirstOrDefault(anchor => anchor.Attributes.Any(
+                                attr => attr.Name == "data-hovercard-type" && attr.Value == "repository"))
+                            ?.InnerText;
+
+                        return $"{repoAuthor}/{repoName}";
+                    }));
+
+                // Get link from next button
+                dependantsUrl = soup.DocumentNode.Descendants("div")
+                    .FirstOrDefault(
+                        div => div.HasClass("BtnGroup") && div.Attributes.Any(
+                            attr => attr.Name == "data-test-selector" && attr.Value == "pagination"))
+                    ?.Descendants("a")
+                    ?.FirstOrDefault(anchor => anchor.InnerText == "Next")
+                    ?.Attributes
+                    ?.FirstOrDefault(attr => attr.Name == "href")
+                    ?.Value;
+            } while (dependantsUrl is not null);
+
+            // For some reason sometimes base repo is in this list
+            dependants = dependants.Where(d => d != repository).ToList();
+
+            _log.LogInformation("Fetched {DependantCount} dependants for repository {Repository}", dependants.Count,
+                repository);
+
+            return dependants;
+        }, DateTimeOffset.Now.AddMinutes(5));
+    }
+
     public async Task<int> GetUserEarnedStars(string userName)
     {
         var repositories = await GetUserRepositories(userName);
 
-        return (int) repositories.Select(r => r.StargazersCount).Sum();
+        return (int)repositories.Select(r => r.StargazersCount).Sum();
     }
 
     public async Task<int> GetUserMergedPullRequests(string userName)
     {
         var searchResult = await SearchIssues($"author:{userName} is:pr is:merged", 1, 1);
 
-        return (int) searchResult.TotalCount;
+        return (int)searchResult.TotalCount;
     }
 
     public async Task<int> GetUserOpenedIssues(string userName)
     {
         var searchResult = await SearchIssues($"author:{userName} is:issue", 1, 1);
 
-        return (int) searchResult.TotalCount;
+        return (int)searchResult.TotalCount;
+    }
+
+    public async Task<IEnumerable<string>> GetUserDependantRepositories(string userName)
+    {
+        var repositories = await GetUserRepositories(userName);
+
+        var dependants = new List<string>();
+
+        foreach (var reposChunk in repositories.Chunk(8))
+        {
+            var tasks = reposChunk.Select(repo => GetRepositoryDependants(repo.FullName)).ToArray();
+
+            await Task.WhenAll(tasks);
+
+            foreach (var task in tasks)
+            {
+                dependants.AddRange(task.Result);
+            }
+        }
+
+        return dependants.Distinct();
     }
 
     private async Task<string> BaseShieldSvg(string label, object value, ShieldQueryParams shieldParams)
     {
         var key = $"ShieldSvg:{label},{value},{shieldParams}";
         _cacheTrack.AddCacheKey(key);
-        
+
         return await _cache.GetOrAddAsync(key, async () => await _http
             .Request("https://img.shields.io/static/v1")
             .SetQueryParam("label", label)
@@ -149,5 +233,11 @@ public class GitHubService : IGitHubService
     public async Task<string> GetUserOpenedIssuesShieldSvg(string userName, ShieldQueryParams shieldParams)
     {
         return await BaseShieldSvg("Opened Issues", await GetUserOpenedIssues(userName), shieldParams);
+    }
+
+    public async Task<string> GetUserDependantRepositoriesShieldSvg(string userName, ShieldQueryParams shieldParams)
+    {
+        return await BaseShieldSvg("Dependant Repositories", (await GetUserDependantRepositories(userName)).Count(),
+            shieldParams);
     }
 }

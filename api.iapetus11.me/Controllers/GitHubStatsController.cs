@@ -9,7 +9,7 @@ namespace api.iapetus11.me.Controllers;
 public class GitHubStatsController : ControllerBase
 {
     private readonly IGitHubService _gitHub;
-    
+
     public GitHubStatsController(IGitHubService gitHub)
     {
         _gitHub = gitHub;
@@ -28,6 +28,7 @@ public class GitHubStatsController : ControllerBase
             EarnedStars = await _gitHub.GetUserEarnedStars(userName),
             MergedPullRequests = await _gitHub.GetUserMergedPullRequests(userName),
             OpenedIssues = await _gitHub.GetUserOpenedIssues(userName),
+            Dependants = await _gitHub.GetUserDependantRepositories(userName),
         });
     }
 
@@ -54,7 +55,8 @@ public class GitHubStatsController : ControllerBase
     }
 
     [HttpGet("{userName}/shield/issues"), ResponseCache(Duration = 1800)]
-    public async Task<IActionResult> GetGitHubUserIssuesCard(string userName, [FromQuery] ShieldQueryParams shieldParams)
+    public async Task<IActionResult> GetGitHubUserIssuesCard(string userName,
+        [FromQuery] ShieldQueryParams shieldParams)
     {
         if (!_gitHub.IsValidUserName(userName))
         {
@@ -62,5 +64,17 @@ public class GitHubStatsController : ControllerBase
         }
 
         return Content(await _gitHub.GetUserOpenedIssuesShieldSvg(userName, shieldParams), "image/svg+xml");
+    }
+
+    [HttpGet("{userName}/shield/dependants"), ResponseCache(Duration = 1800)]
+    public async Task<IActionResult> GetGitHubUserDependantRepositoriesCard(string userName,
+        [FromQuery] ShieldQueryParams shieldParams)
+    {
+        if (!_gitHub.IsValidUserName(userName))
+        {
+            return BadRequest("Invalid GitHub username provided.");
+        }
+
+        return Content(await _gitHub.GetUserDependantRepositoriesShieldSvg(userName, shieldParams), "image/svg+xml");
     }
 }

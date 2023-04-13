@@ -44,6 +44,9 @@
 - `GET github/stats/{userName}/shield/issues` - *Returns an image/shield/badge showing a user's opened issues*
   - `userName` - *Must be a valid GitHub username*
   - [shields.io](https://shields.io/) is used for image generation, this endpoint supports [these](https://shields.io/#your-badge) query parameters.
+- `GET github/stats/{userName}/shield/dependants` - *Returns an image/shield/badge showing the number of repositories dependant on a user's repositories*
+  - `userName` - *Must be a valid GitHub username*
+  - [shields.io](https://shields.io/) is used for image generation, this endpoint supports [these](https://shields.io/#your-badge) query parameters.
 ### Reddit Posts
 - `GET reddit/{subredditGroup}?requesterId={uniquePerSomething}` - *Returns a random image post from the specified subreddit group*
   - `subredditGroup` - *Must be one of `meme`, `cursedMinecraft`, `greentext`, `comic`*

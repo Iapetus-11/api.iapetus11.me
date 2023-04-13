@@ -9,6 +9,7 @@
     <ItemGroup>
       <PackageReference Include="DnsClient" Version="1.6.0" />
       <PackageReference Include="Flurl.Http" Version="4.0.0-pre2" />
+      <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
       <PackageReference Include="LazyCache.AspNetCore" Version="2.4.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="Seq.Extensions.Logging" Version="6.1.0-dev-00091" />
