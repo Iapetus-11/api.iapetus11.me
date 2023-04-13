@@ -104,66 +104,102 @@ public class GitHubService : IGitHubService
         }, DateTimeOffset.Now.AddMinutes(5));
     }
 
-    private async Task<IEnumerable<string>> GetRepositoryDependants(string repository)
+    private async Task<int> GetRepositoryDependantsCount(string repository)
     {
         var cacheKey = $"RepositoryDependants:{repository}";
 
         return await _cache.GetOrAddAsync(cacheKey, async () =>
         {
-            var dependants = new List<string>();
-            var dependantsUrl = $"https://github.com/{repository}/network/dependents";
+            var response = await _http
+                .Request($"https://github.com/{repository}/network/dependents")
+                .GetStringAsync();
 
-            do
+            var soup = new HtmlDocument();
+            soup.LoadHtml(response);
+
+            var dependentRepoCountString = soup.DocumentNode
+                .Descendants("a")
+                .FirstOrDefault(anchor => anchor.HasClass("btn-link") && anchor.Attributes.Any(attr =>
+                    attr.Name == "href" && attr.Value.EndsWith("/network/dependents?dependent_type=REPOSITORY")))
+                ?.InnerText
+                ?.Replace(",", "")
+                ?.Trim()
+                ?.Split()
+                ?.FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(dependentRepoCountString))
             {
-                var response = await _http
-                    .Request(dependantsUrl)
-                    .GetStringAsync();
+                dependentRepoCountString = "0";
+            }
 
-                var soup = new HtmlDocument();
-                soup.LoadHtml(response);
+            var dependentRepoCount = int.Parse(dependentRepoCountString);
+            
+            _log.LogInformation("Fetched dependent count {DependantCount} for repository {GithubRepository}", dependentRepoCount, repository);
 
-                dependants.AddRange(soup.DocumentNode
-                    .Descendants("div")
-                    .Where(node => node.HasClass("Box-row"))
-                    .Select(node =>
-                    {
-                        var repoAuthor = node
-                            .Descendants("a")
-                            .FirstOrDefault(anchor => anchor.Attributes.Any(
-                                attr => attr.Name == "data-hovercard-type" &&
-                                        (attr.Value == "user" || attr.Value == "organization")))
-                            ?.InnerText;
-
-                        var repoName = node
-                            .Descendants("a")
-                            .FirstOrDefault(anchor => anchor.Attributes.Any(
-                                attr => attr.Name == "data-hovercard-type" && attr.Value == "repository"))
-                            ?.InnerText;
-
-                        return $"{repoAuthor}/{repoName}";
-                    }));
-
-                // Get link from next button
-                dependantsUrl = soup.DocumentNode.Descendants("div")
-                    .FirstOrDefault(
-                        div => div.HasClass("BtnGroup") && div.Attributes.Any(
-                            attr => attr.Name == "data-test-selector" && attr.Value == "pagination"))
-                    ?.Descendants("a")
-                    ?.FirstOrDefault(anchor => anchor.InnerText == "Next")
-                    ?.Attributes
-                    ?.FirstOrDefault(attr => attr.Name == "href")
-                    ?.Value;
-            } while (dependantsUrl is not null);
-
-            // For some reason sometimes base repo is in this list
-            dependants = dependants.Where(d => d != repository).ToList();
-
-            _log.LogInformation("Fetched {DependantCount} dependants for repository {Repository}", dependants.Count,
-                repository);
-
-            return dependants;
-        }, DateTimeOffset.Now.AddMinutes(5));
+            return dependentRepoCount;
+        });
     }
+
+    // private async Task<IEnumerable<string>> GetRepositoryDependants(string repository)
+    // {
+    //     var cacheKey = $"RepositoryDependants:{repository}";
+    //
+    //     return await _cache.GetOrAddAsync(cacheKey, async () =>
+    //     {
+    //         var dependants = new List<string>();
+    //         var dependantsUrl = $"https://github.com/{repository}/network/dependents";
+    //
+    //         do
+    //         {
+    //             var response = await _http
+    //                 .Request(dependantsUrl)
+    //                 .GetStringAsync();
+    //
+    //             var soup = new HtmlDocument();
+    //             soup.LoadHtml(response);
+    //
+    //             dependants.AddRange(soup.DocumentNode
+    //                 .Descendants("div")
+    //                 .Where(node => node.HasClass("Box-row"))
+    //                 .Select(node =>
+    //                 {
+    //                     var repoAuthor = node
+    //                         .Descendants("a")
+    //                         .FirstOrDefault(anchor => anchor.Attributes.Any(
+    //                             attr => attr.Name == "data-hovercard-type" &&
+    //                                     (attr.Value == "user" || attr.Value == "organization")))
+    //                         ?.InnerText;
+    //
+    //                     var repoName = node
+    //                         .Descendants("a")
+    //                         .FirstOrDefault(anchor => anchor.Attributes.Any(
+    //                             attr => attr.Name == "data-hovercard-type" && attr.Value == "repository"))
+    //                         ?.InnerText;
+    //
+    //                     return $"{repoAuthor}/{repoName}";
+    //                 }));
+    //
+    //             // Get link from next button
+    //             dependantsUrl = soup.DocumentNode.Descendants("div")
+    //                 .FirstOrDefault(
+    //                     div => div.HasClass("BtnGroup") && div.Attributes.Any(
+    //                         attr => attr.Name == "data-test-selector" && attr.Value == "pagination"))
+    //                 ?.Descendants("a")
+    //                 ?.FirstOrDefault(anchor => anchor.InnerText == "Next")
+    //                 ?.Attributes
+    //                 ?.FirstOrDefault(attr => attr.Name == "href")
+    //                 ?.Value;
+    //         } while (dependantsUrl is not null);
+    //
+    //         // For some reason sometimes base repo is in this list
+    //         dependants = dependants.Where(d => d != repository).ToList();
+    //
+    //         _log.LogInformation("Fetched {DependantCount} dependants for repository {Repository}", dependants.Count,
+    //             repository);
+    //
+    //         return dependants;
+    //     }, DateTimeOffset.Now.AddMinutes(5));
+    // }
 
     public async Task<int> GetUserEarnedStars(string userName)
     {
@@ -186,25 +222,22 @@ public class GitHubService : IGitHubService
         return (int)searchResult.TotalCount;
     }
 
-    public async Task<IEnumerable<string>> GetUserDependantRepositories(string userName)
+    public async Task<int> GetUserDependantRepositoriesCount(string userName)
     {
         var repositories = await GetUserRepositories(userName);
 
-        var dependants = new List<string>();
+        var dependants = 0;
 
-        foreach (var reposChunk in repositories.Chunk(8))
+        foreach (var reposChunk in repositories.Chunk(4))
         {
-            var tasks = reposChunk.Select(repo => GetRepositoryDependants(repo.FullName)).ToArray();
+            var tasks = reposChunk.Select(repo => GetRepositoryDependantsCount(repo.FullName)).ToArray();
 
             await Task.WhenAll(tasks);
 
-            foreach (var task in tasks)
-            {
-                dependants.AddRange(task.Result);
-            }
+            dependants += tasks.Select(task => task.Result).Sum();
         }
 
-        return dependants.Distinct();
+        return dependants;
     }
 
     private async Task<string> BaseShieldSvg(string label, object value, ShieldQueryParams shieldParams)
@@ -237,7 +270,7 @@ public class GitHubService : IGitHubService
 
     public async Task<string> GetUserDependantRepositoriesShieldSvg(string userName, ShieldQueryParams shieldParams)
     {
-        return await BaseShieldSvg("Dependant Repositories", (await GetUserDependantRepositories(userName)).Count(),
+        return await BaseShieldSvg("Dependant Repositories", await GetUserDependantRepositoriesCount(userName),
             shieldParams);
     }
 }

@@ -28,7 +28,7 @@ public class GitHubStatsController : ControllerBase
             EarnedStars = await _gitHub.GetUserEarnedStars(userName),
             MergedPullRequests = await _gitHub.GetUserMergedPullRequests(userName),
             OpenedIssues = await _gitHub.GetUserOpenedIssues(userName),
-            Dependants = await _gitHub.GetUserDependantRepositories(userName),
+            Dependants = await _gitHub.GetUserDependantRepositoriesCount(userName),
         });
     }
 
