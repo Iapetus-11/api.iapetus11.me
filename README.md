@@ -21,7 +21,7 @@
     - `fractalVariation` - *The variation of flame fractal, valid values are: `Linear`, `Sine`, `Spherical`, `Horseshoe`, `Cross`, `Tangent`, `Bubble`, `RadTan`, `Tangle`, and `Diamond`*
     - `colorA` - *The first color, in hex format*
     - `colorB` - *The second color, in hex format*
-    - `coloring` - *The coloring strategy, valid values are: `Gradient`, `SigmoidGradient`, and `Experimental`
+    - `coloring` - *The coloring strategy, valid values are: `Gradient`, `SigmoidGradient`, and `Experimental`*
     - `iterTransformX` - *Iterative X-axis transformation, any value between `0.0` and `5.0`*
     - `iterTransformY` - *Iterative Y-axis tranformation, any value between `0.0` and `5.0`*
     - `xShift` - *How much to shift the X axis by, any value between `-1.0` and `1.0`*
