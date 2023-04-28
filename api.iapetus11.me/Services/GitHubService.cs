@@ -63,7 +63,7 @@ public class GitHubService : IGitHubService
             _log.LogInformation("Fetched {RepoCount} GitHub repositories for user {User}", repos.Count, userName);
 
             return repos;
-        }, DateTimeOffset.Now.AddMinutes(5));
+        }, DateTimeOffset.Now.AddMinutes(30));
     }
 
     private async Task<SearchResult> SearchIssues(string query, int perPage, int pages)
@@ -101,7 +101,7 @@ public class GitHubService : IGitHubService
                 IncompleteResults = incompleteResults,
                 Items = items.ToArray()
             };
-        }, DateTimeOffset.Now.AddMinutes(5));
+        }, DateTimeOffset.Now.AddMinutes(30));
     }
 
     private async Task<int> GetRepositoryDependantsCount(string repository)
@@ -137,7 +137,7 @@ public class GitHubService : IGitHubService
             _log.LogInformation("Fetched dependent count {DependantCount} for repository {GithubRepository}", dependentRepoCount, repository);
 
             return dependentRepoCount;
-        });
+        }, DateTimeOffset.Now.AddMinutes(60));
     }
 
     // private async Task<IEnumerable<string>> GetRepositoryDependants(string repository)
