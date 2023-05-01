@@ -85,6 +85,7 @@ public class RedditPostService : IRedditPostService
         {
             data = await _http
                 .Request($"https://reddit.com/r/{subreddits}/hot/.json?limit=500")
+                .WithHeader("User-Agent", "api.iapetus11.me/0.0.0 (Flurl)")
                 .GetJsonAsync<RedditListing>();
         }
         catch (Exception e)
