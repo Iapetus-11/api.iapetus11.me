@@ -45,6 +45,7 @@ builder.Services.AddHostedService<IRedditPostService>(provider => provider.GetSe
 
 builder.Services.AddSingleton<IStaticAssetsService, StaticAssetsService>();
 builder.Services.AddSingleton<ICacheTrackerService, CacheTrackerService>();
+builder.Services.AddSingleton<IRedditAuthService, RedditAuthService>();
 
 builder.Services.AddControllers();
 

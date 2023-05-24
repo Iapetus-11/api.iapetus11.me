@@ -24,6 +24,7 @@ public class RedditPostService : IRedditPostService
     private static readonly Random _rand = new();
     
     private readonly IFlurlClient _http;
+    private readonly IRedditAuthService _redditAuth;
     private readonly ILogger<RedditPostService> _log;
 
     private readonly Dictionary<string, RedditPost[]> _postGroups = new();
@@ -31,12 +32,15 @@ public class RedditPostService : IRedditPostService
     private Timer _timer = null!;
 
     private readonly DateTime _lastClearTime;
+    private readonly IConfigurationSection _redditConfig;
 
-    public RedditPostService(IFlurlClient http, ILogger<RedditPostService> log)
+    public RedditPostService(IFlurlClient http, IRedditAuthService redditAuth, ILogger<RedditPostService> log, IConfiguration configuration)
     {
         _http = http;
+        _redditAuth = redditAuth;
         _log = log;
         _lastClearTime = DateTime.Now;
+        _redditConfig = configuration.GetRequiredSection("Reddit");
     }
 
     public int GetPostsCacheCount() => _postGroups.SelectMany(kv => kv.Value).Count();
@@ -81,11 +85,14 @@ public class RedditPostService : IRedditPostService
     {
         RedditListing? data;
 
+        var authToken = await _redditAuth.GetAuthToken();
+
         try
         {
             data = await _http
-                .Request($"https://reddit.com/r/{subreddits}/hot/.json?limit=500")
-                .WithHeader("User-Agent", "api.iapetus11.me/0.0.0 (Flurl)")
+                .Request($"https://www.reddit.com/r/{subreddits}/hot/.json?limit=500")
+                .WithHeader("User-Agent", _redditConfig.GetValue<string>("UserAgent"))
+                .WithHeader("Authentication", $"Bearer {authToken}")
                 .GetJsonAsync<RedditListing>();
         }
         catch (Exception e)
@@ -124,7 +131,7 @@ public class RedditPostService : IRedditPostService
             {
                 if (posts.Any()) break;
                 
-                _log.LogWarning("retrying fetching of reddit posts for subreddits: {Subreddits}", subreddits);
+                _log.LogWarning("Retrying fetching of reddit posts for subreddits: {Subreddits}", subreddits);
                 
                 posts = await FetchSubredditPosts(subreddits);    
             }
@@ -143,7 +150,7 @@ public class RedditPostService : IRedditPostService
 
     public Task StartAsync(CancellationToken stoppingToken)
     {
-        _timer = new Timer(BackgroundFetchPosts, null, TimeSpan.Zero, TimeSpan.FromMinutes(10));
+        _timer = new Timer(BackgroundFetchPosts, null, TimeSpan.Zero, TimeSpan.FromMinutes(20));
         return Task.CompletedTask;
     }
 
