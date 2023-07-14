@@ -18,7 +18,7 @@ public class MinecraftImageService : IMinecraftImageService
     {
         return _assets.AchievementBaseImage
             .Clone(x => x
-                .DrawAdjustingText(achievement, 60, 54, _assets.MinecraftiaFontFamily, Color.White, 16, 250,
+                .DrawAdjustingText(achievement, 60, 43, _assets.MinecraftiaFontFamily, Color.White, 16, 250,
                     HorizontalAlignment.Left, out _))
             .ToPngStream();
     }
