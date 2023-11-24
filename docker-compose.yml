@@ -3,7 +3,7 @@ volumes:
   seq:
 services:
   api:
-    container_name: api
+    container_name: api.iapetus11.me
     build:
       context: .
     ports:
@@ -16,6 +16,7 @@ services:
     depends_on:
       - seq
   seq:
+    container_name: api.iapetus11.me-seq
     image: datalust/seq:latest
 #    deploy:
 #      resources:
