@@ -1,3 +1,5 @@
+using SixLabors.ImageSharp.Processing;
+
 namespace Fractals;
 
 using SixLabors.ImageSharp;
@@ -61,6 +63,12 @@ public class FractalGenerator
             var color = _colorFunction(x, y, k, _iterations);
 
             image[pX, pY] = color;
+            
+            image.Mutate((ctx) =>
+            {
+                ctx.GaussianBlur(0.4f, new Rectangle(pX - 1, pY - 1, pX + 1, pY + 1));
+                // ctx.BoxBlur(1, new Rectangle(pX - 1, pY - 1, pX + 1, pY + 1));
+            });
 
             if (_mirrored)
             {
@@ -69,6 +77,13 @@ public class FractalGenerator
                 var (pX4, pY4) = _coordinateFunction(-x - _xShift, -y);
                 
                 image[pX2, pY2] =  image[pX3, pY3] = image[pX4, pY4] = color;
+                
+                // image.Mutate((ctx) =>
+                // {
+                //     ctx.GaussianBlur(0.75f, new Rectangle(pX2 - 1, pY2 - 1, pX2 + 1, pY2 + 1));
+                //     ctx.GaussianBlur(0.75f, new Rectangle(pX3 - 1, pY3 - 1, pX3 + 1, pY3 + 1));
+                //     ctx.GaussianBlur(0.75f, new Rectangle(pX4 - 1, pY4 - 1, pX4 + 1, pY4 + 1));
+                // });
             }
         }
 
