@@ -18,12 +18,6 @@ services:
   seq:
     container_name: api.iapetus11.me-seq
     image: datalust/seq:latest
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 14G
-#        reservations:
-#          memory: 14G
     ports:
       - "5341:5341"
       - "5342:80"
@@ -33,3 +27,13 @@ services:
       - ACCEPT_EULA=Y
       - BASE_URI=${SEQ_BASE_URL}
       - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_PASSWORD}
+  restarter:
+    container_name: api.iapetus11.me-restarter
+    image: docker:cli
+    volumes: 
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: 
+      - "/bin/sh"
+      - "-c"
+      - "while true; do sleep 86400; docker restart api.iapetus11.me; done"
+    
