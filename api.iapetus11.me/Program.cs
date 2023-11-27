@@ -56,6 +56,7 @@ app.Services.GetService<IStaticAssetsService>()!.CacheAllAssets();
 app.UseRouting();
 app.UseCors();
 app.MapControllers();
+app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {
