@@ -13,7 +13,7 @@ public class RedditPostService : IRedditPostService
     private static readonly IReadOnlyDictionary<string, string> _subredditGroups = new Dictionary<string, string>
     {
         {"meme", "memes+me_irl+dankmemes+wholesomememes+prequelmemes+comedyheaven+marvelmemes"},
-        {"cursedMinecraft", "CursedMinecraft"},
+        // {"cursedMinecraft", "CursedMinecraft"},
         {"greentext", "greentext"},
         {"comic", "comics"},
     };

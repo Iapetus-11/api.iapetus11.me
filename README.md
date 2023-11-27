@@ -49,7 +49,7 @@
   - [shields.io](https://shields.io/) is used for image generation, this endpoint supports [these](https://shields.io/#your-badge) query parameters.
 ### Reddit Posts
 - `GET reddit/{subredditGroup}?requesterId={uniquePerSomething}` - *Returns a random image post from the specified subreddit group*
-  - `subredditGroup` - *Must be one of `meme`, `cursedMinecraft`, `greentext`, `comic`*
+  - `subredditGroup` - *Must be one of `meme`, ~~`cursedMinecraft`~~, `greentext`, `comic`*
   - `requesterId` (optional) - *Unique ID to prevent duplicate posts from being returned, for example if used in a Discord bot, this could be the channel ID the command was summoned in*
 ### Minecraft Servers
 - `GET mc/server/status/{serverAddress}` - *Returns the status of the specified Minecraft server, this supports all versions of Minecraft except those below 1.8 and realms*
