@@ -150,7 +150,7 @@ public class RedditPostService : IRedditPostService
 
     public Task StartAsync(CancellationToken stoppingToken)
     {
-        _timer = new Timer(BackgroundFetchPosts, null, TimeSpan.Zero, TimeSpan.FromMinutes(20));
+        _timer = new Timer(BackgroundFetchPosts, null, TimeSpan.Zero, TimeSpan.FromHours(2));
         return Task.CompletedTask;
     }
 
