@@ -22,7 +22,7 @@ services:
       - "5341:5341"
       - "5342:80"
     volumes:
-      - seq:/seq:ro
+      - ./runtime-data/seq:/data
     environment:
       - ACCEPT_EULA=Y
       - BASE_URI=${SEQ_BASE_URL}
